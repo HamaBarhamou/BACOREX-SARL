@@ -14,5 +14,13 @@ def home_dao(request):
     #render(request, 'dao/home_dao.html',{})
 
 def add_dao(request):
+    if request.method == 'POST':
+        form = DaoForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = DaoForm()
+
+    context = {'form':form}
     template = loader.get_template('add_dao.html')
-    return HttpResponse(template.render({}, request))
+    return HttpResponse(template.render(context, request))

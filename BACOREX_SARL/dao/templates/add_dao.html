@@ -1,6 +1,12 @@
 
-<h1>Hello add! </h1>
-<p>Welcome to my first Django project!</p>
-
-</body>
+<html>
+    <body>
+        <h1>Hello add! </h1>
+        <p>Welcome to my first Django project!</p>
+        <form action="/your-name/" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </body>
 </html>
