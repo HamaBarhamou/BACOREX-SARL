@@ -9,7 +9,7 @@ class DAO(models.Model):
     approbation_chef_service = models.BooleanField(default=False)
     approbation_chef_depatement = models.BooleanField(default=False)
     approbation_direction = models.BooleanField(default=False)
-    document_link = models.CharField(max_length=500)
+    document_link = models.URLField(blank=True)
 
 
     def __str__(self):
