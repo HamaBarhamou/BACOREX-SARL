@@ -1,11 +1,8 @@
 #from django.forms import ModelForm
 from django import forms
-from .models import Profile
+from .models import User
 
-class ConnexionForm(forms.Form):
+class LoginForm(forms.Form):
     username = forms.CharField(label="Nom d'utilisateur", max_length=30)
     password = forms.CharField(label="Mot de passe", widget=forms.PasswordInput)
     
-    """class Meta:
-        model = Profile
-        fields = ['user', 'avatar', 'fonction']"""

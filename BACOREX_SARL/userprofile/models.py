@@ -1,11 +1,19 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class Profile(models.Model):
-    user = models.OneToOneField(User,  on_delete=models.CASCADE)
-    avatar = models.ImageField(null=True, blank=True, upload_to="avatars/")
-    fonction = models.CharField(max_length=50)
+class User(AbstractUser):
+    ASSISTANT_DAO = 'ASSISTANT_DAO'
+    CHEF_SERVICE_ETUDE = 'CHEF_SERVICE_ETUDE'
+    CHEF_DEPARTEMENT_ETUDE = 'CHEF_DEPARTEMENT_ETUDE'
+    DG = 'DG'
 
-    def __str__(self):
-        return "Profil de {0}".format(self.user.username)
+    ROLE_CHOICES = (
+        (ASSISTANT_DAO, 'Assistant_dao'),
+        (CHEF_SERVICE_ETUDE, 'Chef_service_etude'),
+        (CHEF_DEPARTEMENT_ETUDE, 'Chef_departement_etude'),
+        (DG, 'Dg')
+    )
+
+    avatar = models.ImageField(verbose_name='photo de profile')
+    fonction = models.CharField(max_length=30, choices=ROLE_CHOICES, verbose_name = 'Fonction')

@@ -5,11 +5,12 @@
 {% endif %}
 
 {% if user.is_authenticated %}
-Vous êtes connecté, {{ user.username }} !
+    <p> Vous êtes connecté, {{ user.username }} ! <a href="{% url 'logout' %}">Se déconnecter</a></p>
+
 {% else %}
 <form method="post" action=".">
        {% csrf_token %}
        {{ form.as_p }}
-    <input type="submit"/>
+    <button type="submit"> Se connecter</button>
 </form>
 {% endif %}
