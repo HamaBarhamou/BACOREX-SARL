@@ -1,9 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Home DAO{% endblock %}
 
-<h1>Hello World! </h1>
-<p>Welcome to my first Django project!</p>
+{% block content %}
+    <h1>Hello World! </h1>
+    <p>Welcome to my first Django project!</p>
 
-{% for d in dao %}
-    <h3> {{ d.id }} </h3>
-{% endfor %}
-</body>
-</html>
+    {% for d in dao %}
+        <h3> {{ d.id }} </h3>
+    {% endfor %}
+{% endblock %}

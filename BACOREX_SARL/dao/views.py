@@ -3,7 +3,9 @@ from django.http import HttpResponse
 from .forms import DaoForm
 from django.template import loader
 from .models import DAO
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='/user/')
 def home_dao(request):
     dao = DAO.objects.all().values()
     context = {
@@ -13,6 +15,8 @@ def home_dao(request):
     return HttpResponse(template.render(context, request))
     #render(request, 'dao/home_dao.html',{})
 
+
+@login_required(login_url='/user/')
 def add_dao(request):
     if request.method == 'POST':
         form = DaoForm(request.POST)
