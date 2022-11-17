@@ -21,14 +21,19 @@
                     </nav>
                 </div>
                 <div class="col-sm border border-warning">
-                  
+                    
                 </div>
             </div>
             
         </div>
 
-        <div class="container border border-success">
-            {% block content %} {% endblock %} 
+        <div class="row container-fluid border border-dark">
+            <div class="col-sm col-2 border border-success">
+                cava
+            </div>
+            <div class="col-sm col-10 border border-dark">
+                {% block content %} {% endblock %}
+            </div>
         </div>
 
         <div id="footer" class="container-fluid border border-dark m-2">

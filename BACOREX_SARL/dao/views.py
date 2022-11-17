@@ -13,7 +13,6 @@ def home_dao(request):
     }
     template = loader.get_template('home_dao.html')
     return HttpResponse(template.render(context, request))
-    #render(request, 'dao/home_dao.html',{})
 
 
 @login_required(login_url='/user/')
