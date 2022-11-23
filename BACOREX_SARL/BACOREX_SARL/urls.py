@@ -20,6 +20,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('dao/', include('dao.urls')),
     path('user/', include('userprofile.urls')),
+    path('message/',include('gestioncouriers.urls')),
     path('admin/', admin.site.urls),
 ]
 

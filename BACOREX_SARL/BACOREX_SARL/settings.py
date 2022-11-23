@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dao.apps.DaoConfig',
     'userprofile.apps.UserprofileConfig',
+    'gestioncouriers.apps.GestioncouriersConfig',
 ]
 
 MIDDLEWARE = [
