@@ -1,8 +1,10 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .forms import MessageForm
 from django.template import loader
 from userprofile.forms import LoginForm
+from .models import Message
+import datetime
 
 # Create your views here.
 def messagerie(request):
@@ -11,14 +13,14 @@ def messagerie(request):
         if form.is_valid():
             messages = form.cleaned_data["messages"]
             recepteur = form.cleaned_data["recepteur"]
-            date_envoie = form.cleaned_data["date_envoie"]
-            status_envoie = form.cleaned_data["status_envoie"]
-            
-
-            # Renseigner l'itulisateur emetteur avant de sauvegarder
-            #form.save()
-            
-        
+            msg = Message(messages = messages,
+                          emetteur = request.user,
+                          recepteur = recepteur,
+                          date_envoie = datetime.datetime.now(datetime.timezone.utc),
+                          status_envoie = True
+                          )
+            msg.save()
+            form = MessageForm()
     else:
         form = MessageForm()
 
