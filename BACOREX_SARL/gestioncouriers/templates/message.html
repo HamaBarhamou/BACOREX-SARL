@@ -1,6 +1,6 @@
 hello massage
-form action="/" method="post">
+<form action="/message" method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
+    {{ form.as_p }}
+    <button type="submit"> Envoyer</button>
 </form>

@@ -4,8 +4,6 @@ from userprofile.models import User
 
 class MessageForm(forms.Form):
     messages = forms.CharField(required=False, widget=forms.Textarea)
-    #emetteur = forms.ModelChoiceField(queryset=None, empty_label="(Nothing)")
-    recepteur = forms.ModelChoiceField(queryset=None, empty_label="(Destinataire du message)")
-    date_envoie = forms.DateTimeField()
-    status_envoie = forms.BooleanField()
+    recepteur = forms.ModelChoiceField(queryset=User.objects.all(), empty_label="Destinateur du message")
+    
     
