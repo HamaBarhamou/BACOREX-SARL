@@ -25,12 +25,13 @@
                     <img src="{% static 'logo.png' %}" alt="Logo" style=width:50%>
                 </div>
             </div>
-            
         </div>
 
         <div class="row container-fluid border border-dark">
             <div class="col-sm col-2 border border-success">
-                {% block menu %} {% endblock %}
+                {% block menu %} 
+                    
+                {% endblock %}
             </div>
             <div class="col-sm col-10 border border-dark">
                 {% block content %} {% endblock %}
@@ -39,7 +40,7 @@
 
         <div id="footer" class="container-fluid border border-dark m-2">
             {% block footer %}
-            &copy; Copyright 2022 by <a href="https://github.com/HamaBarhamou">HamaBarhamou</a>.
+                {% include "footer.html" %}
             {% endblock %}
         </div>
         
