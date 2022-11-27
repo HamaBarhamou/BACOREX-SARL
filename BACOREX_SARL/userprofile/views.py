@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from .forms import LoginForm
 from django.template import loader
@@ -19,6 +19,7 @@ def login_page(request):
             print("username :{} password :{} user: {}".format(username, password, user))
             if user:
                 login(request, user)
+                return redirect('/')
             else:
                 error = True
     else:

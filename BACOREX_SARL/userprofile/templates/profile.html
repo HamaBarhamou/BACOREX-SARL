@@ -1,10 +1,19 @@
 
-{% if user.avatar == "" %}
-    {% load static %}
-    <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" style="width:50px;height:50px;">
-{% else %}
-    <img src="{{ user.avatar }}" >
-{% endif %}
-
-</br>
-{{ user.username }}
+<div class="dropdown">
+    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+        {% if user.avatar == "" %}
+            {% load static %}
+            <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" style="width:30px;height:30px;">
+        {% else %}
+            <img src="{{ user.avatar }}" style="width:50px;height:50px;">
+        {% endif %}
+        </br>
+        {{ user.username }}
+    </a>
+  
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+      <li><a class="dropdown-item" href="#">Votre Profile</a></li>
+      <li><a class="dropdown-item" href="#">Paramettre</a></li>
+      <li><a class="dropdown-item" href="user/logout">Se deconnecté</a></li>
+    </ul>
+</div>
