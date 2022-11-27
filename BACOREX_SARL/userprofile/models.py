@@ -15,8 +15,8 @@ class User(AbstractUser):
       (9, 'DEGP')
     )
 
-    fonction = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES)
-    avatar = models.ImageField(verbose_name='photo de profile')
+    fonction = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
+    avatar = models.ImageField(verbose_name='photo de profile', upload_to='media/avatars')
 
     """ ASSISTANT_DAO = 'ASSISTANT_DAO'
     CHEF_SERVICE_ETUDE = 'CHEF_SERVICE_ETUDE'

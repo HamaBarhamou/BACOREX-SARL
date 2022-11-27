@@ -16,6 +16,7 @@ def login_page(request):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             user = authenticate(username=username, password=password)
+            print("username :{} password :{} user: {}".format(username, password, user))
             if user:
                 login(request, user)
             else:

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'dao.apps.DaoConfig',
     'userprofile.apps.UserprofileConfig',
     'gestioncouriers.apps.GestioncouriersConfig',
+    'gestionprojets.apps.GestionprojetsConfig',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'BACOREX_SARL.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [os.path.join(BASE_DIR,'BACOREX_SARL/static/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +70,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "BACOREX_SARL/static",
 ]
 
 WSGI_APPLICATION = 'BACOREX_SARL.wsgi.application'
@@ -121,6 +126,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
+MEDIA_URL = '/BACOREX_SARL/static/images/' 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'BACOREX_SARL/static/images')
+
+
 
 
 # Default primary key field type

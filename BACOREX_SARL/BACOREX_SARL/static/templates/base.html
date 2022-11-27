@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="col-sm border border-secondary">
                     {% load static %}
-                    <img src="{% static 'logo.png' %}" alt="Logo" style=width:50%>
+                    <img src="{% static 'images/logo.png' %}" alt="BACOREX-SARL" style="width:50px;height:50px;">
                 </div>
                 <div class="col-sm col-8 border border-success">
                     <nav id="navigation" class="navbar navbar-expand text-uppercase fw-bold justify-content-center">
@@ -21,8 +21,9 @@
                     </nav>
                 </div>
                 <div class="col-sm border border-warning">
-                    {% load static %}
-                    <img src="{% static 'logo.png' %}" alt="Logo" style=width:50%>
+                    {% block profile %} 
+                       
+                    {% endblock %}
                 </div>
             </div>
         </div>
