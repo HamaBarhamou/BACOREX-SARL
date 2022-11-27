@@ -12,6 +12,7 @@ def home_dao(request):
     'dao': dao,
     }
     template = loader.get_template('home_dao.html')
+    #template = loader.get_template('hello.html')
     return HttpResponse(template.render(context, request))
 
 
