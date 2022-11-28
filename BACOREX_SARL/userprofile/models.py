@@ -18,17 +18,4 @@ class User(AbstractUser):
     fonction = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
     avatar = models.ImageField(verbose_name='photo de profile', upload_to='media/avatars')
 
-    """ ASSISTANT_DAO = 'ASSISTANT_DAO'
-    CHEF_SERVICE_ETUDE = 'CHEF_SERVICE_ETUDE'
-    CHEF_DEPARTEMENT_ETUDE = 'CHEF_DEPARTEMENT_ETUDE'
-    DG = 'DG'
-
-    ROLE_CHOICES = (
-        (ASSISTANT_DAO, 'Assistant_dao'),
-        (CHEF_SERVICE_ETUDE, 'Chef_service_etude'),
-        (CHEF_DEPARTEMENT_ETUDE, 'Chef_departement_etude'),
-        (DG, 'Dg')
-    )
-
-    avatar = models.ImageField(verbose_name='photo de profile')
-    fonction = models.CharField(max_length=30, choices=ROLE_CHOICES, verbose_name = 'Fonction') """
+ 
