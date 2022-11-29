@@ -1,0 +1,8 @@
+{% extends "messagerie.html" %}
+
+{% block content %}
+    {% for msg in message %}
+        {{msg.emetteur}}
+        </br>
+    {% endfor %}
+{% endblock %}
