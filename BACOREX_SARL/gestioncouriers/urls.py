@@ -5,4 +5,5 @@ from . import views
 
 urlpatterns = [
     path('',views.messagerie, name="messagerie"),
+    path('boitereception', views.boitemessagerie, name="boitereception")
 ]

@@ -23,7 +23,14 @@ def messagerie(request):
             form = MessageForm()
     else:
         form = MessageForm()
+        #form.changed_data
 
     context = {'form':form}
     template = loader.get_template('message.html')
+    return HttpResponse(template.render(context, request))
+
+
+def boitemessagerie(request):
+    context = {}
+    template = loader.get_template('messagerie.html')
     return HttpResponse(template.render(context, request))
