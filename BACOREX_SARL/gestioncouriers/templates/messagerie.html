@@ -1,14 +1,35 @@
 {% extends "home.html" %}
 
-{% block menu %}
-    Notre menue de messagerie
-{% endblock %}
-
 {% block entete_messagerie %} 
+
     <div class="row container-fluid border border-warning">
-        <div class="col-sm border border-success">
-            entete de messagerie
+        <div class="d-flex p-2 bd-highligh col-sm border border-success">
+            {% load static %}
+            <a href="#"> {% load static %} </a>
+            <a href="/boitereception/message"> <img src="{% static 'images/write_email.png' %}" alt="email" title="email" /> </a>
+            {% include "recherche.html" %}
         </div>
     </div>                
 {% endblock %}
-        
+
+{% block menu %}
+    {{ user.email }}
+    <div class="list-group">
+        {% load static %}
+        <a href="#" class="list-group-item list-group-item-action"> 
+            <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courier entrant 
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            <img src="{% static 'images/brouillon.png' %}" alt="email" title="email" />
+            Brouillons
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            <img src="{% static 'images/envoye.png' %}" alt="email" title="email" />
+            Envoyés
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            <img src="{% static 'images/corbeille.png' %}" alt="email" title="email" />
+            Corbeille
+        </a>
+    </div>
+{% endblock %}

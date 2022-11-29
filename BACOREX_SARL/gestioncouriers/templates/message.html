@@ -1,6 +1,10 @@
+{% extends "messagerie.html" %}
 
-<form action="/message/" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit"> Envoyer</button>
-</form>
+{% block content %}
+    <form action="/boitereception/message" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit"> Envoyer</button>
+    </form>
+{% endblock %}
+

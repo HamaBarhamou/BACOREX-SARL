@@ -24,7 +24,7 @@ urlpatterns = [
     path('',views.home, name='home'),
     path('dao/', include('dao.urls')),
     path('user/', include('userprofile.urls')),
-    path('message/',include('gestioncouriers.urls')),
+    path('boitereception/',include('gestioncouriers.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
