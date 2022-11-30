@@ -1,6 +1,6 @@
 {% load auth_extras %}
 
-{% if request.user|has_group:"DAO_TEAM" %} 
+{% if request.user|has_group:"DAO_TEAM" or request.user.is_superuser %} 
     <div class="list-group">
         <a href="#" class="list-group-item list-group-item-action"> Nouveau DAO </a>
         <a href="#" class="list-group-item list-group-item-action">Travailler sur un DAO</a>
@@ -11,8 +11,37 @@
     </div>
 {% endif %}
 
-{% if request.user|has_group:"PROJET_TEAM" %} 
+{% if request.user|has_group:"PROJET_TEAM" or request.user.is_superuser %} 
     <div class="list-group">
+        Caracteristique générales
+        <a href="#" class="list-group-item list-group-item-action">Affaires </a>
+        <a href="#" class="list-group-item list-group-item-action">Contrat</a>
+        <a href="#" class="list-group-item list-group-item-action">Position</a>
+        <a href="#" class="list-group-item list-group-item-action">Intervenant</a>
+        <a href="#" class="list-group-item list-group-item-action">Plannification</a>
+        <a href="#" class="list-group-item list-group-item-action">exposé Tvx à faire</a>
+        <a href="#" class="list-group-item list-group-item-action">Carateristiques techniques</a>
+        Suivi
+        <a href="#" class="list-group-item list-group-item-action">Retroplanning</a>
+        <a href="#" class="list-group-item list-group-item-action">Liste des modifications</a>
+        <a href="#" class="list-group-item list-group-item-action">Revue portefeuille</a>
+        <a href="#" class="list-group-item list-group-item-action">Achat</a>
+        <a href="#" class="list-group-item list-group-item-action">Client</a>
+        <a href="#" class="list-group-item list-group-item-action">CRET</a>
+        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
+    </div>
+{% endif %}
+
+
+{% if request.user.is_superuser %} 
+    <div class="list-group">
+        Gestion des DAO
+        <a href="#" class="list-group-item list-group-item-action"> Nouveau DAO </a>
+        <a href="#" class="list-group-item list-group-item-action">Travailler sur un DAO</a>
+        <a href="#" class="list-group-item list-group-item-action">Liste des DAO en Cours</a>
+        <a href="#" class="list-group-item list-group-item-action">Envoyé DAO</a>
+        <a href="#" class="list-group-item list-group-item-action">Archiver</a>
+        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
         Caracteristique générales
         <a href="#" class="list-group-item list-group-item-action">Affaires </a>
         <a href="#" class="list-group-item list-group-item-action">Contrat</a>

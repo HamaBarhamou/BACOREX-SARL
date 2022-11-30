@@ -6,7 +6,6 @@ find . -path "*/migrations/*.pyc"  -delete
 rm db.sqlite3
 
 python manage.py makemigrations
-python manage.py makemigrations polls
 python manage.py makemigrations gestioncouriers
 python manage.py makemigrations userprofile
 python manage.py makemigrations gestionprojets

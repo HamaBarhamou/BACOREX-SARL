@@ -15,9 +15,11 @@ def messagerie(request):
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
+            objet = form.cleaned_data["objet"]
             messages = form.cleaned_data["messages"]
             recepteur = form.cleaned_data["recepteur"]
-            msg = Message(messages = messages,
+            msg = Message(objet = objet,
+                          messages = messages,
                           emetteur = request.user,
                           recepteur = recepteur,
                           date_envoie = datetime.datetime.now(datetime.timezone.utc),
