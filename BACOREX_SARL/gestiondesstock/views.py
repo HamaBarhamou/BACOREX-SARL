@@ -10,3 +10,9 @@ def magasin_home(request):
     context = {}
     template = loader.get_template('magasin.html')
     return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/user/')
+def categorie_home(request):
+    context = {}
+    template = loader.get_template('magasin.html')
+    return HttpResponse(template.render(context, request))
