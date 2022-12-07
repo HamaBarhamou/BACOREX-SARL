@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'userprofile.apps.UserprofileConfig',
     'gestioncouriers.apps.GestioncouriersConfig',
     'gestionprojets.apps.GestionprojetsConfig',
+    'gestiondesstock.apps.GestiondesstockConfig',
 ]
 
 MIDDLEWARE = [

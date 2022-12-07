@@ -1,6 +1,6 @@
 {% load auth_extras %}
 
-{% if request.user|has_group:"DAO_TEAM" or request.user.is_superuser %} 
+{% if request.user|has_group:"DAO_TEAM" %} 
     <div class="list-group">
         <a href="#" class="list-group-item list-group-item-action"> Nouveau DAO </a>
         <a href="#" class="list-group-item list-group-item-action">Travailler sur un DAO</a>
@@ -11,7 +11,7 @@
     </div>
 {% endif %}
 
-{% if request.user|has_group:"PROJET_TEAM" or request.user.is_superuser %} 
+{% if request.user|has_group:"PROJET_TEAM" %} 
     <div class="list-group">
         Caracteristique générales
         <a href="#" class="list-group-item list-group-item-action">Affaires </a>
