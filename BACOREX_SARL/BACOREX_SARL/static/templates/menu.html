@@ -60,3 +60,14 @@
         <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
     </div>
 {% endif %}
+
+<!-- si l'utilisateur connecter est un magasinier -->
+{% if request.user.fonction == 10 %}
+    <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action">Nouveau Article</a>
+        <a href="#" class="list-group-item list-group-item-action">Article en Stock</a>
+        <a href="#" class="list-group-item list-group-item-action">Article Sortie</a>
+        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
+    </div>
+{% endif %}
+

@@ -13,7 +13,8 @@ class User(AbstractUser):
       (7, 'Conducteurs des Travaux'),
       (8, 'Chef de Projet'),
       (9, 'DEGP'),
-      (10, 'magasinier')
+      (10, 'Magasinier'),
+      (11, 'Agent'),
     )
 
     fonction = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
