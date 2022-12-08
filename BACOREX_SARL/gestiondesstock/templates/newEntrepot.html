@@ -1,7 +1,7 @@
 {% extends "home.html" %}
 
 {% block content %}
-    <form action="/magasin/newcategorie" method="post">
+    <form action="/magasin/newentrepot" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit"> Envoyer</button>
