@@ -26,8 +26,15 @@ def newEntrepot(request):
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/user/')
+def listEntrepot(request):
+    e = Entrepot.objects.all()
+    context = {'entrepot': e}
+    template = loader.get_template('listeEntrepot.html')
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/user/')
 def listeCategorie(request):
-    context = {}
+    context = {'categorie': CategoriMateriel.objects.all()}
     template = loader.get_template('listeCategorie.html')
     return HttpResponse(template.render(context, request))
 
