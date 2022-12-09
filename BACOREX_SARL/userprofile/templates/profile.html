@@ -6,7 +6,7 @@
             <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" style="width:30px;height:30px;">
         {% else %}
             {% load static %}
-            <img src="static/images/{{ user.avatar }}" style="width:30px;height:30px;">
+            <img src="/static/images/{{ user.avatar }}" style="width:30px;height:30px;">
         {% endif %}
         </br>
         {{ user.username }}
