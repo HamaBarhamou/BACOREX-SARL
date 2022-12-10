@@ -10,4 +10,5 @@ urlpatterns = [
     path('listeCategorie',views.listeCategorie, name='listeCategorie'),
     path('newmateriel', views.newMateriel, name='newmateriel'),
     path('newmateriel/<int:pk>/edit/', views.editMateriel, name='materiel_edit'),
+    path('newmateriel/<int:pk>/delette/', views.deletteMateriel, name='deletteMateriel'),
 ]
