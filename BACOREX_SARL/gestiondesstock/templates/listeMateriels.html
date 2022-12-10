@@ -7,6 +7,9 @@
         <tr>
             <th>Noms</th>
             <th>Description</th>
+            <th>Quantité</th>
+            <th>Entrepot</th>
+            <th>Categorie</th>
             <th>Update</th>
             <th>Delette</th>
         </tr>
@@ -17,9 +20,12 @@
                 <tr>
                     <td>{{m.name}}</td>
                     <td>{{m.description}}</td>
+                    <td>{{m.qte}}</td>
+                    <td>{{m.entrepot}}</td>
+                    <td>{{m.categorie}}</td>
                     <td>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <img src="{% static 'images/update.png' %}" alt="delette" title="delette" />
+                        <a href="/magasin/newmateriel/{{m.id}}/edit" class="list-group-item list-group-item-action">
+                            <img src="{% static 'images/update.png' %}" alt="update" title="pdate" />
                         </a>
                     </td>
                     <td>

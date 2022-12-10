@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
@@ -63,7 +64,7 @@ def newCategorie(request):
 @login_required(login_url='/user/')
 def newMateriel(request):
     if request.method == 'POST':
-        form = MaterielsForm(request.POST, request.FILES or None)
+        form = MaterielsForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             name = form.cleaned_data["name"]
             description = form.cleaned_data["description"]
@@ -92,6 +93,36 @@ def newMateriel(request):
     context = {'form':form}
     template = loader.get_template('newMateriel.html')
     return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url='/user/')
+def editMateriel(request, pk):
+    materiel = Materiels.objects.get(pk=pk)
+    if request.method == "POST":
+        form = MaterielsForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            name = form.cleaned_data["name"]
+            description = form.cleaned_data["description"]
+            qte = form.cleaned_data["qte"]
+            categorie = form.cleaned_data["categorie"]
+            entrepot = form.cleaned_data["entrepot"]
+            image = form.cleaned_data["image"]
+
+            materiel.name = name,
+            materiel.description = description,
+            materiel.qte = qte,
+            materiel.categorie = categorie,
+            materiel.entrepot = entrepot,
+            materiel.image = image
+
+            #materiel.save()
+            print("mat::",materiel.name)
+            return redirect('listeMateriel')
+    else:
+        form = MaterielsForm(instance=materiel)
+        context = {'form':form}
+        template = loader.get_template('newMateriel.html')
+        return HttpResponse(template.render(context, request))
 
 
 @login_required(login_url='/user/')

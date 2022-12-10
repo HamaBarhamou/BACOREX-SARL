@@ -13,18 +13,22 @@ class EntrepotForm(forms.Form):
     name = forms.CharField(max_length=50)
     adresse = forms.CharField(max_length=100)
 
-#class MaterielsForm(ModelForm):
-class MaterielsForm(forms.Form):
-    name = forms.CharField(max_length=50)
+class MaterielsForm(ModelForm):
+#class MaterielsForm(forms.Form):
+    """ name = forms.CharField(max_length=50)
     description = forms.CharField(required=False, widget=forms.Textarea)
     qte = forms.IntegerField()
     categorie = forms.ModelChoiceField(queryset=CategoriMateriel.objects.all(),
                                        empty_label="Categories du materiels")
     entrepot = forms.ModelChoiceField(queryset=Entrepot.objects.all(),
                                        empty_label="Entrepot")
-    #image = forms.ImageField()
-    image = forms.FileField()
+    image = forms.ImageField(required=False)
+    #image = forms.FileField() """
 
-    """ class Meta:
+    image = forms.CharField(required=False)
+    class Meta:
         model = Materiels
-        fields = ['name', 'description', 'qte', 'categorie', 'entrepot', 'image'] """
+        fields = ['name', 'description', 'qte', 'categorie', 'entrepot', 'image']
+
+        def __init__(self, *args, **kwargs):
+            super(CaseForm, self).__init__(*args, **kwargs)
