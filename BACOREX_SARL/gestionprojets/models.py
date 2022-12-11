@@ -7,7 +7,6 @@ from gestiondesstock.models import Materiels
 class Client(models.Model):
     name = models.CharField(max_length=50, default=None)
     adresse = models.CharField(max_length=100, default=None)
-    start_date = models.DateField(default=timezone.now)
 
 class Projet(models.Model):
     STATUS = (
@@ -49,3 +48,4 @@ class Task(models.Model):
     pieces_jointes = models.FileField(default=None)
     attribuer_a = models.ForeignKey(User, on_delete=models.CASCADE,
                                            related_name='attribuer_a', default=None)
+    projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=None)

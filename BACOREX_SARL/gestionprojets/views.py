@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
-from .forms import ClientForm
-from .models import Client
+from .forms import ClientForm, ProjetForm
+from .models import Client, Projet
 
 
 # Create your views here.
@@ -27,6 +27,21 @@ def listeClient(request):
     context = {'clients': Client.objects.all()}
     template = loader.get_template('listeclient.html')
     return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url='/user/')
+def newProjet(request):
+    if request.method == "POST":
+        form = ProjetForm(request.POST)
+        if form.is_valid():
+            materiel = form.save(commit=False)
+            return redirect('listeproject')
+        return redirect('newprojet')
+    else:
+        form = ProjetForm()
+        context = {'form':form}
+        template = loader.get_template('newprojet.html')
+        return HttpResponse(template.render(context, request))
 
 
 @login_required(login_url='/user/')
