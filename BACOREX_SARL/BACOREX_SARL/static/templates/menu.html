@@ -13,7 +13,7 @@
 
 {% if request.user|has_group:"PROJET_TEAM" %} 
     <div class="list-group">
-        Caracteristique générales
+        <!-- Caracteristique générales
         <a href="#" class="list-group-item list-group-item-action">Affaires </a>
         <a href="#" class="list-group-item list-group-item-action">Contrat</a>
         <a href="#" class="list-group-item list-group-item-action">Position</a>
@@ -28,7 +28,15 @@
         <a href="#" class="list-group-item list-group-item-action">Achat</a>
         <a href="#" class="list-group-item list-group-item-action">Client</a>
         <a href="#" class="list-group-item list-group-item-action">CRET</a>
+        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a> -->
+        {% if request.user.fonction == 6 %}
+            <a href="/projet/newclient" class="list-group-item list-group-item-action">Nouveau Client</a>
+            <a href="#" class="list-group-item list-group-item-action">Nouveau projet</a>
+        {% endif %}
+        <a href="/projet/listeclient" class="list-group-item list-group-item-action">Liste des Clients</a>
+        <a href="/projet" class="list-group-item list-group-item-action">Liste des projets</a>
         <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
+        <a href="#" class="list-group-item list-group-item-action">Statistique</a>
     </div>
 {% endif %}
 

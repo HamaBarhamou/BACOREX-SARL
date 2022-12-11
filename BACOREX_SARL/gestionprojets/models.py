@@ -37,7 +37,6 @@ class Task(models.Model):
       (1, 'NON DÉBUTÉ'),
       (2, 'EN COURS'),
       (3, 'Terminer'),
-      (4, 'ARCHIVER'),
     )
     name = models.CharField(max_length=100, default=None)
     description = models.TextField()
