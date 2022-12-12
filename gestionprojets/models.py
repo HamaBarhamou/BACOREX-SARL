@@ -8,6 +8,9 @@ class Client(models.Model):
     name = models.CharField(max_length=50, default=None)
     adresse = models.CharField(max_length=100, default=None)
 
+    def __str__(self):
+      return self.name
+
 class Projet(models.Model):
     STATUS = (
       (1, 'NON DÉBUTÉ'),
