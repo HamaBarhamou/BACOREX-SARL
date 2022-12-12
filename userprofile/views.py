@@ -16,7 +16,6 @@ def login_page(request):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             user = authenticate(username=username, password=password)
-            print("username :{} password :{} user: {}".format(username, password, user))
             if user:
                 login(request, user)
                 return redirect('/')
@@ -26,16 +25,17 @@ def login_page(request):
         form = LoginForm()
 
     context = {
-        'error':error,
-        'form':form
+        'error': error,
+        'form': form
     }
-    
+
     template = loader.get_template('login.html')
     return HttpResponse(template.render(context, request))
+
 
 def deconnexion(request):
     logout(request)
     form = LoginForm()
-    context = {'form':form}
+    context = {'form': form}
     template = loader.get_template('login.html')
     return HttpResponse(template.render(context, request))

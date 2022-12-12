@@ -31,14 +31,16 @@
                     
         {% endblock %}
         <div class="row container-fluid border border-dark">
-            <div class="col-sm col-2 border border-success">
+            <div class="col-sm col-2 border border-success overflow-scroll">
                 {% block menu %} 
                     
                 {% endblock %}
             </div>
-            <div class="col-sm col-10 border border-dark">
+
+            <div class="col-sm col-10 border border-dark overflow-scroll">
                 {% block content %} {% endblock %}
-            </div>
+            </div> 
+            
         </div>
 
         <div id="footer" class="container-fluid border border-dark m-2">

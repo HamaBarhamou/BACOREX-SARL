@@ -5,14 +5,12 @@ from django.template import loader
 from .models import DAO
 from django.contrib.auth.decorators import login_required
 
+
 @login_required(login_url='/user/')
 def home_dao(request):
     dao = DAO.objects.all().values()
-    context = {
-    'dao': dao,
-    }
+    context = {'dao': dao}
     template = loader.get_template('home_dao.html')
-    #template = loader.get_template('hello.html')
     return HttpResponse(template.render(context, request))
 
 
@@ -25,6 +23,6 @@ def add_dao(request):
     else:
         form = DaoForm()
 
-    context = {'form':form}
+    context = {'form': form}
     template = loader.get_template('add_dao.html')
     return HttpResponse(template.render(context, request))

@@ -17,7 +17,7 @@ def newClient(request):
             return redirect('listeclient')
     else:
         form = ClientForm()
-        context = {'form':form}
+        context = {'form': form}
         template = loader.get_template('newclient.html')
         return HttpResponse(template.render(context, request))
 
@@ -39,13 +39,13 @@ def newProjet(request):
         return redirect('newprojet')
     else:
         form = ProjetForm()
-        context = {'form':form}
+        context = {'form': form}
         template = loader.get_template('newprojet.html')
         return HttpResponse(template.render(context, request))
 
 
 @login_required(login_url='/user/')
 def listeProject(request):
-    context = {'projets':''}
+    context = {'projets': ''}
     template = loader.get_template('listeproject.html')
     return HttpResponse(template.render(context, request))

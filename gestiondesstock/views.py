@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import CategoriMaterielForm, MaterielsForm, EntrepotForm
 from .models import CategoriMateriel, Materiels, Entrepot
 
+
 # Create your views here.
 @login_required(login_url='/user/')
 def newEntrepot(request):
@@ -15,15 +16,13 @@ def newEntrepot(request):
         if form.is_valid():
             name = form.cleaned_data["name"]
             adresse = form.cleaned_data["adresse"]
-            entrepot = Entrepot(name = name, adresse = adresse)
-            
+            entrepot = Entrepot(name=name, adresse=adresse)
             entrepot.save()
             print(entrepot.name)
             form = EntrepotForm()
     else:
         form = EntrepotForm()
-
-    context = {'form':form}
+    context = {'form': form}
     template = loader.get_template('newEntrepot.html')
     return HttpResponse(template.render(context, request))
 
@@ -50,14 +49,13 @@ def newCategorie(request):
         if form.is_valid():
             name = form.cleaned_data["name"]
             description = form.cleaned_data["description"]
-            categorie = CategoriMateriel(name = name, description = description)
-            
+            categorie = CategoriMateriel(name=name, description=description)
             categorie.save()
             form = CategoriMaterielForm()
     else:
         form = CategoriMaterielForm()
 
-    context = {'form':form}
+    context = {'form': form}
     template = loader.get_template('newCategorie.html')
     return HttpResponse(template.render(context, request))
 
@@ -73,25 +71,21 @@ def newMateriel(request):
             categorie = form.cleaned_data["categorie"]
             entrepot = form.cleaned_data["entrepot"]
             image = form.cleaned_data["image"]
-            
             materiel = Materiels(
-                                 name = name, 
-                                 description = description,
-                                 qte = qte,
-                                 categorie = categorie,
-                                 entrepot = entrepot,
-                                 image = image
-                                 )
-            
+                            name=name,
+                            description=description,
+                            qte=qte,
+                            categorie=categorie,
+                            entrepot=entrepot,
+                            image=image
+                            )
             materiel.save()
-            print("MA:",materiel)
             form = MaterielsForm()
         else:
-            print("Données formulaire Non valid") 
+            print("Données formulaire Non valid")
     else:
-        form = MaterielsForm() 
-
-    context = {'form':form}
+        form = MaterielsForm()
+    context = {'form': form}
     template = loader.get_template('newMateriel.html')
     return HttpResponse(template.render(context, request))
 
@@ -106,7 +100,7 @@ def editMateriel(request, pk):
             return redirect('listeMateriel')
     else:
         form = MaterielsForm(instance=materiel)
-        context = {'form':form, 'pk':materiel.pk}
+        context = {'form': form, 'pk': materiel.pk}
         template = loader.get_template('editMateriel.html')
         return HttpResponse(template.render(context, request))
 
@@ -115,6 +109,7 @@ def editMateriel(request, pk):
 def deletteMateriel(request, pk):
     Materiels.objects.get(pk=pk).delete()
     return redirect('listeMateriel')
+
 
 @login_required(login_url='/user/')
 def listeMateriel(request):

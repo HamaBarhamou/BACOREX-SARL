@@ -17,28 +17,29 @@ def messagerie(request):
             objet = form.cleaned_data["objet"]
             messages = form.cleaned_data["messages"]
             recepteur = form.cleaned_data["recepteur"]
-            msg = Message(objet = objet,
-                          messages = messages,
-                          emetteur = request.user,
-                          recepteur = recepteur,
-                          date_envoie = datetime.datetime.now(datetime.timezone.utc),
-                          status_envoie = True
-                          )
+            msg = Message(
+                    objet=objet,
+                    messages=messages,
+                    emetteur=request.user,
+                    recepteur=recepteur,
+                    date_envoie=datetime.datetime.now(datetime.timezone.utc),
+                    status_envoie=True
+                    )
             msg.save()
             form = MessageForm()
     else:
         form = MessageForm()
-        #form.changed_data
-
-    context = {'form':form}
+    context = {'form': form}
     template = loader.get_template('message.html')
     return HttpResponse(template.render(context, request))
+
 
 @login_required(login_url='/user/')
 def boitemessagerie(request):
     context = {}
     template = loader.get_template('messagerie.html')
     return HttpResponse(template.render(context, request))
+
 
 @login_required(login_url='/user/')
 def courier_entrant(request):
