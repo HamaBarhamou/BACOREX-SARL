@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'gestioncouriers.apps.GestioncouriersConfig',
     'gestionprojets.apps.GestionprojetsConfig',
     'gestiondesstock.apps.GestiondesstockConfig',
+    'bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'BACOREX_SARL.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'BACOREX_SARL/static/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'BACOREX_SARL/static/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

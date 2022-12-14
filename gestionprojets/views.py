@@ -34,18 +34,20 @@ def newProjet(request):
     if request.method == "POST":
         form = ProjetForm(request.POST)
         if form.is_valid():
-            materiel = form.save(commit=False)
-            return redirect('listeproject')
-        return redirect('newprojet')
+            materiel = form.save()
+            """ return redirect('listeproject') """
+            form = ProjetForm()
+        else:
+            form = ProjetForm(request.POST)
     else:
         form = ProjetForm()
-        context = {'form': form}
-        template = loader.get_template('newprojet.html')
-        return HttpResponse(template.render(context, request))
+    context = {'form': form}
+    template = loader.get_template('newprojet.html')
+    return HttpResponse(template.render(context, request))
 
 
 @login_required(login_url='/user/')
 def listeProject(request):
-    context = {'projets': ''}
+    context = {'projets': Projet.objects.all().values()}
     template = loader.get_template('listeproject.html')
     return HttpResponse(template.render(context, request))

@@ -1,5 +1,6 @@
 from django import forms
-from django.forms import ModelForm, Textarea
+from django.forms import ModelForm, Textarea, NumberInput
+from django.forms import ClearableFileInput
 from django.db import models
 from .models import Client, Projet, Task
 from django.utils.translation import gettext_lazy as _
@@ -15,40 +16,6 @@ class ClientForm(ModelForm):
 
 
 class ProjetForm(ModelForm):
-    start_date = forms.DateField(widget=forms.SelectDateWidget(),
-                                 label="Debut du Projet"
-                                 )
-
-    end_date = forms.DateField(widget=forms.SelectDateWidget(),
-                               label="Fin du Projet"
-                               )
-
-    chef_project = forms.ModelChoiceField(
-                    queryset=User.objects.filter(fonction=8),
-                    label="Chef de Projet",
-                    empty_label="Faite un choix",
-                    )
-
-    conducteur_travaux = forms.ModelChoiceField(
-                            queryset=User.objects.filter(fonction=7),
-                            label="Conducteur des Travaux",
-                            empty_label="Faite un choix",
-                            )
-
-    list_intervenant = forms.ModelMultipleChoiceField(
-                            queryset=User.objects.filter(fonction=11),
-                            label="Liste des Intdervenants",
-                            required=False,
-                            widget=forms.CheckboxSelectMultiple
-                            )
-
-    list_materiels = forms.ModelMultipleChoiceField(
-                        queryset=Materiels.objects.all(),
-                        label="Liste des Materiels",
-                        required=False,
-                        widget=forms.CheckboxSelectMultiple
-                        )
-
     class Meta:
         model = Projet
         fields = '__all__'
@@ -63,7 +30,39 @@ class ProjetForm(ModelForm):
         widgets = {
             'name': Textarea(attrs={'cols': 60, 'rows': 1}),
             'description': Textarea(attrs={'cols': 60, 'rows': 3}),
+            'start_date': NumberInput(attrs={'type': 'date'}),
+            'end_date': NumberInput(attrs={'type': 'date'}),
+            'pieces_jointes': ClearableFileInput(attrs={'multiple': True})
         }
+
+    chef_project = forms.ModelChoiceField(
+                        queryset=User.objects.filter(fonction=8),
+                        label="Chef de Projet",
+                        empty_label="Faite un choix",
+                        )
+    conducteur_travaux = forms.ModelChoiceField(
+                            queryset=User.objects.filter(fonction=7),
+                            label="Conducteur des Travaux",
+                            empty_label="Faite un choix",
+                            )
+    list_intervenant = forms.ModelMultipleChoiceField(
+                            queryset=User.objects.filter(fonction=11),
+                            label="Liste des Intdervenants",
+                            required=False,
+                            widget=forms.CheckboxSelectMultiple
+                            )
+    list_materiels = forms.ModelMultipleChoiceField(
+                        queryset=Materiels.objects.all(),
+                        label="Liste des Materiels",
+                        required=False,
+                        widget=forms.CheckboxSelectMultiple
+                        )
+    pieces_jointes = forms.FileField(
+                        required=False,
+                        widget=forms.ClearableFileInput(
+                                        attrs={'multiple': True}
+                                        )
+                        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

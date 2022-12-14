@@ -15,15 +15,14 @@
             {% endif %}
         </tr>
         </thead>
-        <!-- <tbody>
+        <tbody>
             {% load static %}
-            {% for m in materiel %}
+            {% for p in projets %}
                 <tr>
-                    <td>{{m.name}}</td>
-                    <td>{{m.description}}</td>
-                    <td>{{m.qte}}</td>
-                    <td>{{m.entrepot}}</td>
-                    <td>{{m.categorie}}</td>
+                    <td>{{p.name}}</td>
+                    <td>{{p.start_date}}</td>
+                    <td>{{p.end_date}}</td>
+                    <td>None</td>
                     {% if request.user.fonction == 6 %}
                         <td>
                             <a href="#" class="list-group-item list-group-item-action">
@@ -38,7 +37,7 @@
                     {% endif %}
                 </tr>
             {% endfor %}
-        </tbody> -->
+        </tbody>
     </table>
 </div>
 {% endblock %}

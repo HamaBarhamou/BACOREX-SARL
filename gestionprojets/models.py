@@ -37,12 +37,26 @@ class Projet(models.Model):
                             related_name='conducteur_travaux',
                             default=None
                             )
-    list_intervenant = models.ManyToManyField(User, related_name='intervenant')
+    list_intervenant = models.ManyToManyField(
+                            User,
+                            related_name='intervenant'
+                            )
     list_materiels = models.ManyToManyField(Materiels)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, default=None)
-    status = models.PositiveSmallIntegerField(choices=STATUS, default=1)
+    client = models.ForeignKey(
+                Client,
+                on_delete=models.CASCADE,
+                default=None
+                )
+    status = models.PositiveSmallIntegerField(
+                choices=STATUS,
+                default=1
+                )
     budget = models.IntegerField(default=0)
-    pieces_jointes = models.FileField(default=None)
+    pieces_jointes = models.FileField(
+                        verbose_name='image',
+                        upload_to='media/upload/documents',
+                        null=True
+                        )
 
 
 class Task(models.Model):
