@@ -7,4 +7,5 @@ urlpatterns = [
     path('listeclient', views.listeClient, name='listeclient'),
     path('newclient', views.newClient, name='newclient'),
     path('newprojet', views.newProjet, name='newprojet'),
+    path('<int:pk>', views.detailProject, name='detailprojet'),
 ]

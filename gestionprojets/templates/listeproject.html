@@ -5,6 +5,7 @@
     <table class="table table-hover">
         <thead>
         <tr>
+            <th>Detail</th>
             <th>Nom du Projet</th>
             <th>Debut</th>
             <th>Fin</th>
@@ -19,6 +20,11 @@
             {% load static %}
             {% for p in projets %}
                 <tr>
+                    <td>
+                        <a href="{% url 'detailprojet' p.id %}" class="list-group-item list-group-item-action">
+                            <img src="{% static 'images/detail.png' %}" alt="detail" title="detail"/>
+                        </a>
+                    </td>
                     <td>{{p.name}}</td>
                     <td>{{p.start_date}}</td>
                     <td>{{p.end_date}}</td>
@@ -26,12 +32,12 @@
                     {% if request.user.fonction == 6 %}
                         <td>
                             <a href="#" class="list-group-item list-group-item-action">
-                                <img src="{% static 'images/update.png' %}" alt="update" title="pdate" />
+                                <img src="{% static 'images/update.png' %}" alt="update" title="pdate"/>
                             </a>
                         </td>
                         <td>
                             <a href="#" class="list-group-item list-group-item-action">
-                                <img src="{% static 'images/delette.png' %}" alt="delette" title="delette" />
+                                <img src="{% static 'images/delette.png' %}" alt="delette" title="delette" title="pdate"/>
                             </a>
                         </td>
                     {% endif %}

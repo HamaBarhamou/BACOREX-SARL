@@ -17,9 +17,12 @@
                     <img src="{% static 'images/logo.png' %}" alt="BACOREX-SARL" style="width:50px;height:50px;">
                 </div>
                 <div class="col-sm col-8 border border-success">
-                    <nav id="navigation" class="navbar navbar-expand text-uppercase fw-bold justify-content-center">
+                    {% comment %} <nav id="navigation" class="navbar navbar-expand text-uppercase fw-bold justify-content-center">
                        
-                    </nav>
+                    </nav> {% endcomment %}
+                    {% block entete %} 
+                       
+                    {% endblock %}
                 </div>
                 <div class="col-sm border border-warning">
                     {% block profile %} 

@@ -51,3 +51,10 @@ def listeProject(request):
     context = {'projets': Projet.objects.all().values()}
     template = loader.get_template('listeproject.html')
     return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url='/user/')
+def detailProject(request, pk):
+    context = {'projet': Projet.objects.get(pk=pk)}
+    template = loader.get_template('detailProjet.html')
+    return HttpResponse(template.render(context, request))
