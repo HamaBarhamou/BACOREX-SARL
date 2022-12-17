@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'gestionprojets.apps.GestionprojetsConfig',
     'gestiondesstock.apps.GestiondesstockConfig',
     'bootstrap5',
+    'plannig.apps.PlannigConfig',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,16 @@ TEMPLATES = [
 STATICFILES_DIRS = [
     BASE_DIR / "BACOREX_SARL/static",
 ]
+
+""" STATICFILES_DIRS = [
+    BASE_DIR / "BACOREX_SARL/static",
+    BASE_DIR / "dao/static",
+    BASE_DIR / "gestioncouriers/static",
+    BASE_DIR / "gestiondesstock/static",
+    BASE_DIR / "gestionprojets/static",
+    BASE_DIR / "plannig/static",
+    BASE_DIR / "userprofile/static"
+] """
 
 WSGI_APPLICATION = 'BACOREX_SARL.wsgi.application'
 
@@ -127,11 +138,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+#STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-MEDIA_URL = '/BACOREX_SARL/static/images/' 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'BACOREX_SARL/static/images')
+STATIC_ROOT = 'static/'
 
+MEDIA_URL = '/BACOREX_SARL/static/images/'
+ 
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'BACOREX_SA#RL/static/images')
+MEDIA_ROOT = 'static/images'
 
 
 

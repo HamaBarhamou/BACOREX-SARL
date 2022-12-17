@@ -55,6 +55,8 @@ def listeProject(request):
 
 @login_required(login_url='/user/')
 def detailProject(request, pk):
-    context = {'projet': Projet.objects.get(pk=pk)}
+    status = ['NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
+    projet = Projet.objects.get(pk=pk)
+    context = {'projet': projet, 'status': status[projet.status-1]}
     template = loader.get_template('detailProjet.html')
     return HttpResponse(template.render(context, request))

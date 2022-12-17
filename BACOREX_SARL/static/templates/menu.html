@@ -1,51 +1,47 @@
 {% load auth_extras %}
 
-{% if request.user|has_group:"DAO_TEAM" %} 
-    <div class="list-group">
+<div class="list-group">
+    {% if request.user|has_group:"DAO_TEAM" %} 
+        {% comment %} <div class="list-group"> {% endcomment %}
         <a href="#" class="list-group-item list-group-item-action"> Nouveau DAO </a>
         <a href="#" class="list-group-item list-group-item-action">Travailler sur un DAO</a>
         <a href="#" class="list-group-item list-group-item-action">Liste des DAO en Cours</a>
         <a href="#" class="list-group-item list-group-item-action">Envoyé DAO</a>
         <a href="#" class="list-group-item list-group-item-action">Archiver</a>
-        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
-    </div>
-{% endif %}
+        {% comment %} </div> {% endcomment %}
+    {% endif %}
 
-{% if request.user|has_group:"PROJET_TEAM" %} 
-    <div class="list-group">
+    {% if request.user|has_group:"PROJET_TEAM" %} 
+        {% comment %} <div class="list-group"> {% endcomment %}
         {% if request.user.fonction == 6 %}
             <a href="/projet/newclient" class="list-group-item list-group-item-action">Nouveau Client</a>
             <a href="/projet/newprojet" class="list-group-item list-group-item-action">Nouveau projet</a>
         {% endif %}
         <a href="/projet/listeclient" class="list-group-item list-group-item-action">Liste des Clients</a>
         <a href="/projet" class="list-group-item list-group-item-action">Liste des projets</a>
-        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
         <a href="#" class="list-group-item list-group-item-action">Statistique</a>
-    </div>
-{% endif %}
+        {% comment %} </div> {% endcomment %}
+    {% endif %}
 
-
-{% if request.user.is_superuser %} 
-    <div class="list-group">
+    {% if request.user.is_superuser %} 
+        {% comment %} <div class="list-group"> {% endcomment %}
         Gestion des DAO
         <a href="#" class="list-group-item list-group-item-action"> Nouveau DAO </a>
         <a href="#" class="list-group-item list-group-item-action">Travailler sur un DAO</a>
         <a href="#" class="list-group-item list-group-item-action">Liste des DAO en Cours</a>
         <a href="#" class="list-group-item list-group-item-action">Envoyé DAO</a>
         <a href="#" class="list-group-item list-group-item-action">Archiver</a>
-        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
         <a href="/projet/newclient" class="list-group-item list-group-item-action">Nouveau Client</a>
         <a href="/projet/newprojet" class="list-group-item list-group-item-action">Nouveau projet</a>
         <a href="/projet/listeclient" class="list-group-item list-group-item-action">Liste des Clients</a>
         <a href="/projet" class="list-group-item list-group-item-action">Liste des projets</a>
-        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
         <a href="#" class="list-group-item list-group-item-action">Statistique</a>
-    </div>
-{% endif %}
+        {% comment %} </div> {% endcomment %}
+    {% endif %}
 
-<!-- si l'utilisateur connecter est un magasinier -->
-{% if request.user.fonction == 10 %}
-    <div class="list-group">
+    <!-- si l'utilisateur connecter est un magasinier -->
+    {% if request.user.fonction == 10 %}
+        {% comment %} <div class="list-group"> {% endcomment %}
         <a href="/magasin/newentrepot" class="list-group-item list-group-item-action">Creer un Entrepot</a>
         <a href="/magasin/listentrepot" class="list-group-item list-group-item-action">Liste des Entrepots</a>
         <a href="/magasin/newcategorie" class="list-group-item list-group-item-action">Creer une Categorie</a>
@@ -54,6 +50,9 @@
         <a href="/magasin" class="list-group-item list-group-item-action"ategat>Inventaire des Materiels</a>
         <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
         <a href="#" class="list-group-item list-group-item-action">Statistique</a>
-    </div>
-{% endif %}
+    {% comment %}  </div> {% endcomment %}
+    {% endif %}
 
+    <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
+    <a href="/plannig" class="list-group-item list-group-item-action">Plannig</a>
+</div>

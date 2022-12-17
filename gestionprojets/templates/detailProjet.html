@@ -2,6 +2,10 @@
 
 {% block entete %} 
     <h1>{{projet.name}}</h1>
+    Debut : {{projet.start_date | date:"M d, Y" }}  
+    Fin : {{projet.end_date | date:"M d, Y" }}
+    Progres: {{status}}
+    Temps restant: 
 {% endblock %}
 
 {% block menu %}

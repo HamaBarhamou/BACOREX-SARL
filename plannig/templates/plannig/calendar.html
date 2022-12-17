@@ -1,0 +1,23 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block headfile %}
+    <link rel="stylesheet" type="text/css" href="{% static 'plannig/css/styles.css' %}">
+{% endblock %}
+
+{% block entete %} 
+    <h1><center>Plannig</center></h1>
+{% endblock %}
+
+{% block content %}
+    <div class="clearfix">
+        <a class="btn btn-info left" href="{% url 'calendar_post' date "prev" %}"> Mois Precedent </a>
+        <a class="btn btn-info right" href="{% url 'calendar_post' date "next" %}"> Mois Suivant </a>
+    </div>
+    {{ calendar }}
+{% endblock %}
+
+{% block codejs %}
+    <script type="text/javascript" src="{% static 'plannig/js/calendar.js' %}"></script>        
+{% endblock %}
+
