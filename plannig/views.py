@@ -23,17 +23,18 @@ def next_month(d):
 
 
 # Create your views here.
-@login_required(login_url='/user/')
-def calendar(request, date=None, cmd=None):
+@login_required(login_url='/user/') 
+def calendar(request, date=None, cmd=None, calendarType=None):
     if date is None:
         d = datetime.today()
-    elif cmd == "next":
+    if cmd == "next":
         d = next_month(datetime.strptime(date, '%Y-%m-%d'))
     elif cmd == "prev":
         d = prev_month(datetime.strptime(date, '%Y-%m-%d'))
 
     cal = Calendar(d.year, d.month)
     html_cal = cal.formatmonth(withyear=True)
+
     context = {'calendar': mark_safe(html_cal), 'date': str(d).split(' ')[0]}
     template = loader.get_template('plannig/calendar.html')
     return HttpResponse(template.render(context, request))

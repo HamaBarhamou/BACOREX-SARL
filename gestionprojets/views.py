@@ -5,6 +5,7 @@ from django.template import loader
 from django.http import HttpResponse
 from .forms import ClientForm, ProjetForm
 from .models import Client, Projet
+from plannig.models import Event
 
 
 # Create your views here.
@@ -34,7 +35,14 @@ def newProjet(request):
     if request.method == "POST":
         form = ProjetForm(request.POST)
         if form.is_valid():
-            materiel = form.save()
+            event = Event(
+                    title=form.cleaned_data['name'],
+                    description=form.cleaned_data['description'],
+                    start_time=form.cleaned_data['start_date'],
+                    end_time=form.cleaned_data['end_date']
+                    )
+            form.save()
+            event.save()
             """ return redirect('listeproject') """
             form = ProjetForm()
         else:
