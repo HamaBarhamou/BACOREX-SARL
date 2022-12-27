@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from userprofile.models import User
 from gestiondesstock.models import Materiels
+from plannig.models import Event
 
 
 # Create your models here.
@@ -58,6 +59,15 @@ class Projet(models.Model):
                         null=True
                         )
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        event = Event(
+                    title=self.name,
+                    description=self.description,
+                    start_time=self.start_date,
+                    end_time=self.end_date
+                    )
+        event.save()
 
 class Task(models.Model):
     STATUS = (
