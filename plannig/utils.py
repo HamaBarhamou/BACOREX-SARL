@@ -26,16 +26,21 @@ class Calendar(HTMLCalendar):
 
     """ formats a week as a tr  """
     def formatweek(self, theweek, events, year, month, today, listEvents):
+
+        def zero_first(nb):
+            if nb <= 9 and nb >= 0:
+                return f"0{nb}"
+            else:
+                return str(nb)
+
         week = ''
         for d, weekday in theweek:
-            if d <= 9:
-                id = f'{year}-{month}-0{d}'
-            else:
-                id = f'{year}-{month}-{d}'
+            id = f'{year}-{zero_first(month)}-{zero_first(d)}'
             if id in listEvents:
                 liste = listEvents[id]
             else:
                 liste = []
+            #print(id)
             week += self.formatday(d, events, year, month, today, liste)
         return f'<tr> {week} </tr>'
 
@@ -45,21 +50,22 @@ class Calendar(HTMLCalendar):
                     start_time__year=self.year,
                     start_time__month=self.month
                     ) """
-        events = Event.objects.filter(
-                    start_time__year=self.year,
-                    start_time__month=self.month
-                    )
+        events = Event.objects.filter(end_time__gte=f"{self.year}-{self.month}-01")
         dic = {}
 
-        print(events)
+        #print("events: ", events)
         for e in events:
             day_start = e.start_time
             day_end = e.end_time
+            print(f"{day_start} {day_end}")
             for date in list(self.daterange(day_start, day_end)):
                 if date in dic:
                     dic[date].append(e.title)
                 else:
                     dic[date] = [e.title]
+
+        """ for loop in dic:
+            print(f"{loop} {dic[loop]}") """
 
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
