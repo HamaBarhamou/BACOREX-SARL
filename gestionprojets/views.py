@@ -7,6 +7,21 @@ from .forms import ClientForm, ProjetForm
 from .models import Client, Projet
 from plannig.models import Event
 
+fonction = [
+                '',
+                'Assistant DAO',
+                'Chef Service Etude',
+                'Chef Departement Etude',
+                'Directeur Generale',
+                'admin',
+                'Coordinateur des Operations',
+                'Conducteurs des Travaux',
+                'Chef de Projet',
+                'DEGP',
+                'Magasinier',
+                'Intervenant',
+               ]
+
 
 # Create your views here.
 @login_required(login_url='/user/')
@@ -71,26 +86,32 @@ def listeProject(request):
 
 @login_required(login_url='/user/')
 def detailProject(request, pk):
-    status = ['NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
+    status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
     projet = Projet.objects.get(pk=pk)
-    context = {'projet': projet, 'status': status[projet.status-1], 'pk': pk}
+    context = {'projet': projet, 'status': status[projet.status], 'pk': pk}
     template = loader.get_template('detailProjet.html')
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/user/')
 def List_Intervenant_Project(request, pk):
-    status = ['NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
+    status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
     projet = Projet.objects.get(pk=pk)
-    intervenant = []
-    intervenant.append(Projet.chef_project)
-    intervenant.append(Projet.conducteur_travaux)
-    intervenant.append(Projet.list_intervenant)
-    print("inet:",intervenant)
+    intervenant = [
+                    projet.chef_project,
+                    projet.conducteur_travaux,
+                  ]
+
+    """ for loop in projet.list_intervenant:
+        intervenant.append(loop) """
+
+    
+    print("intervenant: ", projet.chef_project)
     context = {
                 'projet': projet,
-                'status': status[projet.status-1],
+                'status': status[projet.status],
                 'pk': pk,
-                'intervenant': intervenant
+                'intervenant': intervenant,
+                'fonction': fonction
               }
     template = loader.get_template('intervenantProjet.html')
     return HttpResponse(template.render(context, request))
