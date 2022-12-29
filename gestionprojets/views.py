@@ -51,6 +51,7 @@ def newProjet(request):
         form = ProjetForm(request.POST)
         if form.is_valid():
             form.save()
+            #print('form: ', form.cleaned_data['list_intervenant'])
             """ return redirect('listeproject') """
             form = ProjetForm()
         else:
@@ -101,11 +102,10 @@ def List_Intervenant_Project(request, pk):
                     projet.conducteur_travaux,
                   ]
 
-    """ for loop in projet.list_intervenant:
-        intervenant.append(loop) """
+    for loop in Projet.objects.get(pk=pk).list_intervenant.all():
+        intervenant.append(loop)
 
     
-    print("intervenant: ", projet.chef_project)
     context = {
                 'projet': projet,
                 'status': status[projet.status],

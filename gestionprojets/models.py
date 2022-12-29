@@ -69,6 +69,15 @@ class Projet(models.Model):
                     )
         event.save()
 
+    """ def delete(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        Event.objects.filter(
+                title=self.name,
+                description=self.description
+                ).delete() """
+
+
+
 class Task(models.Model):
     STATUS = (
         (1, 'NON DÉBUTÉ'),

@@ -90,6 +90,7 @@ class Calendar(HTMLCalendar):
                 return datetime.strftime(convert(start) + timedelta(days=n), DATE_FORMAT)
 
         days = (convert(end) - convert(start)).days
+        print(f"{end} - {start} == {days}")
         if days <= 0:
                 raise ValueError('The start date must be before the end date.')
         for n in range(0, days):
