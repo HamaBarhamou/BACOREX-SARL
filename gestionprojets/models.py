@@ -26,6 +26,12 @@ class Projet(models.Model):
     description = models.TextField(default=None)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
+    coordinateur = models.ForeignKey(
+                    User,
+                    on_delete=models.CASCADE,
+                    related_name='cordinateur_projet',
+                    default=None
+                    )
     chef_project = models.ForeignKey(
                     User,
                     on_delete=models.CASCADE,
@@ -58,6 +64,7 @@ class Projet(models.Model):
                         upload_to='media/upload/documents',
                         null=True
                         )
+
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

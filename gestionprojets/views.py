@@ -98,6 +98,7 @@ def List_Intervenant_Project(request, pk):
     status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
     projet = Projet.objects.get(pk=pk)
     intervenant = [
+                    projet.coordinateur,
                     projet.chef_project,
                     projet.conducteur_travaux,
                   ]

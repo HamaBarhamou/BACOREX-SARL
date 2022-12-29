@@ -34,7 +34,11 @@ class ProjetForm(ModelForm):
             'end_date': NumberInput(attrs={'type': 'date'}),
             'pieces_jointes': ClearableFileInput(attrs={'multiple': True})
         }
-
+    coordinateur = forms.ModelChoiceField(
+                        queryset=User.objects.filter(fonction=6),
+                        label="Coordinateur Operation",
+                        empty_label="Faite un choix",
+                        )
     chef_project = forms.ModelChoiceField(
                         queryset=User.objects.filter(fonction=8),
                         label="Chef de Projet",
