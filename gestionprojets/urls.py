@@ -8,6 +8,7 @@ urlpatterns = [
     path('newclient', views.newClient, name='newclient'),
     path('newprojet', views.newProjet, name='newprojet'),
     path('newprojet/<int:pk>/edit/', views.editProjet, name='editProjet'),
+    path('newprojet/<int:pk>/delete/', views.deletteProjet, name='deleteProjet'),
     path('<int:pk>', views.detailProject, name='detailprojet'),
     path(
         '<int:pk>/intervenants',

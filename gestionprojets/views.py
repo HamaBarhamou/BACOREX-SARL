@@ -79,6 +79,12 @@ def editProjet(request, pk):
 
 
 @login_required(login_url='/user/')
+def deletteProjet(request, pk):
+    Projet.objects.get(pk=pk).delete()
+    return redirect('listeproject')
+
+
+@login_required(login_url='/user/')
 def listeProject(request):
     Directeur_Generale = 4
     Admin = 5
