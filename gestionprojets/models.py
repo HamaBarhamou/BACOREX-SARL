@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from userprofile.models import User
 from gestiondesstock.models import Materiels
-from plannig.models import Event
+
 
 
 # Create your models here.
@@ -68,24 +68,31 @@ class Projet(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        event = Event(
-                    title=self.name,
-                    description=self.description,
-                    start_time=self.start_date,
-                    end_time=self.end_date
-                    )
+        from plannig.models import Event
+
+        event = Event.objects.filter(pk_projet = self.pk).first()
+        
+        if event is None:
+            event = Event(
+                        title=self.name,
+                        description=self.description,
+                        start_time=self.start_date,
+                        end_time=self.end_date,
+                        pk_projet = self.pk
+                        )
+        else:
+            event.title = self.name
+            event.description = self.description
+            event.start_time = self.start_date
+            event.end_time = self.end_date
+
         event.save()
 
-    def delete(self, *args, **kwargs):
-        Event.objects.filter(
-                title=self.name,
-                description=self.description,
-                start_time=self.start_date,
-                end_time=self.end_date
-                ).first().delete()
-        print("Supression de Event")
-        super(Projet, self).delete(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        from plannig.models import Event
+        Event.objects.filter(pk_projet = self.pk).first().delete()
+        super(Projet, self).delete(*args, **kwargs)
 
 
 class Task(models.Model):

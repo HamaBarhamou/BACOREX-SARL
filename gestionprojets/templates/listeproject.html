@@ -30,8 +30,9 @@
                     <td>{{p.end_date}}</td>
                     <td>None</td>
                     {% if request.user.fonction == 6 %}
+                        {% load static %}
                         <td>
-                            <a href="#" class="list-group-item list-group-item-action">
+                            <a href="/projet/newprojet/{{p.id}}/edit/" class="list-group-item list-group-item-action">
                                 <img src="{% static 'images/update.png' %}" alt="update" title="pdate"/>
                             </a>
                         </td>

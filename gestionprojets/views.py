@@ -64,6 +64,21 @@ def newProjet(request):
 
 
 @login_required(login_url='/user/')
+def editProjet(request, pk):
+    projet = Projet.objects.get(pk=pk)
+    if request.method == "POST":
+        form = ProjetForm(request.POST, instance=projet)
+        if form.is_valid():
+            projet = form.save()
+            return redirect('listeproject')
+    else:
+        form = ProjetForm(instance=projet)
+        context = {'form': form, 'pk': projet.pk}
+        template = loader.get_template('editProjet.html')
+        return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url='/user/')
 def listeProject(request):
     Directeur_Generale = 4
     Admin = 5
