@@ -76,12 +76,15 @@ class Projet(models.Model):
                     )
         event.save()
 
-    """ def delete(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    def delete(self, *args, **kwargs):
         Event.objects.filter(
                 title=self.name,
-                description=self.description
-                ).delete() """
+                description=self.description,
+                start_time=self.start_date,
+                end_time=self.end_date
+                ).first().delete()
+        print("Supression de Event")
+        super(Projet, self).delete(*args, **kwargs)
 
 
 

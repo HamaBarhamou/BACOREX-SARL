@@ -105,7 +105,6 @@ def List_Intervenant_Project(request, pk):
 
     for loop in Projet.objects.get(pk=pk).list_intervenant.all():
         intervenant.append(loop)
-
     
     context = {
                 'projet': projet,
