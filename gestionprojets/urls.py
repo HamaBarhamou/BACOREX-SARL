@@ -15,4 +15,5 @@ urlpatterns = [
         views.List_Intervenant_Project,
         name='List_Intervenant_Project'
         ),
+    path('<int:pk>/newTask', views.newTask, name='newTask')
 ]

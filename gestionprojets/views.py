@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
-from .forms import ClientForm, ProjetForm
+from .forms import ClientForm, ProjetForm, TaskForm
 from .models import Client, Projet
 from plannig.models import Event
 
@@ -135,4 +135,20 @@ def List_Intervenant_Project(request, pk):
                 'fonction': fonction
               }
     template = loader.get_template('intervenantProjet.html')
+    return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url='/user/')
+def newTask(request, pk):
+    if request.method == "POST":
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = TaskForm()
+        else:
+            form = TaskForm(request.POST)
+    else:
+        form = TaskForm()
+    context = {'form': form, 'pk': pk}
+    template = loader.get_template('newTask.html')
     return HttpResponse(template.render(context, request))

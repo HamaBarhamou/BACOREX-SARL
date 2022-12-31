@@ -72,3 +72,40 @@ class ProjetForm(ModelForm):
         super().__init__(*args, **kwargs)
         """ self.fields['name'].widget.attrs.update({'class': 'special'})
         self.fields['description'].widget.attrs.update(size='20') """
+
+
+
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = '__all__'
+        exclude = ('status',)
+        labels = {
+            'name': _('Nom du projet'),
+            'start_date': _('Debut du projet'),
+            'end_date': _('Fin du projet'),
+            'status': _('Etat des travaux'),
+            'pieces_jointes': _('Pieces jointes')
+        }
+        widgets = {
+            'name': Textarea(attrs={'cols': 60, 'rows': 1}),
+            'description': Textarea(attrs={'cols': 60, 'rows': 3}),
+            'start_date': NumberInput(attrs={'type': 'date'}),
+            'end_date': NumberInput(attrs={'type': 'date'}),
+            'pieces_jointes': ClearableFileInput(attrs={'multiple': True})
+        }
+
+        
+        list_materiels = forms.ModelMultipleChoiceField(
+                        queryset=Materiels.objects.all(),
+                        label="Liste des Materiels",
+                        required=False,
+                        widget=forms.CheckboxSelectMultiple
+                        )
+
+        attribuer_a = forms.ModelMultipleChoiceField(
+                            queryset=User.objects.all(),
+                            label="Attribuer aux persones",
+                            required=False,
+                            widget=forms.CheckboxSelectMultiple
+                            )
