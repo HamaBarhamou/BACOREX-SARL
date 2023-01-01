@@ -106,21 +106,16 @@ class Task(models.Model):
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
     status = models.PositiveSmallIntegerField(choices=STATUS, default=1)
-    """ list_intervenant = models.ManyToManyField(
-                            User,
-                            related_name='intervenant_task'
-                            ) """
     list_materiels = models.ManyToManyField(Materiels)
     budget = models.IntegerField(default=0)
-    pieces_jointes = models.FileField(default=None)
-    """ attribuer_a = models.ForeignKey(
-                    User,
-                    on_delete=models.CASCADE,
-                    related_name='attribuer_a',
-                    default=None
-                    ) """
     attribuer_a = models.ManyToManyField(
                             User,
                             related_name='attribuer_a'
                             )                
     projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=None)
+    pieces_jointes = models.FileField(
+                        verbose_name='image',
+                        upload_to='media/upload/documents',
+                        null=True,
+                        default=None
+                        )

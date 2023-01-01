@@ -74,16 +74,15 @@ class ProjetForm(ModelForm):
         self.fields['description'].widget.attrs.update(size='20') """
 
 
-
 class TaskForm(ModelForm):
     class Meta:
         model = Task
         fields = '__all__'
-        exclude = ('status',)
+        exclude = ('status', 'projet')
         labels = {
-            'name': _('Nom du projet'),
-            'start_date': _('Debut du projet'),
-            'end_date': _('Fin du projet'),
+            'name': _('Nom de la tache'),
+            'start_date': _('Debut de la tache'),
+            'end_date': _('Fin de la tache'),
             'status': _('Etat des travaux'),
             'pieces_jointes': _('Pieces jointes')
         }
@@ -95,17 +94,20 @@ class TaskForm(ModelForm):
             'pieces_jointes': ClearableFileInput(attrs={'multiple': True})
         }
 
-        
         list_materiels = forms.ModelMultipleChoiceField(
                         queryset=Materiels.objects.all(),
                         label="Liste des Materiels",
                         required=False,
                         widget=forms.CheckboxSelectMultiple
                         )
-
         attribuer_a = forms.ModelMultipleChoiceField(
                             queryset=User.objects.all(),
                             label="Attribuer aux persones",
-                            required=False,
                             widget=forms.CheckboxSelectMultiple
+                            )
+        pieces_jointes = forms.FileField(
+                            required=False,
+                            widget=forms.ClearableFileInput(
+                                            attrs={'multiple': True}
+                                            )
                             )

@@ -51,8 +51,6 @@ def newProjet(request):
         form = ProjetForm(request.POST)
         if form.is_valid():
             form.save()
-            #print('form: ', form.cleaned_data['list_intervenant'])
-            """ return redirect('listeproject') """
             form = ProjetForm()
         else:
             form = ProjetForm(request.POST)
@@ -143,7 +141,7 @@ def newTask(request, pk):
     if request.method == "POST":
         form = TaskForm(request.POST)
         if form.is_valid():
-            form.save()
+            form.save(commit=False)
             form = TaskForm()
         else:
             form = TaskForm(request.POST)
