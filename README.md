@@ -32,7 +32,10 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-7. Accédez à l'application dans votre navigateur à l'adresse : http://localhost:8000/
+7. Accédez à l'application dans votre navigateur à l'adresse : http://localhost:8000/  
+
+Aller http://localhost:8000/admin et creer les groupe **DAO_TEAM** et **PROJET_TEAM**.  
+Creer vous utiisateur  
 
 ## Contribuer
 
