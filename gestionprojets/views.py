@@ -30,7 +30,7 @@ def newClient(request):
         form = ClientForm(request.POST)
         if form.is_valid():
             materiel = form.save()
-            return redirect('listeclient')
+            return redirect('gestionprojets:listeclient')
     else:
         form = ClientForm()
         context = {'form': form}
@@ -68,7 +68,7 @@ def editProjet(request, pk):
         form = ProjetForm(request.POST, instance=projet)
         if form.is_valid():
             projet = form.save()
-            return redirect('listeproject')
+            return redirect('gestionprojets:listeproject')
     else:
         form = ProjetForm(instance=projet)
         context = {'form': form, 'pk': projet.pk}
@@ -79,7 +79,7 @@ def editProjet(request, pk):
 @login_required(login_url='/user/')
 def deletteProjet(request, pk):
     Projet.objects.get(pk=pk).delete()
-    return redirect('listeproject')
+    return redirect('gestionprojets:listeproject')
 
 
 @login_required(login_url='/user/')

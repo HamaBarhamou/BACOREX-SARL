@@ -9,7 +9,7 @@
 
 {% block content %}
     {% load static %}
-    <form action="{% url 'editProjet' pk %}" method="post">
+    <form action="{% url 'gestionprojets:editProjet' pk %}" method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}

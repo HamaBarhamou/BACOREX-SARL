@@ -22,11 +22,11 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('dao/', include('dao.urls')),
-    path('user/', include('userprofile.urls')),
-    path('boitereception/', include('gestioncouriers.urls')),
-    path('magasin/', include('gestiondesstock.urls')),
-    path('projet/', include('gestionprojets.urls')),
-    path('plannig', include('plannig.urls')),
+    path('dao/', include('dao.urls', namespace='dao')),  # Ajoutez l'espace de noms "dao" pour l'application "dao"
+    path('user/', include('userprofile.urls', namespace='userprofile')),  # Ajoutez l'espace de noms "userprofile" pour l'application "userprofile"
+    path('boitereception/', include('gestioncouriers.urls', namespace='gestioncouriers')),  # Ajoutez l'espace de noms "gestioncouriers" pour l'application "gestioncouriers"
+    path('magasin/', include('gestiondesstock.urls', namespace='gestiondesstock')),  # Ajoutez l'espace de noms "gestiondesstock" pour l'application "gestiondesstock"
+    path('projet/', include('gestionprojets.urls', namespace='gestionprojets')),  # Ajoutez l'espace de noms "gestionprojets" pour l'application "gestionprojets"
+    path('plannig/', include('plannig.urls', namespace='plannig')),  # Ajoutez l'espace de noms "plannig" pour l'application "plannig"
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

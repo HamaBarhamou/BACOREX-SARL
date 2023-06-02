@@ -2,6 +2,8 @@ from django.urls import path
 
 from . import views
 
+app_name = 'gestionprojets'
+
 urlpatterns = [
     path('', views.listeProject, name='listeproject'),
     path('listeclient', views.listeClient, name='listeclient'),

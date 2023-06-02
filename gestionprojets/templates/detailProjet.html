@@ -17,7 +17,7 @@
         <a href="#" class="list-group-item list-group-item-action">Affaires </a>
         <a href="#" class="list-group-item list-group-item-action">Contrat</a>
         <a href="#" class="list-group-item list-group-item-action">Position</a>
-        <a href="{% url 'List_Intervenant_Project' pk %}" class="list-group-item list-group-item-action">Intervenant</a>
+        <a href="{% url 'gestionprojets:List_Intervenant_Project' pk %}" class="list-group-item list-group-item-action">Intervenant</a> 
         <a href="#" class="list-group-item list-group-item-action">Plannification</a>
         <a href="#" class="list-group-item list-group-item-action">exposé Tvx à faire</a>
         <a href="#" class="list-group-item list-group-item-action">Carateristiques techniques</a>
@@ -29,7 +29,7 @@
         <a href="#" class="list-group-item list-group-item-action">Client</a>
         <a href="#" class="list-group-item list-group-item-action">CRET</a>
         <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
-        <a href="{% url 'listeproject' %}" class="list-group-item list-group-item-action">Retour</a>
+        <a href="{% url 'gestionprojets:listeproject' %}" class="list-group-item list-group-item-action">Retour</a>
     </div>
 {% endblock %}
 

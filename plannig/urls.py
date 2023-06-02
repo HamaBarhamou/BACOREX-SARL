@@ -3,6 +3,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 
+
+app_name = 'plannig'
+
 urlpatterns = [
     path('', views.calendar, name='calendar'),
     path('<str:date>/<str:cmd>', views.calendar, name='calendar_post'),
