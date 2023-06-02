@@ -11,10 +11,10 @@
 
 {% block content %}
     <div class="clearfix">
-        <a class="btn btn-info left" href="{% url 'calendar_post' date "prev" %}"> Mois Precedent </a>
+        <a class="btn btn-info left" href="{% url 'plannig:calendar_post' date "prev" %}"> Mois Precedent </a>
         <a class="btn btn-info left" href="#"> Mois </a>
         <a class="btn btn-info left" href="#"> Année</a>    
-        <a class="btn btn-info right" href="{% url 'calendar_post' date "next" %}"> Mois Suivant </a>
+        <a class="btn btn-info right" href="{% url 'plannig:calendar_post' date "next" %}"> Mois Suivant </a>
     </div>
     {{ calendar }}
 {% endblock %}

@@ -1,3 +1,5 @@
+
+
 {% extends "home.html" %}
 
 {% load static %}  {# Ajouter cette ligne pour charger la balise {% static %} #}
@@ -20,10 +22,10 @@
         </thead>
         <tbody>
             {% for p in projets %}
-                <tr>
+                <tr class="custom-table-row">
                     <td>
                         <a href="{% url 'gestionprojets:detailprojet' p.id %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-info-circle-fill"></i>
+                            <i class="bi bi-info-circle-fill bi-3x"></i>
                         </a>
                     </td>
                     <td>{{ p.name }}</td>
@@ -33,12 +35,12 @@
                     {% if request.user.fonction == 6 %}
                         <td>
                             <a href="{% url 'gestionprojets:editProjet' p.id %}" class="list-group-item list-group-item-action">
-                                <img src="{% static 'images/update.png' %}" alt="update" title="update">
+                                <i class="bi bi-pencil-fill bi-3x"></i>
                             </a>
                         </td>
                         <td>
                             <a href="{% url 'gestionprojets:deleteProjet' p.id %}" class="list-group-item list-group-item-action">
-                                <i class="bi bi-trash-fill"></i>
+                                <i class="bi bi-trash-fill bi-3x"></i>
                             </a>
                         </td>
                     {% endif %}
