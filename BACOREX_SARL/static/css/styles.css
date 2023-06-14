@@ -1,0 +1,29 @@
+/* CSS du fichier menue.html */
+
+/* Change background color to lighter dark grey */
+.list-group {
+    background-color: #2b2b2b; /* lighter dark grey */
+}
+
+/* Change text color to white and animate it on hover */
+.list-group-item-action {
+    color: #fff; 
+    background-color: #2b2b2b; /* matching the list-group background color */
+}
+
+/* Animation on hover */
+.list-group-item-action:hover {
+    transform: scale(1.02); /* increase size by 2% */
+    transition: transform .2s ease-in-out; /* animation */
+    color: #000; /* darker color on hover */
+    background-color: #f8f9fa; /* lighter background color on hover */
+}
+
+/* Change h4 tag font size and style */
+h4 {
+    font-size: 1.25rem; /* decrease the size */
+    font-weight: normal; /* normal font weight */
+    color: #f8f9fa; /* lighter color for contrast */
+    border-bottom: 1px solid #f8f9fa; /* bottom border for h4 tag */
+    padding-bottom: 0.25rem; /* bottom padding */
+}

@@ -1,8 +1,14 @@
 {% load auth_extras %}
 
-<div class="list-group">
+<div class="list-group rounded bg-light shadow p-3">
+    
+    {% if request.user.is_superuser %}
+        <h4 class="text-info font-weight-bold">Administration</h4>
+        <a href="{% url 'admin:index' %}" class="list-group-item list-group-item-action">Gestion des Utilisateurs</a>
+    {% endif %}
+
     {% if request.user|has_group:"DAO_TEAM" or request.user.is_superuser %}
-        <h4>Gestion des DAO</h4>
+        <h4 class="text-primary font-weight-bold">Gestion des DAO</h4>
         <a href="#" class="list-group-item list-group-item-action">Nouveau DAO</a>
         <a href="#" class="list-group-item list-group-item-action">Travailler sur un DAO</a>
         <a href="#" class="list-group-item list-group-item-action">Liste des DAO en Cours</a>
@@ -11,7 +17,7 @@
     {% endif %}
 
     {% if request.user|has_group:"PROJET_TEAM" or request.user.is_superuser %}
-        <h4>Gestion des Projets</h4>
+        <h4 class="text-success font-weight-bold">Gestion des Projets</h4>
         <a href="{% url 'projectmanagement:newclient' %}" class="list-group-item list-group-item-action">Nouveau Client</a>
         <a href="{% url 'projectmanagement:newproject' %}" class="list-group-item list-group-item-action">Nouveau projet</a>
         <a href="{% url 'projectmanagement:clientlist' %}" class="list-group-item list-group-item-action">Liste des Clients</a>
@@ -20,19 +26,19 @@
 
     {% if request.user.fonction == 10 or request.user.is_superuser %}
         <div class="magasinier-menu">
-            <h4>Gestion des Stock</h4>
+            <h4 class="text-warning font-weight-bold">Gestion des Stock</h4>
             <a href="{% url 'stockmanagement:newwarehouse' %}" class="list-group-item list-group-item-action">Créer un Entrepôt</a>
             <a href="{% url 'stockmanagement:warehouselist' %}" class="list-group-item list-group-item-action">Liste des Entrepôts</a>
             <a href="{% url 'stockmanagement:newcategory' %}" class="list-group-item list-group-item-action">Créer une Catégorie</a>
             <a href="{% url 'stockmanagement:categorylist' %}" class="list-group-item list-group-item-action">Liste des Catégories</a>
             <a href="{% url 'stockmanagement:newmaterial' %}" class="list-group-item list-group-item-action">Ajouter un Matériel</a>
             <a href="{% url 'stockmanagement:materialinventory' %}" class="list-group-item list-group-item-action">Inventaire des Matériels</a>
-            
         </div>
     {% endif %}
 
-    <h4>Autres</h4>
+    <h4 class="text-danger font-weight-bold">Autres</h4>
     <a href="{% url 'mailmanagement:inbox' %}" class="list-group-item list-group-item-action">Courrier</a>
     <a href="{% url 'plannig:calendar' %}" class="list-group-item list-group-item-action">Planning</a>
     <a href="#" class="list-group-item list-group-item-action">Statistique</a>
+    
 </div>
