@@ -1,12 +1,12 @@
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myportfolio.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BACOREX_SARL.settings')
 print("USERNAME = ",os.environ.get('USERNAME'))
 print("PASSWORD = ",os.environ.get('PASSWORD'))
 django.setup()
 
-from django.contrib.auth.models import User
+from userprofile.models import User
 from django.core.management import call_command
 
 
