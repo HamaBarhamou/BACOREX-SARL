@@ -92,6 +92,7 @@ def listeProject(request):
     Intervenant = 11
 
     leader = [Directeur_Generale, Admin, Coordinateur_des_Operations]
+    projets = []  # Définir projets comme une liste vide par défaut
     if request.user.fonction in leader:
         projets = Projet.objects.all().values()
     elif request.user.fonction == Chef_de_Projet:
