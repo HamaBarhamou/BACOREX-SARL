@@ -6,9 +6,14 @@ print("USERNAME = ",os.environ.get('USERNAME'))
 print("PASSWORD = ",os.environ.get('PASSWORD'))
 django.setup()
 
+from django.contrib.auth.models import Group
 from userprofile.models import User
 from django.core.management import call_command
 
+# Création des groupes
+group_names = ['DAO_TEAM', 'PROJET_TEAM']
+for name in group_names:
+    Group.objects.get_or_create(name=name)
 
 email = 'hamabarhamou@gmail.com'  # Remplacez par l'adresse e-mail souhaitée
 username = os.environ.get('USERNAME')
