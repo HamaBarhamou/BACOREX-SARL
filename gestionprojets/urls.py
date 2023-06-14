@@ -2,13 +2,13 @@ from django.urls import path
 
 from . import views
 
-app_name = 'gestionprojets'
+app_name = 'projectmanagement'
 
 urlpatterns = [
-    path('', views.listeProject, name='listeproject'),
-    path('listeclient', views.listeClient, name='listeclient'),
+    path('', views.listeProject, name='projectlist'),
+    path('listeclient', views.listeClient, name='clientlist'),
     path('newclient', views.newClient, name='newclient'),
-    path('newprojet', views.newProjet, name='newprojet'),
+    path('newprojet', views.newProjet, name='newproject'),
     path('newprojet/<int:pk>/edit/', views.editProjet, name='editProjet'),
     path('newprojet/<int:pk>/delete/', views.deletteProjet, name='deleteProjet'),
     path('<int:pk>', views.detailProject, name='detailprojet'),
