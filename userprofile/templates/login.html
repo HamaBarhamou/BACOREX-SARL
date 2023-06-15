@@ -1,3 +1,4 @@
+{% load static %}
 {% load bootstrap5 %}
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
@@ -5,9 +6,15 @@
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 
-<div class="container-fluid vh-100 d-flex justify-content-center align-items-center">
+<div class="container-fluid vh-100 d-flex justify-content-center align-items-center" style="background-image: url('{% static 'images/Background.jpg' %}'); background-size: cover;">
   <div class="col-md-6">
-    <h1 class="text-center">Se connecter</h1>
+    <h1 class="text-center text-light" style="background-color: rgba(0, 0, 0, 0.6); padding: 10px;">Se connecter</h1>
+
+    <!-- Ajout du texte d'introduction -->
+    <p class="text-center text-white" style="background-color: rgba(0, 0, 0, 0.6); padding: 10px;">
+      Bienvenue sur la plateforme de gestion de projet de BACOREX. Chaque jour, votre travail aide notre entreprise à se développer et à répondre aux besoins de notre clientèle exigeante. 
+      Connectez-vous pour accéder à vos projets, collaborer avec vos collègues et contribuer à notre succès continu.
+    </p>
 
     {% if error %}
       <div class="alert alert-danger" role="alert">
@@ -20,7 +27,7 @@
         Vous êtes connecté, {{ user.username }} ! <a href="{% url 'logout' %}">Se déconnecter</a>
       </div>
     {% else %}
-      <form method="post" action=".">
+      <form method="post" action="." class="bg-light p-4 rounded">
         {% csrf_token %}
 
         {% if form.errors %}
@@ -36,11 +43,13 @@
         <div class="mb-3">
           <label for="id_username" class="form-label">Nom d'utilisateur</label>
           {{ form.username }}
+          <p class="text-muted">Entrez votre nom d'utilisateur.</p>
         </div>
 
         <div class="mb-3">
           <label for="id_password" class="form-label">Mot de passe</label>
           {{ form.password }}
+          <p class="text-muted">Entrez votre mot de passe.</p>
         </div>
 
         <button type="submit" class="btn btn-primary">Se connecter</button>
