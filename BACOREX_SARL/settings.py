@@ -103,14 +103,14 @@ WSGI_APPLICATION = 'BACOREX_SARL.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-} """
+}
 
-if 'RENDER' not in os.environ: # If local environment
+""" if 'RENDER' not in os.environ: # If local environment
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -123,7 +123,7 @@ else: # If production environment
             default= os.environ.get('DATABASE_URL'),
             conn_max_age=600
         )
-    }
+    } """
 
 
 # Password validation
