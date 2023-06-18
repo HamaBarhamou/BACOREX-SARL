@@ -30,7 +30,7 @@ def newClient(request):
         form = ClientForm(request.POST)
         if form.is_valid():
             materiel = form.save()
-            return redirect('gestionprojets:listeclient')
+            return redirect('projectmanagement:clientlist') 
     else:
         form = ClientForm()
         context = {'form': form}
