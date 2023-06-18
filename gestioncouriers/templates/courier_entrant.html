@@ -5,9 +5,10 @@
         <table class="table table-hover">
             <thead>
               <tr>
-                <th>files</th>
+                <th>Files</th>
                 <th>Sujets</th>
-                <th>Correspondants</th>
+                <th>Émetteur</th>
+                <th>Destinataires</th>
                 <th>Dates</th>
               </tr>
             </thead>
@@ -16,15 +17,21 @@
             {% for msg in message %}
                 <tr>
                     <td>F</td>
-                    <td>{{msg.objet}}</td>
-                    <td>{{msg.emetteur}}</td>
-                    <td>{{msg.date_envoie}}</td>
+                    <td>{{ msg.objet }}</td>
+                    <td>{{ msg.emetteur }}</td>
+                    <td>
+                        <ul>
+                        {% for recepteur in msg.recepteurs.all %}
+                            <li>{{ recepteur }}</li>
+                        {% empty %}
+                            <li>Aucun destinataire</li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ msg.date_envoie }}</td>
                 </tr>
             {% endfor %}
             </tbody>
           </table>
     </div>
-    <div class="container">
-    </div>
-    
 {% endblock %}

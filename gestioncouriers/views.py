@@ -16,22 +16,23 @@ def messagerie(request):
         if form.is_valid():
             objet = form.cleaned_data["objet"]
             messages = form.cleaned_data["messages"]
-            recepteur = form.cleaned_data["recepteur"]
+            recepteurs = form.cleaned_data["recepteurs"]
             msg = Message(
-                    objet=objet,
-                    messages=messages,
-                    emetteur=request.user,
-                    recepteur=recepteur,
-                    date_envoie=datetime.datetime.now(datetime.timezone.utc),
-                    status_envoie=True
-                    )
+                objet=objet,
+                messages=messages,
+                emetteur=request.user,
+                date_envoie=datetime.datetime.now(datetime.timezone.utc),
+                status_envoie=True
+            )
             msg.save()
+            msg.recepteurs.add(*recepteurs)
             form = MessageForm()
     else:
         form = MessageForm()
     context = {'form': form}
     template = loader.get_template('message.html')
     return HttpResponse(template.render(context, request))
+
 
 
 @login_required(login_url='/user/')
@@ -43,7 +44,7 @@ def boitemessagerie(request):
 
 @login_required(login_url='/user/')
 def courier_entrant(request):
-    q = Message.objects.all()
+    q = Message.objects.filter(recepteurs=request.user).order_by('-date_envoie')
     context = {'message': q}
     template = loader.get_template('courier_entrant.html')
     return HttpResponse(template.render(context, request))
