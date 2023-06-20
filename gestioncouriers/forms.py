@@ -7,6 +7,14 @@ class MessageForm(forms.Form):
     messages = forms.CharField(required=False, widget=CKEditorWidget())
     recepteurs = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),
-        widget=forms.SelectMultiple(attrs={'class': 'form-control select2'})
+        
+        required=False,
     )
     documents = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(MessageForm, self).__init__(*args, **kwargs)
+        if user:
+            self.fields['recepteurs'].queryset = User.objects.exclude(id=user.id)
+

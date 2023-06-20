@@ -16,14 +16,14 @@
     {{ user.email }}
     <div class="list-group">
         {% load static %}
-        <a href="entrant" class="list-group-item list-group-item-action"> 
+        <a href="{% url 'mailmanagement:entrant' %}" class="list-group-item list-group-item-action"> 
             <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courier entrant 
         </a>
         <a href="#" class="list-group-item list-group-item-action">
             <img src="{% static 'images/brouillon.png' %}" alt="email" title="email" />
             Brouillons
         </a>
-        <a href="#" class="list-group-item list-group-item-action">
+        <a href="{% url 'mailmanagement:courier_envoye' %}" class="list-group-item list-group-item-action">
             <img src="{% static 'images/envoye.png' %}" alt="email" title="email" />
             Envoyés
         </a>

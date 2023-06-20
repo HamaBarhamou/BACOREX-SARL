@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 @login_required(login_url='/user/')
 def messagerie(request):
     if request.method == 'POST':
-        form = MessageForm(request.POST)
+        form = MessageForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             objet = form.cleaned_data["objet"]
             messages = form.cleaned_data["messages"]
@@ -48,3 +48,9 @@ def courier_entrant(request):
     context = {'message': q}
     template = loader.get_template('courier_entrant.html')
     return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url='/user/')
+def courier_envoye(request):
+    messages_envoyes = Message.objects.filter(emetteur=request.user).order_by('-date_envoie')
+    return render(request, 'courier_envoye.html', {'messages': messages_envoyes})
