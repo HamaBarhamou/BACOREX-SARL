@@ -206,3 +206,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'userprofile.User'
 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'send.one.com'  # votre serveur sortant
+EMAIL_PORT = 465  # votre port sortant
+EMAIL_USE_TLS = False  
+EMAIL_USE_SSL = True  
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+print('EMAIL_HOST_USER = {} EMAIL_HOST_PASSWORD = {}'.format(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD))

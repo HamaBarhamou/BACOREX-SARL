@@ -1,0 +1,20 @@
+{% extends "messagerie.html" %}
+{% load static %}
+
+{% block content %}
+    <h2>Reply to Message</h2>
+    <h3>Original Message</h3>
+    <p><strong>Subject:</strong> {{ original_message.objet }}</p>
+    <p><strong>From:</strong> {{ original_message.emetteur.username }}</p>
+    <p><strong>Sent at:</strong> {{ original_message.date_envoie }}</p>
+    <p><strong>Message:</strong> {{ original_message.messages }}</p>
+
+    <h3>Your Reply</h3>
+    <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form.as_p }}
+        <button type="submit">Send Reply</button>
+    </form>
+{% endblock %}

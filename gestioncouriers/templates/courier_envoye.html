@@ -13,7 +13,7 @@
             </thead>
             <tbody>
             {% for msg in messages %}
-                <tr>
+                  <tr class="clickable-row" data-href="{% url 'mailmanagement:detail_message' msg.id %}">
                     <td>{{msg.objet}}</td>
                     <td>
                         {% if msg.messages|length > 60 %}
@@ -31,4 +31,11 @@
             </tbody>
           </table>
     </div>
+    <script>
+      $(document).ready(function($) {
+          $(".clickable-row").click(function() {
+              window.location = $(this).data("href");
+          });
+      });
+  </script>
 {% endblock %}

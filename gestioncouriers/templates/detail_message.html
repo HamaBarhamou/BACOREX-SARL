@@ -1,0 +1,31 @@
+{% extends "messagerie.html" %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">{{ message.objet }}</h2>
+            <small>Envoyé par : {{ message.emetteur.username }}</small> | 
+            <small>Date d'envoi : {{ message.date_envoie }}</small>
+        </div>
+        <div class="card-body">
+            <p>{{ message.messages | safe }}</p>
+        </div>
+        <div class="card-footer">
+            <p>Reçus par : 
+            {{ message.recepteurs.all|join:"; " }}
+            </p>
+            {% if message.documents.all %}
+            <h5>Fichiers attachés :</h5>
+            {% for document in message.documents.all %}
+                <a href="{{ document.file.url }}" download>{{ document.file.name }}</a><br/>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <!-- Ajoutez votre bouton de réponse ici -->
+        {% if message.emetteur != request.user %}
+        <div class="card-footer text-muted">
+            <a href="{% url 'mailmanagement:reply_to_message' message.id %}" class="btn btn-primary">Répondre</a>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

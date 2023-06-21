@@ -15,7 +15,7 @@
             <tbody>
 
             {% for msg in message %}
-                <tr>
+                <tr class="clickable-row" data-href="{% url 'mailmanagement:detail_message' msg.id %}">
                     <td>F</td>
                     <td>{{ msg.objet }}</td>
                     <td>{{ msg.emetteur }}</td>
@@ -34,4 +34,11 @@
             </tbody>
           </table>
     </div>
+    <script>
+        $(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
 {% endblock %}

@@ -15,7 +15,7 @@ group_names = ['DAO_TEAM', 'PROJET_TEAM']
 for name in group_names:
     Group.objects.get_or_create(name=name)
 
-email = 'hamabarhamou@gmail.com'  # Remplacez par l'adresse e-mail souhaitée
+email = 'gestionprojet@bacorex.com'  # Remplacez par l'adresse e-mail souhaitée
 username = os.environ.get('USERNAME')
 password = os.environ.get('PASSWORD')
 
