@@ -24,12 +24,10 @@
     </div>
 {% endblock %}
 
-
-
 {% block menu %}
     <div class="list-group">
         {% if request.user.fonction == 8 %}
-            <a href="{% url 'newTask' pk %}" class="list-group-item list-group-item-action">Creer une Tache </a>
+            <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action">Creer une Tache </a>
         {% endif %}
         Caracteristique générales
         <a href="#" class="list-group-item list-group-item-action">Affaires </a>

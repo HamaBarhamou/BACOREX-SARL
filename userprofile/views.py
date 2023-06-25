@@ -39,3 +39,4 @@ def deconnexion(request):
     context = {'form': form}
     template = loader.get_template('login.html')
     return HttpResponse(template.render(context, request))
+

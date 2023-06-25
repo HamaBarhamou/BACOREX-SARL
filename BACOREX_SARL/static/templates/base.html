@@ -21,24 +21,26 @@
 <body>
     <div class="container-fluid m-2 h-25">
         <div class="row">
-            <div class="col-4 col-sm-2 d-flex justify-content-center justify-content-sm-start border border-secondary">
-                <div style="width: 50px; height: 50px;">
+            <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-start border border-secondary">
+                <div style="width: 100px; height: 100px;">
                     {% load static %}
                     <img src="{% static 'images/logo.png' %}" alt="BACOREX-SARL" class="img-fluid">
                 </div>
+                
             </div>
-            <div class="col-4 col-sm-8 d-flex justify-content-center border border-success">
+            <div class="col-10 col-sm-10 d-flex justify-content-center border border-success">
                 {% block entete %} 
                     <!-- En-tête -->
                 {% endblock %}
             </div>
-            <div class="col-4 col-sm-2 d-flex justify-content-center justify-content-sm-end border border-warning">
+            <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-end border border-warning">
                 {% block profile %} 
                     <!-- Profil -->
                 {% endblock %}
             </div>
         </div>
     </div>
+    
     
     {% block entete_messagerie %} 
     {% endblock %}

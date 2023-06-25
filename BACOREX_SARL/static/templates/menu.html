@@ -18,8 +18,11 @@
 
     {% if request.user|has_group:"PROJET_TEAM" or request.user.is_superuser %}
         <h4 class="text-success font-weight-bold">Gestion des Projets</h4>
-        <a href="{% url 'projectmanagement:newclient' %}" class="list-group-item list-group-item-action">Nouveau Client</a>
-        <a href="{% url 'projectmanagement:newproject' %}" class="list-group-item list-group-item-action">Nouveau projet</a>
+        
+        {% if request.user.is_admin_or_coordinator %}
+            <a href="{% url 'projectmanagement:newclient' %}" class="list-group-item list-group-item-action">Nouveau Client</a>
+            <a href="{% url 'projectmanagement:newproject' %}" class="list-group-item list-group-item-action">Nouveau projet</a>
+        {% endif %} 
         <a href="{% url 'projectmanagement:clientlist' %}" class="list-group-item list-group-item-action">Liste des Clients</a>
         <a href="{% url 'projectmanagement:projectlist' %}" class="list-group-item list-group-item-action">Liste des projets</a>
     {% endif %}

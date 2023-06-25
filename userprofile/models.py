@@ -34,3 +34,8 @@ class User(AbstractUser):
                 fonction = loop[1]
                 break
         return "{} : {}".format(self.username, fonction)
+
+    def is_admin_or_coordinator(self):
+        if self.is_superuser:
+          return True
+        return self.fonction in [5, 6]

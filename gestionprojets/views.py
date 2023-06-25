@@ -69,7 +69,7 @@ def editProjet(request, pk):
         form = ProjetForm(request.POST, instance=projet)
         if form.is_valid():
             projet = form.save()
-            return redirect('gestionprojets:listeproject')
+            return redirect('projectmanagement:projectlist')
     else:
         form = ProjetForm(instance=projet)
         context = {'form': form, 'pk': projet.pk}
