@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
@@ -109,7 +110,10 @@ def listeProject(request):
 def detailProject(request, pk):
     status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
     projet = Projet.objects.get(pk=pk)
-    context = {'projet': projet, 'status': status[projet.status], 'pk': pk}
+    temps_restant = None
+    if projet.status == 2:  # Assumons que 2 signifie 'EN COURS'
+        temps_restant = (projet.end_date - datetime.now()).days
+    context = {'projet': projet, 'status': status[projet.status], 'temps_restant': temps_restant, 'pk': pk}
     template = loader.get_template('detailProjet.html')
     return HttpResponse(template.render(context, request))
 
