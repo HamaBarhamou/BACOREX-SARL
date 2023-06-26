@@ -26,16 +26,16 @@
 
 {% block menu %}
     <div class="list-group">
-        {% if request.user.fonction == 8 %}
+        {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
             <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action">Creer une Tache </a>
         {% endif %}
         Caracteristique générales
         <a href="#" class="list-group-item list-group-item-action">Affaires </a>
         <a href="#" class="list-group-item list-group-item-action">Contrat</a>
-        <a href="#" class="list-group-item list-group-item-action">Position</a>
+        {% comment %} <a href="#" class="list-group-item list-group-item-action">Position</a> {% endcomment %}
         <a href="{% url 'gestionprojets:List_Intervenant_Project' pk %}" class="list-group-item list-group-item-action">Intervenant</a> 
         <a href="#" class="list-group-item list-group-item-action">Plannification</a>
-        <a href="#" class="list-group-item list-group-item-action">exposé Tvx à faire</a>
+        <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action">exposé Tvx à faire</a>
         <a href="#" class="list-group-item list-group-item-action">Carateristiques techniques</a>
         Suivi
         <a href="#" class="list-group-item list-group-item-action">Retroplanning</a>

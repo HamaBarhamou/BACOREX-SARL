@@ -1,20 +1,18 @@
-
-<div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+<div class="dropdown" >
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        {% load static %}
         {% if user.avatar == "" %}
-            {% load static %}
-            <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" style="width:30px;height:30px;">
+            <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" class="rounded-circle" style="width:30px;height:30px;">
         {% else %}
-            {% load static %}
-            <img src="/static/images/{{ user.avatar }}" style="width:30px;height:30px;">
+            <img src="/static/images/{{ user.avatar }}" alt="Avatar" class="rounded-circle" style="width:30px;height:30px;">
         {% endif %}
-        </br>
-        {{ user.username }}
-    </a>
-  
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-      <li><a class="dropdown-item" href="#">Votre Profile</a></li>
-      <li><a class="dropdown-item" href="#">Paramettre</a></li>
-      <li><a class="dropdown-item" href="/user/logout">Se deconnecté</a></li>
+        <span class="ml-2">{{ user.username }}</span>
+    </button>
+
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill me-2"></i>Votre Profile</a></li>
+      <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill me-2"></i>Paramettre</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="/user/logout"><i class="bi bi-box-arrow-right me-2"></i>Se deconnecté</a></li>
     </ul>
 </div>

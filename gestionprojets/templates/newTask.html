@@ -2,7 +2,7 @@
 
 {% block entete %}
     <div class="bg-dark w-100">
-        <h2 class="text-center text-light py-4">Création d'une nouvelle tâche</h2>
+        <h2 class="text-center text-light py-4">Gestion des Tâches</h2>
     </div>
 {% endblock %}
 
@@ -14,13 +14,63 @@
 {% bootstrap_messages %}
 
 {% block content %}
-    <form action="/projet/{{pk}}/newTask" method="post">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        {% buttons %}
-            <button type="submit" class="btn btn-primary">
-                Enregister
-            </button>
-        {% endbuttons %}
-    </form>
+<div class="container">
+    <div class="row">
+        <!-- Tasks section -->
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between">
+                    <span>Liste des tâches</span>
+                    <!-- Trigger the modal with a button -->
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newTaskModal">+</button>
+                </div>
+                <div class="card-body">
+                    {% if tasks %}
+                        <ul class="list-group">
+                            {% for task in tasks %}
+                                <li class="list-group-item">
+                                    <strong>Nom de la tâche:</strong> {{ task.name }} <br>
+                                    <strong>Date de début:</strong> {{ task.start_date }} <br>
+                                    <strong>Date de fin:</strong> {{ task.end_date }} <br>
+                                    <strong>Status:</strong> {{ task.get_status_display }} <br>
+                                    <strong>Attribué à:</strong> 
+                                    {% for user in task.attribuer_a.all %}
+                                        {{ user.username }}
+                                        {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center">Il n'y a aucune tâche pour le moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>    
+
+    <!-- Modal -->
+    <div class="modal fade" id="newTaskModal" tabindex="-1" role="dialog" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newTaskModalLabel">Créer une nouvelle tâche</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/projet/{{pk}}/newTask" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Enregister</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>
 {% endblock %}

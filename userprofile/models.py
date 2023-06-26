@@ -39,3 +39,11 @@ class User(AbstractUser):
         if self.is_superuser:
           return True
         return self.fonction in [5, 6]
+      
+    def is_chefDeProjet(self):
+      return self.fonction == 8
+    
+    def is_chefDeProjet_or_coordinateur_or_admin(self):
+      if self.is_superuser:
+          return True
+      return self.fonction in [5,6,8]

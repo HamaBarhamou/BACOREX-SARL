@@ -75,6 +75,22 @@ class ProjetForm(ModelForm):
 
 
 class TaskForm(ModelForm):
+    list_materiels = forms.ModelMultipleChoiceField(
+        queryset=Materiels.objects.all(),
+        label="Liste des Materiels",
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+    attribuer_a = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        label="Attribuer aux persones",
+        widget=forms.CheckboxSelectMultiple
+    )
+    pieces_jointes = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'multiple': True})
+    )
+
     class Meta:
         model = Task
         fields = '__all__'
@@ -91,23 +107,5 @@ class TaskForm(ModelForm):
             'description': Textarea(attrs={'cols': 60, 'rows': 3}),
             'start_date': NumberInput(attrs={'type': 'date'}),
             'end_date': NumberInput(attrs={'type': 'date'}),
-            'pieces_jointes': ClearableFileInput(attrs={'multiple': True})
+            # 'pieces_jointes': ClearableFileInput(attrs={'multiple': True})
         }
-
-        list_materiels = forms.ModelMultipleChoiceField(
-                        queryset=Materiels.objects.all(),
-                        label="Liste des Materiels",
-                        required=False,
-                        widget=forms.CheckboxSelectMultiple
-                        )
-        attribuer_a = forms.ModelMultipleChoiceField(
-                            queryset=User.objects.all(),
-                            label="Attribuer aux persones",
-                            widget=forms.CheckboxSelectMultiple
-                            )
-        pieces_jointes = forms.FileField(
-                            required=False,
-                            widget=forms.ClearableFileInput(
-                                            attrs={'multiple': True}
-                                            )
-                            )
