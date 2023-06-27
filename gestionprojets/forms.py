@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from userprofile.models import User
 from gestiondesstock.models import Materiels
 from django.contrib.admin.widgets import AdminDateWidget
+from django.core.exceptions import ValidationError
+
 
 
 class ClientForm(ModelForm):
@@ -109,3 +111,13 @@ class TaskForm(ModelForm):
             'end_date': NumberInput(attrs={'type': 'date'}),
             # 'pieces_jointes': ClearableFileInput(attrs={'multiple': True})
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+
+        if start_date and end_date and end_date < start_date:
+            raise ValidationError(_("La date de fin de la tâche doit être postérieure à la date de début."))
+
+        return cleaned_data

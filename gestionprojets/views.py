@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 from datetime import datetime
 from django.shortcuts import redirect
 from django.template import loader
@@ -167,14 +168,20 @@ def newTask(request, pk):
         if form.is_valid():
             task = form.save(commit=False)
             task.projet = projet  # Associer cette tâche au projet actuel
-            task.save()
-            form.save_m2m()  # Important lorsque vous avez des champs ManyToMany
-            form = TaskForm()
+            try:
+                task.full_clean() # Ajoutez cette ligne pour appeler explicitement la méthode clean du modèle
+            except ValidationError as e:
+                form.add_error(None, e)
+            else:
+                task.save()
+                form.save_m2m()  # Important lorsque vous avez des champs ManyToMany
+                form = TaskForm()
         else:
             form = TaskForm(request.POST, request.FILES)
     else:
         form = TaskForm()
 
-    context = {'form': form, 'pk': pk, 'tasks': tasks}
+    context = {'form': form, 'pk': pk, 'tasks': tasks, 'projet': projet}
     template = loader.get_template('newTask.html')
     return HttpResponse(template.render(context, request))
+

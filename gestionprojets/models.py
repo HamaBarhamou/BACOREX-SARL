@@ -1,8 +1,9 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from datetime import date
 from django.utils import timezone
 from userprofile.models import User
 from gestiondesstock.models import Materiels
-
 
 
 # Create your models here.
@@ -117,5 +118,31 @@ class Task(models.Model):
                         verbose_name='image',
                         upload_to='media/upload/documents',
                         null=True,
+                        blank=True, 
                         default=None
                         )
+
+    def __str__(self):
+        """
+        Retourne une représentation textuelle de la tâche.
+        """
+        return self.name
+
+    def clean(self):
+        """
+        Vérifie que la date de fin n'est pas antérieure à la date de début.
+        """
+        if self.end_date < self.start_date:
+            raise ValidationError("La date de fin ne peut pas être antérieure à la date de début.")
+
+    def duration(self):
+        """
+        Retourne la durée de la tâche en jours.
+        """
+        return (self.end_date - self.start_date).days
+    
+    def remaining_time(self):
+        """
+        Retourne le temps restant pour la tâche en jours.
+        """
+        return (self.end_date - date.today()).days

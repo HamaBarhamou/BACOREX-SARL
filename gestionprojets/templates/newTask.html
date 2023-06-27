@@ -2,9 +2,10 @@
 
 {% block entete %}
     <div class="bg-dark w-100">
-        <h2 class="text-center text-light py-4">Gestion des Tâches</h2>
+        <h2 class="text-center text-light py-4">Gestion des travaux à faire pour le projet {{ projet.name }}</h2>
     </div>
 {% endblock %}
+
 
 {% load bootstrap5 %}
 {# Load CSS and JavaScript #}
@@ -22,7 +23,9 @@
                 <div class="card-header bg-primary text-white d-flex justify-content-between">
                     <span>Liste des tâches</span>
                     <!-- Trigger the modal with a button -->
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newTaskModal">+</button>
+                    {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newTaskModal">+</button>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if tasks %}
@@ -32,6 +35,8 @@
                                     <strong>Nom de la tâche:</strong> {{ task.name }} <br>
                                     <strong>Date de début:</strong> {{ task.start_date }} <br>
                                     <strong>Date de fin:</strong> {{ task.end_date }} <br>
+                                    <strong>Duration:</strong> {{ task.duration }} jours <br>  <!-- Durée de la tâche -->
+                                    <strong>Temps restant:</strong> {{ task.remaining_time }} jours <br>  <!-- Temps restant -->
                                     <strong>Status:</strong> {{ task.get_status_display }} <br>
                                     <strong>Attribué à:</strong> 
                                     {% for user in task.attribuer_a.all %}
@@ -45,6 +50,7 @@
                         <p class="text-center">Il n'y a aucune tâche pour le moment.</p>
                     {% endif %}
                 </div>
+                
             </div>
         </div>
     </div>    
