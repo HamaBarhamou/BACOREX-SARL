@@ -17,5 +17,8 @@ urlpatterns = [
         views.List_Intervenant_Project,
         name='List_Intervenant_Project'
         ),
-    path('<int:pk>/newTask', views.newTask, name='newTask')
+    path('<int:pk>/newTask', views.newTask, name='newTask'),
+    path('editTask/<int:pk>/', views.editTask, name='editTask'),
+    path('deleteTask/<int:pk>/', views.deleteTask, name='deleteTask'),
+
 ]

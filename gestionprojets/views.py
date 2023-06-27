@@ -1,14 +1,19 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
+from django.forms.models import model_to_dict
 from datetime import datetime
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
 from .forms import ClientForm, ProjetForm, TaskForm
-from .models import Client, Projet
+from .models import Client, Projet, Task
 from plannig.models import Event
+from .serializers import TaskSerializer
 
 fonction = [
                 '',
@@ -142,21 +147,6 @@ def List_Intervenant_Project(request, pk):
     template = loader.get_template('intervenantProjet.html')
     return HttpResponse(template.render(context, request))
 
-
-""" @login_required(login_url='/user/')
-def newTask(request, pk):
-    if request.method == "POST":
-        form = TaskForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save(commit=False)
-            form = TaskForm()
-        else:
-            form = TaskForm(request.POST, request.FILES)
-    else:
-        form = TaskForm()
-    context = {'form': form, 'pk': pk}
-    template = loader.get_template('newTask.html')
-    return HttpResponse(template.render(context, request)) """
     
 @login_required(login_url='/user/')
 def newTask(request, pk):
@@ -185,3 +175,33 @@ def newTask(request, pk):
     template = loader.get_template('newTask.html')
     return HttpResponse(template.render(context, request))
 
+
+
+@login_required(login_url='/user/')
+def editTask(request, pk):
+    print('vue apppeler')
+    task = get_object_or_404(Task, pk=pk)
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        serializer = TaskSerializer(task)
+        return JsonResponse(serializer.data)
+    else:
+        if request.method == "POST":
+            form = TaskForm(request.POST, request.FILES, instance=task)
+            if form.is_valid():
+                form.save()
+            return HttpResponseRedirect(reverse('projectmanagement:detailprojet', args=(task.projet.pk,)))
+        else:
+            return HttpResponseRedirect(reverse('projectmanagement:detailprojet', args=(task.projet.pk,)))
+
+
+@login_required(login_url='/user/')
+def deleteTask(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    projet_pk = task.projet.pk  # Sauvegarde le pk du projet pour la redirection
+    task.delete()
+    return redirect('projectmanagement:newTask', pk=projet_pk)
+
+
+
+    
+   

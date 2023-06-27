@@ -32,6 +32,14 @@
                         <ul class="list-group">
                             {% for task in tasks %}
                                 <li class="list-group-item">
+                                    <!-- ... -->
+                                    <button type="button" class="btn btn-primary edit-btn" data-id="{{ task.id }}" data-url="{% url 'projectmanagement:editTask' task.id %}">Modifier</button>
+                                    {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
+                                        <button type="button" class="btn btn-danger" onclick="location.href='{% url 'projectmanagement:deleteTask' task.id %}'">Supprimer</button>
+                                    {% endif %}
+                                </li>
+                            
+                                <li class="list-group-item">
                                     <strong>Nom de la tâche:</strong> {{ task.name }} <br>
                                     <strong>Date de début:</strong> {{ task.start_date }} <br>
                                     <strong>Date de fin:</strong> {{ task.end_date }} <br>
@@ -43,6 +51,13 @@
                                         {{ user.username }}
                                         {% if not forloop.last %}, {% endif %}
                                     {% endfor %}
+                                    
+                                    {% if task.pieces_jointes %}
+                                        <br>
+                                        <strong>Pièces jointes:</strong> 
+                                        <a href="{{ task.pieces_jointes.url }}" download>Download</a> 
+                                    {% endif %}
+
                                 </li>
                             {% endfor %}
                         </ul>
@@ -63,7 +78,7 @@
                     <h5 class="modal-title" id="newTaskModalLabel">Créer une nouvelle tâche</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="/projet/{{pk}}/newTask" method="post" enctype="multipart/form-data">
+                <form action="/projet/{{pk}}/newTask" method="post" enctype="multipart/form-data" id="taskForm">
                     <div class="modal-body">
                         {% csrf_token %}
                         {% bootstrap_form form %}
@@ -76,7 +91,33 @@
             </div>
         </div>
     </div>
-
-
 </div>
+
+<script>
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', event => {
+            const id = event.target.getAttribute('data-id');
+            const url = event.target.getAttribute('data-url');
+            fetch(url, {method: 'GET'})
+            .then(response => response.json())
+            .then(data => {
+                // data contient maintenant le formulaire et les données du projet
+                const form = document.querySelector('#newTaskModal form');
+                form.action = url;
+                document.querySelector('#newTaskModalLabel').textContent = 'Modifier la tâche';
+                
+                // Remplissez le formulaire avec les données de la tâche
+                Object.keys(data.form).forEach(key => {
+                    const input = form.elements[key];
+                    if (input) input.value = data.form[key];
+                });
+    
+                // Ouvrir le modal
+                const modal = new bootstrap.Modal(document.getElementById('newTaskModal'));
+                modal.show();
+            });
+        });
+    });    
+</script>
+    
 {% endblock %}

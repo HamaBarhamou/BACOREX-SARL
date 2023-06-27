@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ckeditor',
+    'rest_framework',
     'dao.apps.DaoConfig',
     'userprofile.apps.UserprofileConfig',
     'gestioncouriers.apps.GestioncouriersConfig',
