@@ -33,10 +33,15 @@
                             {% for task in tasks %}
                                 <li class="list-group-item">
                                     <!-- ... -->
-                                    <button type="button" class="btn btn-primary edit-btn" data-id="{{ task.id }}" data-url="{% url 'projectmanagement:editTask' task.id %}">Modifier</button>
+                                    <button type="button" class="btn btn-primary edit-btn" data-edit="true" data-id="{{ task.id }}" data-url="{% url 'projectmanagement:editTask' task.id %}">
+                                        <i class="fas fa-edit"></i> <!-- Icône de modification (crayon) -->
+                                    </button>
                                     {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
-                                        <button type="button" class="btn btn-danger" onclick="location.href='{% url 'projectmanagement:deleteTask' task.id %}'">Supprimer</button>
+                                        <button type="button" class="btn btn-danger" onclick="location.href='{% url 'projectmanagement:deleteTask' task.id %}'">
+                                            <i class="fas fa-trash-alt"></i> <!-- Icône de suppression (poubelle) -->
+                                        </button>
                                     {% endif %}
+                                    
                                 </li>
                             
                                 <li class="list-group-item">
@@ -96,9 +101,15 @@
 <script>
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', event => {
-            const id = event.target.getAttribute('data-id');
-            const url = event.target.getAttribute('data-url');
-            fetch(url, {method: 'GET'})
+            const id = event.currentTarget.getAttribute('data-id');
+            const url = event.currentTarget.getAttribute('data-url');
+            //console.log('url=',url)
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'  // Ajoutez cette ligne
+                }
+            })
             .then(response => response.json())
             .then(data => {
                 // data contient maintenant le formulaire et les données du projet
@@ -107,17 +118,88 @@
                 document.querySelector('#newTaskModalLabel').textContent = 'Modifier la tâche';
                 
                 // Remplissez le formulaire avec les données de la tâche
-                Object.keys(data.form).forEach(key => {
+                Object.keys(data).forEach(key => {
+                    //console.log("Processing key: ", key);
                     const input = form.elements[key];
-                    if (input) input.value = data.form[key];
-                });
+                    //console.log("Input element: ", input);
+                    if (input) {
+                        if (input instanceof HTMLSelectElement) {
+                            console.log("This is a select element");
+                            let values = Array.isArray(data[key]) ? data[key] : [data[key]];  // Si ce n'est pas un tableau, le convertir en tableau
+                            Array.from(input.options).forEach(option => {
+                                option.selected = values.includes(option.value);
+                            });
+                        } else if (input instanceof RadioNodeList || input instanceof NodeList) {
+                            //console.log("This is a radio/check list");
+                            let values = Array.isArray(data[key]) ? data[key] : [data[key]];  // Si ce n'est pas un tableau, le convertir en tableau
+                            Array.from(input).forEach(radioOrCheck => {
+                                radioOrCheck.checked = values.includes(Number(radioOrCheck.value));
+                            });
+                        } else if (input.type !== "file") {
+                            //console.log("Setting input value to: ", data[key]);
+                            input.value = data[key];
+                        } else {
+                            console.log("Cannot set file input value");
+                        }
+                    }
+                });            
     
                 // Ouvrir le modal
                 const modal = new bootstrap.Modal(document.getElementById('newTaskModal'));
                 modal.show();
             });
         });
-    });    
+    });  
+    
+    const form = document.querySelector('#newTaskModal form');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Empêche la soumission par défaut du formulaire
+
+        // Préparation des données du formulaire pour l'envoi
+        let formData = new FormData(form);
+
+        // URL de l'action du formulaire
+        let url = form.action;
+        
+        console.log('url=',url)
+        /*for (let [key, value] of formData.entries()) { 
+            console.log(key, value);
+        }*/
+        
+        // Effectue la requête AJAX
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest' // Ajoutez cette ligne
+            },
+            body: formData,
+        })
+        //.then(response => console.log(response))
+        //.then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                // Si la demande a échoué, rejeter la promesse avec l'état de la réponse
+                return response.json().then(err => {throw err;});
+            }
+            return response
+        })
+        .then(data => {
+            console.log(data);
+            // Traitement de la réponse du serveur
+            // Vous pouvez utiliser 'data' pour afficher des messages de succès ou d'erreur
+
+            // Fermer le modal après la soumission réussie
+            let modal = bootstrap.Modal.getInstance(document.getElementById('newTaskModal'));
+            modal.hide();
+            form.reset();
+            location.reload();  // Rafraîchir la page
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
 </script>
     
 {% endblock %}

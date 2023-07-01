@@ -179,11 +179,22 @@ def newTask(request, pk):
 
 @login_required(login_url='/user/')
 def editTask(request, pk):
-    print('vue apppeler')
     task = get_object_or_404(Task, pk=pk)
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        serializer = TaskSerializer(task)
-        return JsonResponse(serializer.data)
+        if request.method == "POST":
+            form = TaskForm(request.POST, request.FILES, instance=task)
+            if form.is_valid():
+                form.save()  # Sauvegardez les données
+                updated_task = Task.objects.get(pk=pk)  # Récupérez l'objet mis à jour de la base de données
+                serializer = TaskSerializer(updated_task)  # Sérialisez les données mises à jour
+                # Retournez une réponse JSON avec les données mises à jour
+                return JsonResponse({'status': 'success', 'message': 'Tâche modifiée avec succès', 'updated_task': serializer.data}, status=200)
+            else:
+                # retourner une réponse JSON en cas d'échec de la validation du formulaire
+                return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+        else:
+            serializer = TaskSerializer(task)
+            return JsonResponse(serializer.data)
     else:
         if request.method == "POST":
             form = TaskForm(request.POST, request.FILES, instance=task)
