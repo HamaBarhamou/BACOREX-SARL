@@ -96,7 +96,8 @@ class TaskForm(ModelForm):
     class Meta:
         model = Task
         fields = '__all__'
-        exclude = ('status', 'projet')
+        #exclude = ('status', 'projet')
+        exclude = ('projet',)
         labels = {
             'name': _('Nom de la tache'),
             'start_date': _('Debut de la tache'),

@@ -1,0 +1,49 @@
+<div id="{{ column_id }}" class="task-column">
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">{{ column_title }}</h4>
+    </div>  
+
+    {% if tasks %}
+            <ul id="{{ column_id }}-list" class="list-group sortable-list">
+                {% for task in tasks %}
+                    {% if task.status == column_status %}
+                        <li  class="list-group-item">
+                            <!-- Boutons d'action -->
+                            <div class="mb-2">
+                                <button type="button" class="btn btn-primary edit-btn" data-edit="true" data-id="{{ task.id }}" data-url="{% url 'projectmanagement:editTask' task.id %}">
+                                    <i class="fas fa-edit"></i> <!-- Icône de modification (crayon) -->
+                                </button>
+                                {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
+                                    <button type="button" class="btn btn-danger" onclick="location.href='{% url 'projectmanagement:deleteTask' task.id %}'">
+                                        <i class="fas fa-trash-alt"></i> <!-- Icône de suppression (poubelle) -->
+                                    </button>
+                                {% endif %}
+                            </div>
+
+                            <!-- Détails de la tâche -->
+                            <strong>Nom de la tâche:</strong> {{ task.name }} <br>
+                            <strong>Date de début:</strong> {{ task.start_date }} <br>
+                            <strong>Date de fin:</strong> {{ task.end_date }} <br>
+                            <strong>Duration:</strong> {{ task.duration }} jours <br>  <!-- Durée de la tâche -->
+                            <strong>Temps restant:</strong> {{ task.remaining_time }} jours <br>  <!-- Temps restant -->
+                            <strong>Status:</strong> {{ task.get_status_display }} <br>
+                            <strong>Attribué à:</strong> 
+                            {% for user in task.attribuer_a.all %}
+                                {{ user.username }}
+                                {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+
+                            {% if task.pieces_jointes %}
+                                <br>
+                                <strong>Pièces jointes:</strong> 
+                                <a href="{{ task.pieces_jointes.url }}" download>Download</a> 
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+    {% else %}
+        <p class="text-center">Il n'y a aucune tâche pour le moment.</p>
+    {% endif %}
+
+</div>

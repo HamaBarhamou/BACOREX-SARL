@@ -176,7 +176,6 @@ def newTask(request, pk):
     return HttpResponse(template.render(context, request))
 
 
-
 @login_required(login_url='/user/')
 def editTask(request, pk):
     task = get_object_or_404(Task, pk=pk)

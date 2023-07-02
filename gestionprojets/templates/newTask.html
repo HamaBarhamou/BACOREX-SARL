@@ -6,7 +6,6 @@
     </div>
 {% endblock %}
 
-
 {% load bootstrap5 %}
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
@@ -15,6 +14,16 @@
 {% bootstrap_messages %}
 
 {% block content %}
+<style>
+    .task-column {
+        width: 30%;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+        padding: 10px;
+        min-height: 300px;
+    }
+</style>
+
 <div class="container">
     <div class="row">
         <!-- Tasks section -->
@@ -27,50 +36,13 @@
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newTaskModal">+</button>
                     {% endif %}
                 </div>
-                <div class="card-body">
-                    {% if tasks %}
-                        <ul class="list-group">
-                            {% for task in tasks %}
-                                <li class="list-group-item">
-                                    <!-- ... -->
-                                    <button type="button" class="btn btn-primary edit-btn" data-edit="true" data-id="{{ task.id }}" data-url="{% url 'projectmanagement:editTask' task.id %}">
-                                        <i class="fas fa-edit"></i> <!-- Icône de modification (crayon) -->
-                                    </button>
-                                    {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
-                                        <button type="button" class="btn btn-danger" onclick="location.href='{% url 'projectmanagement:deleteTask' task.id %}'">
-                                            <i class="fas fa-trash-alt"></i> <!-- Icône de suppression (poubelle) -->
-                                        </button>
-                                    {% endif %}
-                                    
-                                </li>
-                            
-                                <li class="list-group-item">
-                                    <strong>Nom de la tâche:</strong> {{ task.name }} <br>
-                                    <strong>Date de début:</strong> {{ task.start_date }} <br>
-                                    <strong>Date de fin:</strong> {{ task.end_date }} <br>
-                                    <strong>Duration:</strong> {{ task.duration }} jours <br>  <!-- Durée de la tâche -->
-                                    <strong>Temps restant:</strong> {{ task.remaining_time }} jours <br>  <!-- Temps restant -->
-                                    <strong>Status:</strong> {{ task.get_status_display }} <br>
-                                    <strong>Attribué à:</strong> 
-                                    {% for user in task.attribuer_a.all %}
-                                        {{ user.username }}
-                                        {% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                    
-                                    {% if task.pieces_jointes %}
-                                        <br>
-                                        <strong>Pièces jointes:</strong> 
-                                        <a href="{{ task.pieces_jointes.url }}" download>Download</a> 
-                                    {% endif %}
 
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-center">Il n'y a aucune tâche pour le moment.</p>
-                    {% endif %}
+                <div class="card-body d-flex justify-content-between">
+                    {% include 'task_column.html' with column_id='notStartedTasks' column_title='Non débuté' column_status=1 %}
+                    {% include 'task_column.html' with column_id='ongoingTasks' column_title='En cours' column_status=2 %}
+                    {% include 'task_column.html' with column_id='completedTasks' column_title='Terminé' column_status=3 %}
                 </div>
-                
+            
             </div>
         </div>
     </div>    
@@ -99,6 +71,12 @@
 </div>
 
 <script>
+    // Initialize SortableJS
+  // Initialize SortableJS
+    new Sortable(document.getElementById('notStartedTasks-list'), { group: { name: 'shared', put: true }, animation: 150 });
+    new Sortable(document.getElementById('ongoingTasks-list'), { group: { name: 'shared', put: true }, animation: 150 });
+    new Sortable(document.getElementById('completedTasks-list'), { group: { name: 'shared', put: true }, animation: 150 });
+
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', event => {
             const id = event.currentTarget.getAttribute('data-id');
@@ -126,12 +104,14 @@
                         if (input instanceof HTMLSelectElement) {
                             console.log("This is a select element");
                             let values = Array.isArray(data[key]) ? data[key] : [data[key]];  // Si ce n'est pas un tableau, le convertir en tableau
+                            values = values.map(String);
                             Array.from(input.options).forEach(option => {
                                 option.selected = values.includes(option.value);
                             });
                         } else if (input instanceof RadioNodeList || input instanceof NodeList) {
                             //console.log("This is a radio/check list");
                             let values = Array.isArray(data[key]) ? data[key] : [data[key]];  // Si ce n'est pas un tableau, le convertir en tableau
+                            //values = values.map(String);
                             Array.from(input).forEach(radioOrCheck => {
                                 radioOrCheck.checked = values.includes(Number(radioOrCheck.value));
                             });
