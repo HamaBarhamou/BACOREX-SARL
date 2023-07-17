@@ -72,10 +72,21 @@
 
 <script>
     // Initialize SortableJS
-  // Initialize SortableJS
     new Sortable(document.getElementById('notStartedTasks-list'), { group: { name: 'shared', put: true }, animation: 150 });
     new Sortable(document.getElementById('ongoingTasks-list'), { group: { name: 'shared', put: true }, animation: 150 });
     new Sortable(document.getElementById('completedTasks-list'), { group: { name: 'shared', put: true }, animation: 150 });
+
+    function setCheckbox(input, values, key) {
+        console.log('input: ',input)
+        Array.from(input).forEach(radioOrCheck => {
+            /*console.log("Processing checkbox with name: ", key);
+            console.log("radioOrCheck value: ", radioOrCheck.value);
+            console.log("values: ", values);*/
+            let isChecked = values.includes(parseInt(radioOrCheck.value, 10));
+            //console.log("Is checkbox checked: ", isChecked);
+            radioOrCheck.checked = isChecked;
+        });
+    }
 
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', event => {
@@ -90,6 +101,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log('data= ',data)
                 // data contient maintenant le formulaire et les données du projet
                 const form = document.querySelector('#newTaskModal form');
                 form.action = url;
@@ -102,19 +114,16 @@
                     //console.log("Input element: ", input);
                     if (input) {
                         if (input instanceof HTMLSelectElement) {
-                            console.log("This is a select element");
+                            //console.log("This is a select element: ",input);
                             let values = Array.isArray(data[key]) ? data[key] : [data[key]];  // Si ce n'est pas un tableau, le convertir en tableau
                             values = values.map(String);
                             Array.from(input.options).forEach(option => {
-                                option.selected = values.includes(option.value);
+                                option.selected = values.includes(String(option.value));
                             });
-                        } else if (input instanceof RadioNodeList || input instanceof NodeList) {
-                            //console.log("This is a radio/check list");
-                            let values = Array.isArray(data[key]) ? data[key] : [data[key]];  // Si ce n'est pas un tableau, le convertir en tableau
-                            //values = values.map(String);
-                            Array.from(input).forEach(radioOrCheck => {
-                                radioOrCheck.checked = values.includes(Number(radioOrCheck.value));
-                            });
+                        } else if (input instanceof RadioNodeList || input instanceof NodeList || input.type === "checkbox") {
+                            let values = Array.isArray(data[key]) ? [...data[key]] : [data[key]];  // Clone le tableau avec l'opérateur de décomposition (spread operator)
+                            setCheckbox(input, values, key);
+                    
                         } else if (input.type !== "file") {
                             //console.log("Setting input value to: ", data[key]);
                             input.value = data[key];
@@ -138,6 +147,8 @@
 
         // Préparation des données du formulaire pour l'envoi
         let formData = new FormData(form);
+
+        console.log("list_materiels: ", formData.getAll('list_materiels'));
 
         // URL de l'action du formulaire
         let url = form.action;

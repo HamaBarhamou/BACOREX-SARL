@@ -122,3 +122,25 @@ class TaskForm(ModelForm):
             raise ValidationError(_("La date de fin de la tâche doit être postérieure à la date de début."))
 
         return cleaned_data
+
+
+class TaskLimitedForm(ModelForm):
+    list_materiels = forms.ModelMultipleChoiceField(
+        queryset=Materiels.objects.all(),
+        label="Liste des Materiels",
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    class Meta:
+        model = Task
+        fields = ['status', 'list_materiels']  # Les seuls champs que l'utilisateur peut modifier
+        labels = {
+            'status': _('Etat des travaux'),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # Pas besoin de vérifier les dates ici car elles ne font pas partie du formulaire
+
+        return cleaned_data

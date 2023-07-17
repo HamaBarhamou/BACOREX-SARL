@@ -10,7 +10,7 @@ from datetime import datetime
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
-from .forms import ClientForm, ProjetForm, TaskForm
+from .forms import ClientForm, ProjetForm, TaskForm, TaskLimitedForm
 from .models import Client, Projet, Task
 from plannig.models import Event
 from .serializers import TaskSerializer
@@ -151,10 +151,19 @@ def List_Intervenant_Project(request, pk):
 @login_required(login_url='/user/')
 def newTask(request, pk):
     projet = get_object_or_404(Projet, pk=pk)
-    tasks = projet.task_set.all()  # Récupérer toutes les tâches associées à ce projet
-
+    #tasks = projet.task_set.all()  # Récupérer toutes les tâches associées à ce projet
+    if request.user.is_chefDeProjet_or_coordinateur_or_admin():
+        print("newTask TaskForm selected")
+        tasks = projet.task_set.all()  # Récupérer toutes les tâches associées à ce projet
+        form_class = TaskForm
+    else:
+        print("newTask InterventionForm selected")
+        tasks = projet.task_set.filter(attribuer_a=request.user)  # Récupérer seulement les tâches attribuées à cet utilisateur
+        form_class = TaskLimitedForm
+    
     if request.method == "POST":
-        form = TaskForm(request.POST, request.FILES)
+        #form = TaskForm(request.POST, request.FILES)
+        form = form_class(request.POST, request.FILES)
         if form.is_valid():
             task = form.save(commit=False)
             task.projet = projet  # Associer cette tâche au projet actuel
@@ -165,23 +174,33 @@ def newTask(request, pk):
             else:
                 task.save()
                 form.save_m2m()  # Important lorsque vous avez des champs ManyToMany
-                form = TaskForm()
+                #form = TaskForm()
+                form = form_class()
         else:
-            form = TaskForm(request.POST, request.FILES)
+            #form = TaskForm(request.POST, request.FILES)
+            form = form_class(request.POST, request.FILES)
     else:
-        form = TaskForm()
-
+        #form = TaskForm()
+        form = form_class()
+   
     context = {'form': form, 'pk': pk, 'tasks': tasks, 'projet': projet}
     template = loader.get_template('newTask.html')
     return HttpResponse(template.render(context, request))
 
-
 @login_required(login_url='/user/')
 def editTask(request, pk):
     task = get_object_or_404(Task, pk=pk)
+
+    if request.user.is_chefDeProjet_or_coordinateur_or_admin():
+        print("editTask TaskForm selected")
+        form_class = TaskForm
+    else:
+        print("editTask InterventionForm selected")
+        form_class = TaskLimitedForm
+
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         if request.method == "POST":
-            form = TaskForm(request.POST, request.FILES, instance=task)
+            form = form_class(request.POST, request.FILES, instance=task)
             if form.is_valid():
                 form.save()  # Sauvegardez les données
                 updated_task = Task.objects.get(pk=pk)  # Récupérez l'objet mis à jour de la base de données
@@ -190,13 +209,15 @@ def editTask(request, pk):
                 return JsonResponse({'status': 'success', 'message': 'Tâche modifiée avec succès', 'updated_task': serializer.data}, status=200)
             else:
                 # retourner une réponse JSON en cas d'échec de la validation du formulaire
+                print(form.errors)
+
                 return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
         else:
             serializer = TaskSerializer(task)
             return JsonResponse(serializer.data)
     else:
         if request.method == "POST":
-            form = TaskForm(request.POST, request.FILES, instance=task)
+            form = form_class(request.POST, request.FILES, instance=task)
             if form.is_valid():
                 form.save()
             return HttpResponseRedirect(reverse('projectmanagement:detailprojet', args=(task.projet.pk,)))
