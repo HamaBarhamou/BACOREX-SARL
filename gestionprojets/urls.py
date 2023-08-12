@@ -21,4 +21,9 @@ urlpatterns = [
     path('editTask/<int:pk>/', views.editTask, name='editTask'),
     path('deleteTask/<int:pk>/', views.deleteTask, name='deleteTask'),
 
+    path('projects/<int:project_id>/phases/', views.list_phases_for_project, name='list_phases_for_project'),
+    path('projects/<int:project_id>/phases/new/', views.new_phase_for_project, name='new_phase_for_project'),
+    path('phases/<int:phase_id>/<int:projet_id>/', views.phase_detail, name='phase_detail'),
+    path('phases/<int:phase_id>/<int:projet_id>/edit/', views.edit_phase, name='edit_phase'),
+    path('phases/<int:phase_id>/delete/', views.delete_phase, name='delete_phase'),
 ]

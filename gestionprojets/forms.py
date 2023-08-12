@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm, Textarea, NumberInput
 from django.forms import ClearableFileInput
 from django.db import models
-from .models import Client, Projet, Task
+from .models import Client, Projet, Task, Phase
 from django.utils.translation import gettext_lazy as _
 from userprofile.models import User
 from gestiondesstock.models import Materiels
@@ -144,3 +144,16 @@ class TaskLimitedForm(ModelForm):
         # Pas besoin de vérifier les dates ici car elles ne font pas partie du formulaire
 
         return cleaned_data
+
+
+class PhaseForm(forms.ModelForm):
+    class Meta:
+        model = Phase
+        fields = ['name', 'description', 'start_date', 'end_date']
+
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }

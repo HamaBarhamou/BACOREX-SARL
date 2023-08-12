@@ -26,15 +26,11 @@
 
 {% block menu %}
     <div class="list-group">
-        {% comment %} {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
-            <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action">Creer une Tache </a>
-        {% endif %} {% endcomment %}
         Caracteristique générales
         <a href="#" class="list-group-item list-group-item-action">Affaires </a>
         <a href="#" class="list-group-item list-group-item-action">Contrat</a>
-        {% comment %} <a href="#" class="list-group-item list-group-item-action">Position</a> {% endcomment %}
         <a href="{% url 'projectmanagement:List_Intervenant_Project' pk %}" class="list-group-item list-group-item-action">Intervenant</a> 
-        <a href="#" class="list-group-item list-group-item-action">Plannification</a>
+        <a href="{% url 'projectmanagement:list_phases_for_project' pk %}" class="list-group-item list-group-item-action">Plannification</a>
         {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
             <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action">Gestion des travaux</a>
         {% else %} 

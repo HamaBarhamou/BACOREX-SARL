@@ -146,3 +146,44 @@ class Task(models.Model):
         Retourne le temps restant pour la tâche en jours.
         """
         return (self.end_date - date.today()).days
+
+
+class Phase(models.Model):
+    name = models.CharField(max_length=100, default=None)
+    description = models.TextField()
+    start_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(default=timezone.now)
+    projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=None)
+
+    def __str__(self):
+        """
+        Retourne une représentation textuelle de la phase.
+        """
+        return self.name
+
+    def clean(self):
+        """
+        Vérifie que la date de fin n'est pas antérieure à la date de début.
+        """
+        if self.end_date < self.start_date:
+            raise ValidationError("La date de fin ne peut pas être antérieure à la date de début.")
+
+    def duration(self):
+        """
+        Retourne la durée de la phase en jours.
+        """
+        return (self.end_date - self.start_date).days
+    
+    def remaining_time(self):
+        """
+        Retourne le temps restant pour la phase en jours.
+        """
+        return (self.end_date - date.today()).days
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    phase = models.ForeignKey(Phase, on_delete=models.CASCADE)
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

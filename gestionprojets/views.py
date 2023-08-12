@@ -10,10 +10,12 @@ from datetime import datetime
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
-from .forms import ClientForm, ProjetForm, TaskForm, TaskLimitedForm
-from .models import Client, Projet, Task
+from .forms import ClientForm, ProjetForm, TaskForm, TaskLimitedForm, PhaseForm
+from .models import Client, Projet, Task, Phase
 from plannig.models import Event
 from .serializers import TaskSerializer
+from django.views.decorators.http import require_POST
+
 
 fonction = [
                 '',
@@ -233,6 +235,55 @@ def deleteTask(request, pk):
     return redirect('projectmanagement:newTask', pk=projet_pk)
 
 
+# vues pour la gestion des phases du projet
 
-    
-   
+def list_phases_for_project(request, project_id):
+    print('projetid=', project_id)
+    projet = Projet.objects.get(pk=project_id)
+    phases = Phase.objects.filter(projet_id=project_id)
+    context = {'projet': projet, 'phases': phases,'pk':project_id, 'form':PhaseForm(), 'is_editing': False}
+    template = loader.get_template('plannification.html')
+    return HttpResponse(template.render(context, request))
+
+def new_phase_for_project(request, project_id):
+    if request.method == 'POST':
+        print('creation')
+        form = PhaseForm(request.POST)
+        if form.is_valid():
+            phase = form.save(commit=False)
+            phase.projet_id = project_id
+            phase.save()
+            return redirect('projectmanagement:list_phases_for_project', project_id=project_id)
+    else:
+        form = PhaseForm()
+    context = {'form': form, 'project_id': project_id}
+    template = loader.get_template('plannification.html')
+    return HttpResponse(template.render(context, request))
+
+def phase_detail(request, phase_id, projet_id):
+    phase = get_object_or_404(Phase, id=phase_id)
+    context = {'phase': phase, 'pk':projet_id}
+    template = loader.get_template('plannification.html')
+    return HttpResponse(template.render(context, request))
+
+def edit_phase(request, phase_id, projet_id):
+    phase = get_object_or_404(Phase, id=phase_id)
+    if request.method == 'POST':
+        print('requette poste')
+        form = PhaseForm(request.POST, instance=phase)
+        if form.is_valid():
+            form.save()
+            return redirect('projectmanagement:phase_detail', phase_id=phase.id, projet_id=projet_id)
+    else:
+        form = PhaseForm(instance=phase)
+        #print(" vue de odification GET phase_id={} && projet_id={}".format(phase_id, projet_id))
+    context = {'form': form, 'pk':projet_id, 'is_editing': True, 'phase': phase}
+    template = loader.get_template('plannification.html')
+    return HttpResponse(template.render(context, request))
+
+@require_POST
+def delete_phase(request, phase_id):
+    print('delete appeler')
+    phase = get_object_or_404(Phase, id=phase_id)
+    phase.delete()
+    return redirect('projectmanagement:list_phases')
