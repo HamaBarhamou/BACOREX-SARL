@@ -282,8 +282,8 @@ def edit_phase(request, phase_id, projet_id):
     return HttpResponse(template.render(context, request))
 
 @require_POST
-def delete_phase(request, phase_id):
-    print('delete appeler')
+def delete_phase(request, phase_id, projet_id):
+    print('suppression e')
     phase = get_object_or_404(Phase, id=phase_id)
     phase.delete()
-    return redirect('projectmanagement:list_phases')
+    return redirect('projectmanagement:list_phases_for_project', project_id=projet_id)

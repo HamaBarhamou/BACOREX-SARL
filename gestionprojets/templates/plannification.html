@@ -39,7 +39,10 @@
                     <div class="btn-group float-right" role="group" aria-label="Actions">
                         <a href="{% url 'projectmanagement:phase_detail' phase.id pk %}" class="btn btn-outline-info btn-sm">Détails</a>
                         <a href="{% url 'projectmanagement:edit_phase' phase.id pk %}" class="btn btn-outline-warning btn-sm">Modifier</a>
-                        <a href="{% url 'projectmanagement:delete_phase' phase.id %}" onclick="return confirm('Voulez-vous vraiment supprimer cette phase?');" class="btn btn-outline-danger btn-sm">Supprimer</a>
+                        <form method="post" action="{% url 'projectmanagement:delete_phase' phase.id pk %}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette phase?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Supprimer</button>
+                        </form>                        
                     </div>
                 </li>
             {% endfor %}
