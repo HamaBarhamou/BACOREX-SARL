@@ -1,4 +1,4 @@
-{% load auth_extras %}
+{% comment %} {% load auth_extras %}
 
 <div class="list-group rounded bg-light shadow p-3">
     
@@ -44,4 +44,90 @@
     <a href="{% url 'plannig:calendar' %}" class="list-group-item list-group-item-action">Planning</a>
     <a href="#" class="list-group-item list-group-item-action">Statistique</a>
     
+</div>
+ {% endcomment %}
+
+ {% load auth_extras %}
+
+<div class="list-group rounded bg-light shadow p-3">
+
+    {% if request.user.is_superuser %}
+        <h4 class="text-info font-weight-bold">Administration</h4>
+        <a href="{% url 'admin:index' %}" class="list-group-item list-group-item-action">
+            <i class="fas fa-users-cog text-info"></i> Gestion des Utilisateurs
+        </a>
+    {% endif %}
+
+    {% if request.user|has_group:"DAO_TEAM" or request.user.is_superuser %}
+        <h4 class="text-primary font-weight-bold">Gestion des DAO</h4>
+        <a href="#" class="list-group-item list-group-item-action">
+            <i class="fas fa-plus text-primary"></i> Nouveau DAO
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            <i class="fas fa-edit text-primary"></i> Travailler sur un DAO
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            <i class="fas fa-list text-primary"></i> Liste des DAO en Cours
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            <i class="fas fa-paper-plane text-primary"></i> Envoyé DAO
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            <i class="fas fa-archive text-primary"></i> Archiver
+        </a>
+    {% endif %}
+
+    {% if request.user|has_group:"PROJET_TEAM" or request.user.is_superuser %}
+        <h4 class="text-success font-weight-bold">Gestion des Projets</h4>
+
+        {% if request.user.is_admin_or_coordinator %}
+            <a href="{% url 'projectmanagement:newclient' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-plus text-success"></i> Nouveau Client
+            </a>
+            <a href="{% url 'projectmanagement:newproject' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-briefcase text-success"></i> Nouveau projet
+            </a>
+        {% endif %}
+        <a href="{% url 'projectmanagement:clientlist' %}" class="list-group-item list-group-item-action">
+            <i class="fas fa-users text-success"></i> Liste des Clients
+        </a>
+        <a href="{% url 'projectmanagement:projectlist' %}" class="list-group-item list-group-item-action">
+            <i class="fas fa-list-alt text-success"></i> Liste des projets
+        </a>
+    {% endif %}
+
+    {% if request.user.fonction == 10 or request.user.is_superuser %}
+        <div class="magasinier-menu">
+            <h4 class="text-warning font-weight-bold">Gestion des Stock</h4>
+            <a href="{% url 'stockmanagement:newwarehouse' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-warehouse text-warning"></i> Créer un Entrepôt
+            </a>
+            <a href="{% url 'stockmanagement:warehouselist' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-list-ol text-warning"></i> Liste des Entrepôts
+            </a>
+            <a href="{% url 'stockmanagement:newcategory' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-tags text-warning"></i> Créer une Catégorie
+            </a>
+            <a href="{% url 'stockmanagement:categorylist' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-tag text-warning"></i> Liste des Catégories
+            </a>
+            <a href="{% url 'stockmanagement:newmaterial' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-box-open text-warning"></i> Ajouter un Matériel
+            </a>
+            <a href="{% url 'stockmanagement:materialinventory' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-clipboard-list text-warning"></i> Inventaire des Matériels
+            </a>
+        </div>
+    {% endif %}
+
+    <h4 class="text-danger font-weight-bold">Autres</h4>
+    <a href="{% url 'mailmanagement:inbox' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-envelope text-danger"></i> Courrier
+    </a>
+    <a href="{% url 'plannig:calendar' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-calendar-alt text-danger"></i> Planning
+    </a>
+    <a href="#" class="list-group-item list-group-item-action">
+        <i class="fas fa-chart-bar text-danger"></i> Statistique
+    </a>
 </div>

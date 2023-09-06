@@ -2,13 +2,15 @@
 
 /* Change background color to lighter dark grey */
 .list-group {
-    background-color: #2b2b2b; /* lighter dark grey */
+    /* background-color: #2b2b2b;  *//* lighter dark grey */
+    background-color: transparent;
 }
 
 /* Change text color to white and animate it on hover */
 .list-group-item-action {
     color: #fff; 
-    background-color: #2b2b2b; /* matching the list-group background color */
+    /* background-color: #2b2b2b; */ /* matching the list-group background color */
+    background-color: transparent;
 }
 
 /* Animation on hover */

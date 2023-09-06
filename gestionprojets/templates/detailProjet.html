@@ -26,28 +26,28 @@
 
 {% block menu %}
     <div class="list-group">
-        Caracteristique générales
-        <a href="#" class="list-group-item list-group-item-action">Affaires </a>
-        <a href="#" class="list-group-item list-group-item-action">Contrat</a>
-        <a href="{% url 'projectmanagement:List_Intervenant_Project' pk %}" class="list-group-item list-group-item-action">Intervenant</a> 
-        <a href="{% url 'projectmanagement:list_phases_for_project' pk %}" class="list-group-item list-group-item-action">Plannification</a>
+        <h5 class="text-white border-bottom pb-1">Caracteristique générales</h5>
+        {% comment %} <a href="#" class="list-group-item list-group-item-action">Affaires </a> {% endcomment %}
+        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-file-contract text-primary"></i> Contrat</a>
+        <a href="{% url 'projectmanagement:List_Intervenant_Project' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-user-tie text-success"></i> Intervenant</a> 
+        <a href="{% url 'projectmanagement:list_phases_for_project' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-calendar-alt text-warning"></i> Plannification</a>
         {% if request.user.is_chefDeProjet_or_coordinateur_or_admin %}
-            <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action">Gestion des travaux</a>
+            <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-tasks text-info"></i> Gestion des travaux</a>
         {% else %} 
-            <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action">Travaux a faire</a>
+            <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-tasks text-secondary"></i> Travaux a faire</a>
         {% endif %}
-        <a href="#" class="list-group-item list-group-item-action">Carateristiques techniques</a>
-        Suivi
-        <a href="#" class="list-group-item list-group-item-action">Retroplanning</a>
-        <a href="#" class="list-group-item list-group-item-action">Liste des modifications</a>
-        <a href="#" class="list-group-item list-group-item-action">Revue portefeuille</a>
-        <a href="#" class="list-group-item list-group-item-action">Achat</a>
-        <a href="#" class="list-group-item list-group-item-action">Client</a>
-        <a href="#" class="list-group-item list-group-item-action">CRET</a>
-        <a href="/boitereception" class="list-group-item list-group-item-action">Courier</a>
-        <a href="{% url 'projectmanagement:projectlist' %}" class="list-group-item list-group-item-action">Retour</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-cogs text-purple"></i> Carateristiques techniques</a>
+        <h5 class="text-white border-bottom pb-1 mt-2">Gestion et suivi</h5>
+        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-list text-purple"></i> Liste des modifications</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-folder-open text-danger"></i> Revue portefeuille</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-shopping-cart text-purple"></i> Achat</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-user-friends text-cyan"></i> Client</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-file text-teal"></i> CRET</a>
+        <a href="/boitereception" class="list-group-item list-group-item-action"><i class="fa fa-envelope text-yellow"></i> Courier</a>
+        <a href="{% url 'projectmanagement:projectlist' %}" class="list-group-item list-group-item-action"><i class="fa fa-arrow-left text-gray"></i> Retour</a>
     </div>
 {% endblock %}
+
 
 {% block content %}
     Detail sur le projet

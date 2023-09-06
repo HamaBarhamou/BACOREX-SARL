@@ -273,7 +273,8 @@ def edit_phase(request, phase_id, projet_id):
         form = PhaseForm(request.POST, instance=phase)
         if form.is_valid():
             form.save()
-            return redirect('projectmanagement:phase_detail', phase_id=phase.id, projet_id=projet_id)
+            #return redirect('projectmanagement:phase_detail', phase_id=phase.id, projet_id=projet_id)
+            return redirect('projectmanagement:list_phases_for_project', project_id=projet_id)
     else:
         form = PhaseForm(instance=phase)
         #print(" vue de odification GET phase_id={} && projet_id={}".format(phase_id, projet_id))
