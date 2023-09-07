@@ -26,4 +26,8 @@ urlpatterns = [
     path('phases/<int:phase_id>/<int:projet_id>/', views.phase_detail, name='phase_detail'),
     path('phases/<int:phase_id>/<int:projet_id>/edit/', views.edit_phase, name='edit_phase'),
     path('phases/<int:phase_id>/<int:projet_id>/delete/', views.delete_phase, name='delete_phase'),
+    
+    #path('revue-portefeuille/', views.revue_portefeuille, name='revue_portefeuille'),
+    path('display/', views.display_projet_data, name='display_data'),
+    path('download/', views.download_projet_data, name='download_data'),
 ]

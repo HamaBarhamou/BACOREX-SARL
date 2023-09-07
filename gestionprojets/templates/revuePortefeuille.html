@@ -1,0 +1,44 @@
+
+{% extends "home.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- Formulaire de recherche -->
+<form method="get" action="{% url 'projectmanagement:display_data' %}">
+    <input type="text" name="search_term" value="{{ search_term }}" placeholder="Rechercher un projet...">
+    <button type="submit">Rechercher</button>
+</form>
+
+<!-- Affichage des détails des projets -->
+{% for projet in projets %}
+    <div class="project-detail">
+        <h2>{{ projet.name }}</h2>
+        <p><strong>Description:</strong> {{ projet.description }}</p>
+        <p><strong>Intervenants:</strong> {{ projet.intervenants }}</p>
+        <p><strong>Matériels:</strong> {{ projet.materiels }}</p>
+        <p><strong>Client:</strong> {{ projet.client.name }}</p>
+        <p><strong>Statut:</strong> {{ projet.status_display }}</p>
+        <p><strong>Budget:</strong> {{ projet.budget }}</p>
+
+        <!-- Affichage des phases dans une liste -->
+        <div class="phases">
+            <h4>Phases :</h4>
+            <ul>
+                {% for phase in projet.phase_set.all %}
+                    <li>
+                        <strong>Nom:</strong> {{ phase.name }} <br>
+                        <strong>Description:</strong> {{ phase.description }} <br>
+                        <strong>Date Début:</strong> {{ phase.start_date }} <br>
+                        <strong>Date Fin:</strong> {{ phase.end_date }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endfor %}
+
+<a href="{% url 'projectmanagement:download_data' %}?search_term={{ search_term }}">Télécharger les données</a>
+
+{% endblock %}

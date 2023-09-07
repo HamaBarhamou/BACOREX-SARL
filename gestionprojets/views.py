@@ -15,6 +15,11 @@ from .models import Client, Projet, Task, Phase
 from plannig.models import Event
 from .serializers import TaskSerializer
 from django.views.decorators.http import require_POST
+import pandas as pd
+from openpyxl import Workbook
+from django.db.models import F
+from userprofile.models import User
+from django.db.models import Prefetch
 
 
 fonction = [
@@ -288,3 +293,98 @@ def delete_phase(request, phase_id, projet_id):
     phase = get_object_or_404(Phase, id=phase_id)
     phase.delete()
     return redirect('projectmanagement:list_phases_for_project', project_id=projet_id)
+
+
+# vues de la gestion du revue portefeuille
+
+def display_projet_data(request):
+    search_term = request.GET.get('search_term', '')
+
+    projets = Projet.objects.prefetch_related(
+        'list_intervenant',
+        'list_materiels',
+        'coordinateur',
+        'chef_project',
+        'conducteur_travaux',
+        'client',
+        'phase_set'
+    ).all()
+
+    if search_term:
+        projets = projets.filter(name__icontains=search_term)
+
+    # Convert the STATUS to a dictionary
+    for projet in projets:
+        projet.status_display = dict(projet.STATUS)[projet.status]
+
+    return render(request, 'revuePortefeuille.html', {'projets': projets, 'search_term': search_term})
+
+
+def download_projet_data(request):
+    search_term = request.GET.get('search_term', '')
+    projets = Projet.objects.prefetch_related(
+        'list_intervenant',
+        'list_materiels',
+        'coordinateur',
+        'chef_project',
+        'conducteur_travaux',
+        'client',
+        'phase_set'
+    ).all()
+
+    if search_term:
+        projets = projets.filter(name__icontains=search_term)
+
+    data = []
+
+    for projet in projets:
+        users = [
+            projet.coordinateur.username,
+            projet.chef_project.username,
+            projet.conducteur_travaux.username
+        ]
+        users.extend([user.username for user in projet.list_intervenant.all()])
+        users_str = ', '.join(users)
+
+        phases = []
+        for phase in projet.phase_set.all():
+            phases.append(f"Nom: {phase.name}, Description: {phase.description}, Date Début: {phase.start_date}, Date Fin: {phase.end_date}")
+        phases_str = '\n'.join(phases)  # Retour à la ligne entre chaque phase
+
+        data.append({
+            'Nom Projet': projet.name,
+            'Description Projet': projet.description,
+            'Intervenants': users_str,
+            'Materiels': ', '.join([materiel.name for materiel in projet.list_materiels.all()]),
+            'Client': projet.client.name,
+            'Statut Projet': dict(projet.STATUS).get(projet.status),
+            'Budget Projet': projet.budget,
+            'Phases': phases_str
+        })
+
+    df = pd.DataFrame(data)
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="revue_portefeuille.xlsx"'
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Détails Projets')
+
+    return response
+
+
+def get_user_projects():
+    users = User.objects.all()
+
+    user_projects = {}
+
+    for user in users:
+        projects = set()  # Utilisez un ensemble pour éviter les doublons
+
+        # Cherchez tous les rôles possibles pour l'utilisateur et ajoutez les projets correspondants à l'ensemble
+        projects.update(user.cordinateur_projet.all())
+        projects.update(user.chef_project.all())
+        projects.update(user.conducteur_travaux.all())
+        projects.update(user.intervenant.all())
+
+        user_projects[user.username] = projects
+
+    return user_projects
