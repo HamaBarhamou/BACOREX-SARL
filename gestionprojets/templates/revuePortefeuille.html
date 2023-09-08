@@ -1,44 +1,148 @@
-
 {% extends "home.html" %}
 
 {% load static %}
 
 {% block content %}
 
-<!-- Formulaire de recherche -->
-<form method="get" action="{% url 'projectmanagement:display_data' %}">
-    <input type="text" name="search_term" value="{{ search_term }}" placeholder="Rechercher un projet...">
-    <button type="submit">Rechercher</button>
-</form>
+<style>
+    .table thead th {
+        background-color: #004085; /* Bleu foncé */
+        color: white;
+    }
+   .table tbody tr:not(:nth-child(4n+3)), .table tbody tr:not(:nth-child(4n+4)) {
+    background-color: #f8f9fa; /* Gris clair */
+    }     
+</style>
 
-<!-- Affichage des détails des projets -->
-{% for projet in projets %}
-    <div class="project-detail">
-        <h2>{{ projet.name }}</h2>
-        <p><strong>Description:</strong> {{ projet.description }}</p>
-        <p><strong>Intervenants:</strong> {{ projet.intervenants }}</p>
-        <p><strong>Matériels:</strong> {{ projet.materiels }}</p>
-        <p><strong>Client:</strong> {{ projet.client.name }}</p>
-        <p><strong>Statut:</strong> {{ projet.status_display }}</p>
-        <p><strong>Budget:</strong> {{ projet.budget }}</p>
+<div class="container-fluid mt-4">
 
-        <!-- Affichage des phases dans une liste -->
-        <div class="phases">
-            <h4>Phases :</h4>
-            <ul>
-                {% for phase in projet.phase_set.all %}
-                    <li>
-                        <strong>Nom:</strong> {{ phase.name }} <br>
-                        <strong>Description:</strong> {{ phase.description }} <br>
-                        <strong>Date Début:</strong> {{ phase.start_date }} <br>
-                        <strong>Date Fin:</strong> {{ phase.end_date }}
-                    </li>
-                {% endfor %}
-            </ul>
+    <form method="get" action="{% url 'projectmanagement:display_data' %}" class="mb-3">
+        <div class="row">
+            <div class="col-md-4"> <!-- Augmenté à 4 -->
+                <label for="search_term">Recherche</label>
+                <input type="text" id="search_term" name="search_term" value="{{ search_term }}" placeholder="Rechercher un projet..." class="form-control">
+            </div>
+            <div class="col-md-2"> <!-- Réduit à 2 -->
+                <label for="start_date">Date de début</label>
+                <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+            </div>
+            <div class="col-md-2"> <!-- Réduit à 2 -->
+                <label for="end_date">Date de fin</label>
+                <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+            </div>
+            <div class="col-md-4 mt-4"> <!-- Augmenté à 4 pour équilibrer, mais le bouton n'occupera pas tout l'espace -->
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
         </div>
-    </div>
-{% endfor %}
+    </form>
 
-<a href="{% url 'projectmanagement:download_data' %}?search_term={{ search_term }}">Télécharger les données</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nom du Projet</th>
+                <th>Description</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Client</th>
+                <th>Statut</th>
+                <th>Budget</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for projet in projets %}
+            <tr>
+                <td>{{ projet.name }}</td>
+                <td>{{ projet.description }}</td>
+                <td>{{ projet.start_date }}</td>
+                <td>{{ projet.end_date }}</td>
+                <td>{{ projet.client.name }}</td>
+                <td>{{ projet.status_display }}</td>
+                <td>{{ projet.budget }}</td>
+                <td>
+                    <!-- Boutons pour afficher les informations supplémentaires -->
+                    <button class="btn btn-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#intervenants-{{ forloop.counter }}" aria-expanded="false">Intervenants</button>
+                    <button class="btn btn-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#materiels-{{ forloop.counter }}" aria-expanded="false">Matériels</button>
+                    <button class="btn btn-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#phases-{{ forloop.counter }}" aria-expanded="false">Phases</button>
+                </td>
+            </tr>
+            <!-- Informations supplémentaires cachées par défaut -->
+            <tr>
+                <td colspan="8" class="p-0">
+                    <div class="collapse" id="intervenants-{{ forloop.counter }}">
+                        {{ projet.users|join:", " }}
+                    </div>
+                    <div class="collapse" id="materiels-{{ forloop.counter }}">
+                        {{ projet.materiels }}
+                    </div>
+                    <div class="collapse" id="phases-{{ forloop.counter }}">
+                        <ul class="list-group list-group-flush">
+                            {% for phase in projet.phase_set.all %}
+                                <li class="list-group-item">
+                                    {{ phase.name }} - {{ phase.description }} (Début: {{ phase.start_date }} | Fin: {{ phase.end_date }})
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if projets %}
+        <a class="btn btn-primary" href="{% url 'projectmanagement:download_data' %}?search_term={{ search_term }}&start_date={{ start_date }}&end_date={{ end_date }}">Télécharger les données</a>
+    {% endif %}
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% if projets.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1&search_term={{ search_term }}&start_date={{ start_date }}&end_date={{ end_date }}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ projets.previous_page_number }}&search_term={{ search_term }}&start_date={{ start_date }}&end_date={{ end_date }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;&laquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+            {% endif %}
+    
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ projets.number }} sur {{ projets.paginator.num_pages }}</span>
+            </li>
+    
+            {% if projets.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ projets.next_page_number }}&search_term={{ search_term }}&start_date={{ start_date }}&end_date={{ end_date }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ projets.paginator.num_pages }}&search_term={{ search_term }}&start_date={{ start_date }}&end_date={{ end_date }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;&raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    
+</div>
 
 {% endblock %}

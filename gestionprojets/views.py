@@ -20,6 +20,8 @@ from openpyxl import Workbook
 from django.db.models import F
 from userprofile.models import User
 from django.db.models import Prefetch
+from django.db.models import Q 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 fonction = [
@@ -295,49 +297,81 @@ def delete_phase(request, phase_id, projet_id):
     return redirect('projectmanagement:list_phases_for_project', project_id=projet_id)
 
 
-# vues de la gestion du revue portefeuille
+# vue pour la revue protefeuille
+
+def fetch_filtered_projet(search_term, start_date, end_date):
+    print("Termes de recherche:", search_term, start_date, end_date)
+    projets = Projet.objects.prefetch_related(
+        'list_intervenant',
+        'list_materiels',
+        'coordinateur',
+        'chef_project',
+        'conducteur_travaux',
+        'client'
+    ).filter(
+        Q(name__icontains=search_term) |
+        Q(description__icontains=search_term) |
+        Q(coordinateur__username__icontains=search_term) |
+        Q(chef_project__username__icontains=search_term) |
+        Q(conducteur_travaux__username__icontains=search_term) |
+        Q(list_intervenant__username__icontains=search_term)
+    )
+
+    if start_date:
+        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+        projets = projets.filter(start_date__gte=start_date_obj)
+
+    if end_date:
+        end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+        projets = projets.filter(end_date__lte=end_date_obj)
+
+    return projets.distinct()
 
 def display_projet_data(request):
     search_term = request.GET.get('search_term', '')
+    start_date = request.GET.get('start_date', None)
+    end_date = request.GET.get('end_date', None)
 
-    projets = Projet.objects.prefetch_related(
-        'list_intervenant',
-        'list_materiels',
-        'coordinateur',
-        'chef_project',
-        'conducteur_travaux',
-        'client',
-        'phase_set'
-    ).all()
+    projets = fetch_filtered_projet(search_term, start_date, end_date)
+    
+    # Ajoutez ces lignes pour la pagination
+    paginator = Paginator(projets, 10) # Afficher 10 projets par page
+    page = request.GET.get('page')
+    try:
+        projets = paginator.page(page)
+    except PageNotAnInteger:
+        projets = paginator.page(1)
+    except EmptyPage:
+        projets = paginator.page(paginator.num_pages)
 
-    if search_term:
-        projets = projets.filter(name__icontains=search_term)
-
-    # Convert the STATUS to a dictionary
     for projet in projets:
+        #print("p u: ",projet)
         projet.status_display = dict(projet.STATUS)[projet.status]
+        projet.users = [
+            projet.coordinateur.username,
+            projet.chef_project.username,
+            projet.conducteur_travaux.username
+        ] + [user.username for user in projet.list_intervenant.all()]
 
-    return render(request, 'revuePortefeuille.html', {'projets': projets, 'search_term': search_term})
-
+    return render(request, 'revuePortefeuille.html', {
+        'projets': projets,
+        'search_term': search_term, 
+        'start_date': start_date, 
+        'end_date': end_date
+    })
+    #return render(request, 'revuePortefeuille.html', {'projets': projets, 'search_term': search_term, 'start_date': start_date, 'end_date': end_date})
 
 def download_projet_data(request):
     search_term = request.GET.get('search_term', '')
-    projets = Projet.objects.prefetch_related(
-        'list_intervenant',
-        'list_materiels',
-        'coordinateur',
-        'chef_project',
-        'conducteur_travaux',
-        'client',
-        'phase_set'
-    ).all()
+    start_date = request.GET.get('start_date', None)
+    end_date = request.GET.get('end_date', None)
 
-    if search_term:
-        projets = projets.filter(name__icontains=search_term)
-
+    projets = fetch_filtered_projet(search_term, start_date, end_date)
+    
     data = []
 
     for projet in projets:
+        #print("p d: ",projet)
         users = [
             projet.coordinateur.username,
             projet.chef_project.username,
@@ -345,11 +379,6 @@ def download_projet_data(request):
         ]
         users.extend([user.username for user in projet.list_intervenant.all()])
         users_str = ', '.join(users)
-
-        phases = []
-        for phase in projet.phase_set.all():
-            phases.append(f"Nom: {phase.name}, Description: {phase.description}, Date Début: {phase.start_date}, Date Fin: {phase.end_date}")
-        phases_str = '\n'.join(phases)  # Retour à la ligne entre chaque phase
 
         data.append({
             'Nom Projet': projet.name,
@@ -359,7 +388,8 @@ def download_projet_data(request):
             'Client': projet.client.name,
             'Statut Projet': dict(projet.STATUS).get(projet.status),
             'Budget Projet': projet.budget,
-            'Phases': phases_str
+            'Date de demarrage': projet.start_date,
+            'Date de fin': projet.end_date,
         })
 
     df = pd.DataFrame(data)
