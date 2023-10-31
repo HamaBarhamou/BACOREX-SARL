@@ -330,11 +330,11 @@ def fetch_filtered_projet(search_term, start_date, end_date):
         Q(list_intervenant__username__icontains=search_term)
     )
 
-    if start_date:
+    if start_date and start_date != 'None':
         start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
         projets = projets.filter(start_date__gte=start_date_obj)
 
-    if end_date:
+    if end_date and end_date != 'None':
         end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
         projets = projets.filter(end_date__lte=end_date_obj)
 
@@ -378,7 +378,7 @@ def download_projet_data(request):
     search_term = request.GET.get('search_term', '')
     start_date = request.GET.get('start_date', None)
     end_date = request.GET.get('end_date', None)
-
+    
     projets = fetch_filtered_projet(search_term, start_date, end_date)
     
     data = []
