@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
-from datetime import datetime
+from datetime import datetime, timedelta,date
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
@@ -22,6 +22,7 @@ from userprofile.models import User
 from django.db.models import Prefetch
 from django.db.models import Q 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 
 fonction = [
@@ -116,6 +117,18 @@ def listeProject(request):
         projets = Projet.objects.filter(chef_project=request.user).values()
     elif request.user.fonction == Conducteurs_des_Travaux:
         projets = Projet.objects.filter(conducteur_travaux=request.user).values()
+    
+    for projet in projets:
+        start_date = projet['start_date']
+        end_date = projet['end_date']
+
+        if date.today() < start_date:
+            days_until_start = (start_date - date.today()).days
+            projet['days_remaining'] = f"Commence dans {days_until_start} jours"
+        else:
+            days_remaining = (end_date - date.today()).days
+            projet['days_remaining'] = f"{days_remaining if days_remaining > 0 else 'Terminé'} jours restants"
+
 
     context = {'projets': projets}
     template = loader.get_template('listeproject.html')

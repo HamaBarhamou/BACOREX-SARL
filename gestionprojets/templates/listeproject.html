@@ -14,7 +14,7 @@
             <th>Debut</th>
             <th>Fin</th>
             <th>Temps restant</th>
-            {% if request.user.fonction == 6 %}
+            {% if request.user.is_admin_or_coordinator %}
                 <th>Update</th>
                 <th>Delete</th>
             {% endif %}
@@ -31,8 +31,8 @@
                     <td>{{ p.name }}</td>
                     <td>{{ p.start_date }}</td>
                     <td>{{ p.end_date }}</td>
-                    <td>None</td> 
-                    {% if request.user.fonction == 6 %}
+                    <td>{{ p.days_remaining }}</td> 
+                    {% if request.user.is_admin_or_coordinator %}
                         <td>
                             <a href="{% url 'gestionprojets:editProjet' p.id %}" class="list-group-item list-group-item-action">
                                 <i class="bi bi-pencil-fill bi-3x text-success"></i>
