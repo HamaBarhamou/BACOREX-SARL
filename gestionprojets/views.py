@@ -97,7 +97,7 @@ def editProjet(request, pk):
 @login_required(login_url='/user/')
 def deletteProjet(request, pk):
     Projet.objects.get(pk=pk).delete()
-    return redirect('gestionprojets:listeproject')
+    return redirect('projectmanagement:projectlist')
 
 
 @login_required(login_url='/user/')
