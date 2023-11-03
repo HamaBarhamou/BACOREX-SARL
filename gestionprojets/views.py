@@ -56,11 +56,43 @@ def newClient(request):
         return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+""" @login_required(login_url='/user/')
 def listeClient(request):
     context = {'clients': Client.objects.all()}
     template = loader.get_template('listeclient.html')
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) """
+
+""" @login_required(login_url='/user/')
+def listeClient(request):
+    clients = Client.objects.prefetch_related('projet_set').all()
+    context = {'clients': clients}
+    return render(request, 'listeclient.html', context) """
+
+
+@login_required(login_url='/user/')
+def listeClient(request):
+    # Récupération du terme de recherche
+    search_term = request.GET.get('search_term', '')
+    clients_list = Client.objects.prefetch_related('projet_set').all()
+
+    # Filtrage en fonction du terme de recherche
+    if search_term:
+        clients_list = clients_list.filter(
+            Q(name__icontains=search_term) | Q(adresse__icontains=search_term)
+        )
+
+    # Pagination
+    paginator = Paginator(clients_list, 10)  # Afficher 10 clients par page
+    page = request.GET.get('page')
+    clients = paginator.get_page(page)
+
+    context = {
+        'clients': clients,
+        'search_term': search_term
+    }
+    return render(request, 'listeclient.html', context)
+
+
 
 
 @login_required(login_url='/user/')

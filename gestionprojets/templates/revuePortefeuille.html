@@ -6,31 +6,48 @@
 
 <style>
     .table thead th {
-        background-color: #004085; /* Bleu foncé */
+        background-color: #8B4513; /* Marron */
         color: white;
     }
-   .table tbody tr:not(:nth-child(4n+3)), .table tbody tr:not(:nth-child(4n+4)) {
-    background-color: #f8f9fa; /* Gris clair */
-    }     
+    .table tbody tr:not(:nth-child(4n+3)), .table tbody tr:not(:nth-child(4n+4)) {
+        background-color: #D3D3D3; /* Gris */
+    }
+    .pagination .page-link {
+        color: #8B4513; /* Marron */
+        border: 1px solid #8B4513; /* Bordure Marron */
+    }
+    .pagination .page-link:hover {
+        background-color: #D3D3D3; /* Gris */
+        color: #2F4F4F; /* Gris foncé */
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #8B4513; /* Marron */
+        border-color: #8B4513; /* Marron */
+        color: white;
+    }
+    .pagination .page-item.disabled .page-link {
+        color: #A9A9A9; /* Gris clair */
+        border-color: #A9A9A9; /* Gris clair */
+    }
 </style>
 
 <div class="container-fluid mt-4">
 
     <form method="get" action="{% url 'projectmanagement:display_data' %}" class="mb-3">
         <div class="row">
-            <div class="col-md-4"> <!-- Augmenté à 4 -->
+            <div class="col-md-4"> 
                 <label for="search_term">Recherche</label>
                 <input type="text" id="search_term" name="search_term" value="{{ search_term }}" placeholder="Rechercher un projet..." class="form-control">
             </div>
-            <div class="col-md-2"> <!-- Réduit à 2 -->
+            <div class="col-md-2"> 
                 <label for="start_date">Date de début</label>
                 <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
             </div>
-            <div class="col-md-2"> <!-- Réduit à 2 -->
+            <div class="col-md-2"> 
                 <label for="end_date">Date de fin</label>
                 <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
             </div>
-            <div class="col-md-4 mt-4"> <!-- Augmenté à 4 pour équilibrer, mais le bouton n'occupera pas tout l'espace -->
+            <div class="col-md-4 mt-4"> 
                 <button type="submit" class="btn btn-primary">Rechercher</button>
             </div>
         </div>

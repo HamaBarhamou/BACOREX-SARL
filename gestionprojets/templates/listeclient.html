@@ -1,42 +1,134 @@
 {% extends "home.html" %}
 
 {% block content %}
-<div class="container">
-    <table class="table table-hover">
+
+<style>
+    .table thead th {
+        background-color: #8B4513; /* Marron */
+        color: white;
+    }
+    .table tbody tr:not(:nth-child(4n+3)), .table tbody tr:not(:nth-child(4n+4)) {
+        background-color: #D3D3D3; /* Gris */
+    }
+    .btn-primary {
+        background-color: #8B4513; /* Marron */
+        border-color: #8B4513; /* Marron */
+    }
+    .pagination .page-link {
+        color: #8B4513; /* Marron */
+    }
+    .pagination .page-link:hover {
+        background-color: #D3D3D3; /* Gris clair */
+        border-color: #8B4513; /* Marron */
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #8B4513; /* Marron */
+        border-color: #8B4513; /* Marron */
+    }
+</style>
+
+<!-- Ajouter un champ de recherche au-dessus de la table -->
+<!-- Champ de recherche -->
+<form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-10">
+            <input type="text" name="search_term" value="{{ search_term }}" placeholder="Rechercher un client..." class="form-control">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </div>
+    </div>
+</form>
+
+
+<div class="container-fluid mt-4">
+    <table class="table table-bordered">
         <thead>
-        <tr>
-            <th>Nom du Client</th>
-            <th>Adresse</th>
-            <th>Liste des projet du Client</th>
-            {% if request.user.fonction == 6 %}
-                <th>Update</th>
-                <th>Delette</th>
-            {% endif %}
-        </tr>
+            <tr>
+                <th>Nom du Client</th>
+                <th>Adresse</th>
+                <th>Projets du Client</th>
+                {% if request.user.is_admin_or_coordinator %}
+                    <th>Mise à jour</th>
+                    <th>Suppression</th>
+                {% endif %}
+            </tr>
         </thead>
         <tbody>
-            {% load static %}
-            {% for c in clients %}
-                <tr>
-                    <td>{{c.name}}</td>
-                    <td>{{c.adresse}}</td>
-                    <td>RAS</td>
-                    {% if request.user.fonction == 6 %}
-                        <td>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <img src="{% static 'images/update.png' %}" alt="update" title="pdate" />
-                            </a>
-                        </td>
-                        <td>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <img src="{% static 'images/delette.png' %}" alt="delette" title="delette" />
-                            </a>
-                        </td>
-                    {% endif %}
-                    
-                </tr>
-            {% endfor %}
+        {% for c in clients %}
+            <tr>
+                <td>{{c.name}}</td>
+                <td>{{c.adresse}}</td>
+                <td>
+                    <!-- Bouton pour montrer/cacher la liste des projets -->
+                    <button class="btn btn-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#projets-{{ forloop.counter }}" aria-expanded="false">
+                        {{ c.projet_set.count }} Projets
+                    </button>
+                </td>
+                {% if request.user.is_admin_or_coordinator %}
+                    <td>
+                        <a href="#" title="Mettre à jour">
+                            <i class="bi bi-pencil-square" style="color: green;"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="#" title="Supprimer">
+                            <i class="bi bi-trash" style="color: red;"></i>
+                        </a>
+                    </td>
+                {% endif %}
+            </tr>
+            <!-- Liste cachée des projets -->
+            <tr>
+                <td colspan="{{ request.user.is_admin_or_coordinator|yesno:"5,4" }}" class="p-0">
+                    <div class="collapse" id="projets-{{ forloop.counter }}">
+                        <ul class="list-group list-group-flush">
+                            {% for projet in c.projet_set.all %}
+                                <li class="list-group-item">
+                                    <a href="#URL_TO_PROJECT_DETAILS">{{ projet.name }}</a>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item">Aucun projet</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
+
+
+<!-- Ajouter la pagination en bas de la table -->
+<div class="mt-4">
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center">
+            {% if clients.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1&search_term={{ search_term }}">Début</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ clients.previous_page_number }}&search_term={{ search_term }}">Précédent</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Début</span></li>
+                <li class="page-item disabled"><span class="page-link">Précédent</span></li>
+            {% endif %}
+
+            {% for num in clients.paginator.page_range %}
+                {% if clients.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}&search_term={{ search_term }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if clients.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ clients.next_page_number }}&search_term={{ search_term }}">Suivant</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ clients.paginator.num_pages }}&search_term={{ search_term }}">Fin</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Suivant</span></li>
+                <li class="page-item disabled"><span class="page-link">Fin</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
 {% endblock %}
