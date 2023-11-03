@@ -40,6 +40,42 @@ fonction = [
                 'Intervenant',
                ]
 
+""" @login_required(login_url='/user/')
+def Taskliste(request):
+    user_tasks = Task.objects.filter(attribuer_a__in=[request.user])
+    other_tasks = Task.objects.exclude(attribuer_a__in=[request.user])
+    
+    context = {
+        'user_tasks': user_tasks,
+        'other_tasks': other_tasks
+    }
+
+    return render(request, 'listeTask.html', context) """
+
+@login_required(login_url='/user/')
+def Taskliste(request):
+    # Récupérer toutes les tâches pour l'utilisateur connecté
+    user_tasks = Task.objects.filter(attribuer_a__in=[request.user]).prefetch_related('attribuer_a').order_by('end_date', 'start_date')
+
+    # Séparer les tâches en cours, à venir, expirées et terminées
+    ongoing_tasks = user_tasks.filter(start_date__lte=date.today(), end_date__gte=date.today(), status=2)
+    upcoming_tasks = user_tasks.filter(start_date__gt=date.today())
+    expired_tasks = user_tasks.filter(end_date__lt=date.today(), status__in=[1, 2])  # Supposons que le statut 3 est pour "Terminé"
+    completed_tasks = user_tasks.filter(status=3)
+
+    # Pour les autres tâches (non assignées à l'utilisateur)
+    other_tasks = Task.objects.exclude(attribuer_a__in=[request.user]).prefetch_related('attribuer_a').order_by('end_date', 'start_date')
+
+    context = {
+        'ongoing_tasks': ongoing_tasks,
+        'upcoming_tasks': upcoming_tasks,
+        'expired_tasks': expired_tasks,
+        'completed_tasks': completed_tasks,
+        'other_tasks': other_tasks
+    }
+
+    return render(request, 'listeTask.html', context)
+
 
 # Create your views here.
 @login_required(login_url='/user/')
@@ -54,19 +90,6 @@ def newClient(request):
         context = {'form': form}
         template = loader.get_template('newclient.html')
         return HttpResponse(template.render(context, request))
-
-
-""" @login_required(login_url='/user/')
-def listeClient(request):
-    context = {'clients': Client.objects.all()}
-    template = loader.get_template('listeclient.html')
-    return HttpResponse(template.render(context, request)) """
-
-""" @login_required(login_url='/user/')
-def listeClient(request):
-    clients = Client.objects.prefetch_related('projet_set').all()
-    context = {'clients': clients}
-    return render(request, 'listeclient.html', context) """
 
 
 @login_required(login_url='/user/')
@@ -91,8 +114,6 @@ def listeClient(request):
         'search_term': search_term
     }
     return render(request, 'listeclient.html', context)
-
-
 
 
 @login_required(login_url='/user/')
@@ -178,6 +199,7 @@ def detailProject(request, pk):
     template = loader.get_template('detailProjet.html')
     return HttpResponse(template.render(context, request))
 
+
 @login_required(login_url='/user/')
 def List_Intervenant_Project(request, pk):
     status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
@@ -201,7 +223,7 @@ def List_Intervenant_Project(request, pk):
     template = loader.get_template('intervenantProjet.html')
     return HttpResponse(template.render(context, request))
 
-    
+
 @login_required(login_url='/user/')
 def newTask(request, pk):
     projet = get_object_or_404(Projet, pk=pk)

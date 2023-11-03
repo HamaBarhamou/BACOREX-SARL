@@ -97,6 +97,9 @@
         <a href="{% url 'projectmanagement:display_data' %}" class="list-group-item list-group-item-action">
             <i class="fa fa-folder-open text-success"></i> Revue portefeuille
         </a>
+        <a href="{% url 'projectmanagement:taskliste' %}" class="list-group-item list-group-item-action">
+            <i class="fas fa-tasks text-success"></i> Travaux à faire
+        </a>
     {% endif %}
 
     {% if request.user.fonction == 10 or request.user.is_superuser %}
