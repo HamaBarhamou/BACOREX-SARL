@@ -22,6 +22,7 @@ from userprofile.models import User
 from django.db.models import Prefetch
 from django.db.models import Q 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils.timezone import now
 
 
 
@@ -57,7 +58,9 @@ def Taskliste(request):
     # Récupérer toutes les tâches pour l'utilisateur connecté
     user_tasks = Task.objects.filter(attribuer_a__in=[request.user]).prefetch_related('attribuer_a').order_by('end_date', 'start_date')
 
-    # Séparer les tâches en cours, à venir, expirées et terminées
+    # Séparer les tâches en cours, à venir, expirées et terminées 
+    #not_started_tasks = user_tasks.filter(start_date__lte=now().date(),end_date__gte=now().date(),status=1)
+    not_started_tasks = user_tasks.filter(start_date__lte=date.today(),end_date__gte=date.today(),status=1)
     ongoing_tasks = user_tasks.filter(start_date__lte=date.today(), end_date__gte=date.today(), status=2)
     upcoming_tasks = user_tasks.filter(start_date__gt=date.today())
     expired_tasks = user_tasks.filter(end_date__lt=date.today(), status__in=[1, 2])  # Supposons que le statut 3 est pour "Terminé"
@@ -67,11 +70,13 @@ def Taskliste(request):
     other_tasks = Task.objects.exclude(attribuer_a__in=[request.user]).prefetch_related('attribuer_a').order_by('end_date', 'start_date')
 
     context = {
+        'not_started_tasks': not_started_tasks,
         'ongoing_tasks': ongoing_tasks,
         'upcoming_tasks': upcoming_tasks,
         'expired_tasks': expired_tasks,
         'completed_tasks': completed_tasks,
-        'other_tasks': other_tasks
+        'other_tasks': other_tasks,
+        'to_days':date.today()
     }
 
     return render(request, 'listeTask.html', context)

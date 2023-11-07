@@ -4,93 +4,156 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h3 class="mb-4">Exposer des Travaux à Faire</h3>
+    <h2 class="mb-4 text-center">Tableau de Bord des Tâches</h2>
 
-    {% if ongoing_tasks or upcoming_tasks or expired_tasks or completed_tasks or other_tasks %}
+    {% if not_started_tasks or ongoing_tasks or upcoming_tasks or expired_tasks or completed_tasks or other_tasks %}
+        <!-- Non Started Tasks Highlight -->
+        <div class="mb-4">
+            <h3 class="text-warning">Tâches en Retard de Démarrage</h3>
+            <div class="card-deck">
+                {% for task in not_started_tasks %}
+                <!-- Enveloppe la carte dans un <a> sans style de lien et avec classe list-group-item pour correspondre aux autres sections -->
+                <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="card border-warning mb-3">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="card-title">{{ task.name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ task.description }}</p>
+                            <p class="card-text"><small class="text-muted">Du {{ task.start_date }} au {{ task.end_date }}</small></p>
+                            <p class="card-text">Assigné à : {{ task.attribuer_a.all|join:", " }}</p>
+                            <span class="badge badge-pill badge-danger">Non débuté</span>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="card border-light mb-3">
+                    <div class="card-body">
+                        <p class="card-text text-muted">Aucune tâche en retard.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div> 
+
+        <!-- Other Tasks -->
         <div class="row">
-            <div class="col-md-6">
-                <h4 class="text-dark">Mes Travaux</h4>
-                
-                <h5 class="mt-3 text-warning">En Cours</h5>
-                <ul class="list-group">
-                {% for task in ongoing_tasks %}
-                    <li class="list-group-item list-group-item-warning">
-                        <a href="#" class="text-decoration-none font-weight-bold">{{ task.name }}</a>
-                        - {{ task.description }} 
-                        (Du {{ task.start_date }} au {{ task.end_date }})
-                        - Assigné à : {{ task.attribuer_a.all|join:", " }}
-                        - Statut : {{ task.get_status_display }}
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">Pas de travaux en cours.</li>
-                {% endfor %}
-                </ul>
-
-                <h5 class="mt-3 text-info">À Venir</h5>
-                <ul class="list-group">
-                {% for task in upcoming_tasks %}
-                    <li class="list-group-item list-group-item-info">
-                        <a href="#" class="text-decoration-none font-weight-bold">{{ task.name }}</a>
-                        - {{ task.description }}
-                        (Du {{ task.start_date }} au {{ task.end_date }})
-                        - Assigné à : {{ task.attribuer_a.all|join:", " }}
-                        - Statut : {{ task.get_status_display }}
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">Pas de travaux à venir.</li>
-                {% endfor %}
-                </ul>
-
-                <h5 class="mt-3 text-danger">Expirés</h5>
-                <ul class="list-group">
-                {% for task in expired_tasks %}
-                    <li class="list-group-item list-group-item-danger">
-                        <a href="#" class="text-decoration-none font-weight-bold">{{ task.name }}</a>
-                        - {{ task.description }}
-                        (Du {{ task.start_date }} au {{ task.end_date }})
-                        - Assigné à : {{ task.attribuer_a.all|join:", " }}
-                        - Statut : {{ task.get_status_display }}
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">Pas de travaux expirés.</li>
-                {% endfor %}
-                </ul>
-
-                <h5 class="mt-3 text-success">Terminés</h5>
-                <ul class="list-group">
-                {% for task in completed_tasks %}
-                    <li class="list-group-item list-group-item-success">
-                        {{ task.name }}
-                        - {{ task.description }}
-                        (Du {{ task.start_date }} au {{ task.end_date }})
-                        - Assigné à : {{ task.attribuer_a.all|join:", " }}
-                        - Statut : {{ task.get_status_display }}
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">Pas de travaux terminés.</li>
-                {% endfor %}
-                </ul>
+            <div class="col-md-6 mb-4">
+                <h4 style="color: #555;">Travaux en Cours</h4>
+                <div class="list-group">
+                    {% for task in ongoing_tasks %}
+                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-warning">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ task.name }}</h5>
+                            <small>Fin prévue le {{ task.end_date }}</small>
+                        </div>
+                        <p class="mb-1">{{ task.description }}</p>
+                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">Aucun travail en cours.</div>
+                    {% endfor %}
+                </div>
             </div>
-            
-            <div class="col-md-6">
-                <h4 class="text-dark">Autres Travaux</h4>
-                <ul class="list-group">
-                {% for task in other_tasks %}
-                    <li class="list-group-item">
-                        <span class="font-weight-bold">{{ task.name }}</span>
-                        - {{ task.description }}
-                        (Du {{ task.start_date }} au {{ task.end_date }})
-                        - {{ task.attribuer_a.all|join:", " }}
-                        - Statut : {{ task.get_status_display }}
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">Aucun autre travail disponible pour le moment.</li>
-                {% endfor %}
-                </ul>
+            <div class="col-md-6 mb-4">
+                <h4 style="color: #555;">Travaux à Venir</h4>
+                <div class="list-group">
+                    {% for task in upcoming_tasks %}
+                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-info">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ task.name }}</h5>
+                            <small>Début prévu le {{ task.start_date }}</small>
+                        </div>
+                        <p class="mb-1">{{ task.description }}</p>
+                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">Aucun travail à venir.</div>
+                    {% endfor %}
+                </div>
             </div>
+            <div class="col-md-6 mb-4">
+                <h4 style="color: #555;">Travaux Expirés</h4>
+                <div class="list-group">
+                    {% for task in expired_tasks %}
+                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-danger">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ task.name }}</h5>
+                            <small>Terminé le {{ task.end_date }}</small>
+                        </div>
+                        <p class="mb-1">{{ task.description }}</p>
+                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">Aucun travail expiré.</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <h4 style="color: #555;">Travaux Terminés</h4>
+                <div class="list-group">
+                    {% for task in completed_tasks %}
+                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-success">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ task.name }}</h5>
+                            <small>Terminé le {{ task.end_date }}</small>
+                        </div>
+                        <p class="mb-1">{{ task.description }}</p>
+                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">Aucun travail terminé.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-12 mb-4">
+                <h4 style="color: #555;">Autres Travaux</h4>
+                <div class="list-group">
+                    {% for task in other_tasks %}
+                    <div class="list-group-item flex-column align-items-start
+                        {% if task.status == 1 %}
+                            {% if task.start_date < to_days %}
+                                list-group-item-danger
+                            {% else %}
+                                list-group-item-warning
+                            {% endif %}
+                        {% elif task.status == 2 %}
+                            list-group-item-primary
+                        {% elif task.status == 3 %}
+                            list-group-item-success
+                        {% endif %}">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ task.name }}</h5>
+                            <small>Statut : 
+                                {% if task.status == 1 %}
+                                    {% if task.start_date < to_days %}
+                                        EN RETARD
+                                    {% else %}
+                                        À VENIR
+                                    {% endif %}
+                                {% elif task.status == 2 %}
+                                    EN COURS
+                                {% elif task.status == 3 %}
+                                    TERMINÉ
+                                {% else %}
+                                    INCONNU
+                                {% endif %}
+                            </small>
+                        </div>
+                        <p class="mb-1">{{ task.description }} </p>
+                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
+                        <p>Date prévue : Du {{ task.start_date }} au {{ task.end_date }}</p>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item">Aucun autre travail.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
     {% else %}
-        <div class="alert alert-info">Il n'y a pas de travaux disponibles pour le moment.</div>
+        <div class="alert alert-info text-center">Aucune tâche à afficher pour le moment.</div>
     {% endif %}
 </div>
 {% endblock %}
