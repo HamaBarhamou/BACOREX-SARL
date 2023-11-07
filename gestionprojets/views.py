@@ -41,25 +41,38 @@ fonction = [
                 'Intervenant',
                ]
 
-""" @login_required(login_url='/user/')
-def Taskliste(request):
-    user_tasks = Task.objects.filter(attribuer_a__in=[request.user])
-    other_tasks = Task.objects.exclude(attribuer_a__in=[request.user])
-    
-    context = {
-        'user_tasks': user_tasks,
-        'other_tasks': other_tasks
-    }
-
-    return render(request, 'listeTask.html', context) """
-
 @login_required(login_url='/user/')
 def Taskliste(request):
     # Récupérer toutes les tâches pour l'utilisateur connecté
     user_tasks = Task.objects.filter(attribuer_a__in=[request.user]).prefetch_related('attribuer_a').order_by('end_date', 'start_date')
 
+    # Création des labels et des données pour le graphique de Gantt
+    gantt_labels = []
+    gantt_data = []
+
+    # Parcourir toutes les tâches et construire les données pour le graphique de Gantt
+    for task in user_tasks:
+        # Déterminer le pourcentage achevé de la tâche
+        if task.status == 3:  # Si la tâche est terminée
+            percent_done = 100
+        elif task.status == 1:  # Si la tâche n'a pas commencé
+            percent_done = 0
+        elif task.status == 2:  # Si la tâche est en cours
+            total_days = (task.end_date - task.start_date).days
+            days_passed = (date.today() - task.start_date).days
+            percent_done = (days_passed / total_days) * 100 if total_days > 0 else 0
+            percent_done = min(max(percent_done, 0), 100)  # S'assurer que le pourcentage reste entre 0 et 100
+
+        gantt_labels.append(task.name)
+        gantt_data.append({
+            'name': task.name,
+            'start': task.start_date.strftime("%Y-%m-%d"),  # Format pour correspondre à l'attente JS
+            'end': task.end_date.strftime("%Y-%m-%d"),
+            'status': task.status,
+            'percentDone': percent_done,
+        })
+
     # Séparer les tâches en cours, à venir, expirées et terminées 
-    #not_started_tasks = user_tasks.filter(start_date__lte=now().date(),end_date__gte=now().date(),status=1)
     not_started_tasks = user_tasks.filter(start_date__lte=date.today(),end_date__gte=date.today(),status=1)
     ongoing_tasks = user_tasks.filter(start_date__lte=date.today(), end_date__gte=date.today(), status=2)
     upcoming_tasks = user_tasks.filter(start_date__gt=date.today())
@@ -76,7 +89,9 @@ def Taskliste(request):
         'expired_tasks': expired_tasks,
         'completed_tasks': completed_tasks,
         'other_tasks': other_tasks,
-        'to_days':date.today()
+        'to_days':date.today(),
+        'gantt_labels': gantt_labels,  # Utilisés pour les labels sur l'axe des ordonnées
+        'gantt_data': gantt_data,
     }
 
     return render(request, 'listeTask.html', context)

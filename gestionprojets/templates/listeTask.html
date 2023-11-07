@@ -7,6 +7,10 @@
     <h2 class="mb-4 text-center">Tableau de Bord des Tâches</h2>
 
     {% if not_started_tasks or ongoing_tasks or upcoming_tasks or expired_tasks or completed_tasks or other_tasks %}
+
+         <!-- Conteneur pour le graphique de Gantt -->
+        <div id="gantt_chart" style="width: 100%; height: 100%;"></div>
+
         <!-- Non Started Tasks Highlight -->
         <div class="mb-4">
             <h3 class="text-warning">Tâches en Retard de Démarrage</h3>
@@ -156,4 +160,69 @@
         <div class="alert alert-info text-center">Aucune tâche à afficher pour le moment.</div>
     {% endif %}
 </div>
+
+
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['gantt']});
+    google.charts.setOnLoadCallback(drawChart);
+  
+    function daysToMilliseconds(days) {
+      return days * 24 * 60 * 60 * 1000;
+    }
+  
+    function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Task ID');
+    data.addColumn('string', 'Task Name');
+    data.addColumn('date', 'Start Date');
+    data.addColumn('date', 'End Date');
+    data.addColumn('number', 'Duration');
+    data.addColumn('number', 'Percent Complete');
+    data.addColumn('string', 'Dependencies');
+
+    var ganttData = {{ gantt_data | safe }};
+    ganttData.forEach(function(task) {
+        data.addRow([
+            task.name,
+            task.name,
+            new Date(task.start),
+            new Date(task.end),
+            null,
+            task.percentDone,
+            null,
+        ]);
+    });
+
+
+    /* var options = {
+        height: 400,
+        gantt: {
+            trackHeight: 30
+        }
+    }; */
+
+    // Déterminez la hauteur de chaque tâche (ligne) et ajoutez un peu d'espace pour le header
+    var rowHeight = 30;
+    var headerHeight = 50; // Estimation de la hauteur de l'en-tête
+
+    // Calculez la hauteur totale du graphique
+    var totalHeight = ganttData.length * rowHeight + headerHeight;
+
+    // Assurez-vous qu'il y a une hauteur minimum pour le graphique
+    var chartHeight = Math.max(totalHeight, 400);
+
+    var options = {
+        height: chartHeight,
+        gantt: {
+            trackHeight: rowHeight
+        }
+    };
+
+
+    var chart = new google.visualization.Gantt(document.getElementById('gantt_chart'));
+
+    chart.draw(data, options);
+}
+
+  </script>
 {% endblock %}
