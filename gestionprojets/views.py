@@ -42,6 +42,50 @@ fonction = [
                ]
 
 @login_required(login_url='/user/')
+def ganttchartprojects(request):
+    projets = Projet.objects.all().order_by('end_date', 'start_date')
+    # Création des labels et des données pour le graphique de Gantt
+    gantt_labels = []
+    gantt_data = []
+
+    status_colors = {  # Couleurs selon le statut du projet
+        1: 'gray',   # NON DÉBUTÉ
+        2: 'blue',   # EN COURS
+        3: 'green',  # TERMINÉ
+        4: 'red',    # ARCHIVÉ
+    }
+
+    # Parcourir toutes les tâches et construire les données pour le graphique de Gantt
+    for projet in projets:
+        percent_done = projet.pourcentage_achevement()
+        # Construction du tooltip
+        tooltip = f"Coordinateur: {projet.coordinateur.get_full_name()}, "\
+                  f"Chef de projet: {projet.chef_project.get_full_name()}, "\
+                  f"Conducteur de travaux: {projet.conducteur_travaux.get_full_name()}"
+        
+        print('tooltip=',tooltip)
+        
+        gantt_labels.append(projet.name)
+        gantt_data.append({
+            'id': projet.id,
+            'name': projet.name,
+            'start': projet.start_date.strftime("%Y-%m-%d"),  # Format pour correspondre à l'attente JS
+            'end': projet.end_date.strftime("%Y-%m-%d"),
+            'status': projet.status,
+            'percentDone': percent_done,
+            'color': status_colors[projet.status],
+            'tooltip': tooltip,
+        })
+    
+    context = {
+        'gantt_labels': gantt_labels,  # Utilisés pour les labels sur l'axe des ordonnées
+        'gantt_data': gantt_data,
+    }
+    #print('context=',context)
+    return render(request, 'ganttchartprojects.html', context)
+
+
+@login_required(login_url='/user/')
 def Taskliste(request):
     # Récupérer toutes les tâches pour l'utilisateur connecté
     user_tasks = Task.objects.filter(attribuer_a__in=[request.user]).prefetch_related('attribuer_a').order_by('end_date', 'start_date')

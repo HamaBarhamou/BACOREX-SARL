@@ -16,6 +16,9 @@
                 <strong>Statut :</strong> <span class="badge {% if status == 'EN COURS' %} bg-success {% elif status == 'TERMINER' %} bg-dark {% elif status == 'NON DÉBUTÉ' %} bg-primary {% elif status == 'ARCHIVER' %} bg-secondary {% endif %}">{{status}}</span>
             </p>
             <p class="card-text mb-2 mb-md-0">
+                <strong>Taux d'achèvement :</strong> {{ projet.pourcentage_achevement }} <strong>%</strong>
+            </p>
+            <p class="card-text mb-2 mb-md-0">
                 {% if temps_restant != None %}
                     <strong>Temps restant :</strong> {{ temps_restant }} jours
                 {% endif %}

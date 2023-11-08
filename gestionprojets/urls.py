@@ -5,6 +5,7 @@ from . import views
 app_name = 'projectmanagement'
 
 urlpatterns = [
+    path('ganttchartprojects', views.ganttchartprojects, name='ganttchartprojects'),
     path('taskliste', views.Taskliste, name='taskliste'),
     path('projectlist', views.listeProject, name='projectlist'),
     path('listeclient', views.listeClient, name='clientlist'),

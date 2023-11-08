@@ -100,6 +100,9 @@
         <a href="{% url 'projectmanagement:taskliste' %}" class="list-group-item list-group-item-action">
             <i class="fas fa-tasks text-success"></i> Travaux à faire
         </a>
+        <a href="{% url 'projectmanagement:ganttchartprojects' %}" class="list-group-item list-group-item-action">
+            <i class="fas fa-chart-bar text-success"></i> Diagramme de Gantt des Projets
+        </a>
     {% endif %}
 
     {% if request.user.fonction == 10 or request.user.is_superuser %}

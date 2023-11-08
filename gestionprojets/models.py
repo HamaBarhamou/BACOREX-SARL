@@ -66,7 +66,6 @@ class Projet(models.Model):
                         null=True
                         )
 
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from plannig.models import Event
@@ -94,6 +93,20 @@ class Projet(models.Model):
         from plannig.models import Event
         Event.objects.filter(pk_projet = self.pk).first().delete()
         super(Projet, self).delete(*args, **kwargs)
+    
+    def pourcentage_achevement(self):
+        # Obtenir toutes les tâches pour ce projet
+        taches = self.task_set.all()  # Assurez-vous que votre modèle de tâche est lié à votre projet avec un ForeignKey
+        total_taches = taches.count()  # Compter le nombre total de tâches
+        taches_terminees = taches.filter(status=3).count()  # Compter les tâches terminées
+
+        # Calculer le pourcentage
+        if total_taches > 0:
+            pourcentage_achevement = (taches_terminees / total_taches) * 100
+        else:
+            pourcentage_achevement = 0  # Eviter la division par zéro si le projet n'a pas de tâches
+
+        return round(pourcentage_achevement, 2)  # Arrondir à deux décimales pour la précision
 
 
 class Task(models.Model):

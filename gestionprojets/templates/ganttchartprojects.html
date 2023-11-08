@@ -1,0 +1,82 @@
+{% extends "home.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<h2 class="mb-4 text-center">Tableau de gantt des Projets</h2>
+
+<!-- Conteneur pour le graphique de Gantt -->
+<div id="gantt_chart" style="width: 100%; height: 100%;"></div>
+
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['gantt']});
+    google.charts.setOnLoadCallback(drawChart);
+  
+    function daysToMilliseconds(days) {
+      return days * 24 * 60 * 60 * 1000;
+    }
+  
+    function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Task ID');
+        data.addColumn('string', 'Task Name');
+        data.addColumn('date', 'Start Date');
+        data.addColumn('date', 'End Date');
+        data.addColumn('number', 'Durée du projet');
+        data.addColumn('number', 'Percent Complete');
+        data.addColumn('string', 'Dependencies');
+        data.addColumn('string', 'Resource'); // Pour la couleur
+        data.addColumn('string', 'Tooltip');  // Pour le tooltip
+
+        var ganttData = {{ gantt_data | safe }};
+        console.log('ganttData=',ganttData)
+        ganttData.forEach(function(projet) {
+            data.addRow([
+                projet.name,
+                projet.name,
+                new Date(projet.start),
+                new Date(projet.end),
+                null,
+                projet.percentDone,
+                null,
+                projet.color,  // Ajout de la couleur
+                projet.tooltip // Ajout du tooltip
+            ]);
+        });
+
+        // Déterminez la hauteur de chaque tâche (ligne) et ajoutez un peu d'espace pour le header
+        var rowHeight = 30;
+        var headerHeight = 50; // Estimation de la hauteur de l'en-tête
+
+        // Calculez la hauteur totale du graphique
+        var totalHeight = ganttData.length * rowHeight + headerHeight;
+
+        // Assurez-vous qu'il y a une hauteur minimum pour le graphique
+        var chartHeight = Math.max(totalHeight, 600);
+
+        var options = {
+            height: chartHeight,
+            gantt: {
+                trackHeight: rowHeight,
+                labelStyle: {
+                    fontName: "Helvetica",
+                    fontSize: 14,
+                    color: '#757575'
+                },
+                barCornerRadius: 5,
+                barCornerRadius: 5, // Arrondir les coins des barres
+                barHeight: 20, // Hauteur des barres du graphique
+                criticalPathEnabled: false, // Désactiver l'affichage du chemin critique
+                arrow: { width: 0 }, // Pas de flèches pour les dépendances (puisque vous ne les utilisez pas)
+                shadowEnabled: false, // Désactiver l'ombre des barres
+                tooltip: { isHtml: true } 
+            },
+            tooltip: { isHtml: true }
+        };
+
+        var chart = new google.visualization.Gantt(document.getElementById('gantt_chart'));
+        chart.draw(data, options);
+    }
+  </script>
+{% endblock %}
