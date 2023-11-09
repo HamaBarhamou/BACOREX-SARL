@@ -23,6 +23,8 @@ from django.db.models import Prefetch
 from django.db.models import Q 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.timezone import now
+from history.models import ActionHistory
+import json
 
 
 
@@ -291,7 +293,6 @@ def List_Intervenant_Project(request, pk):
 @login_required(login_url='/user/')
 def newTask(request, pk):
     projet = get_object_or_404(Projet, pk=pk)
-    #tasks = projet.task_set.all()  # Récupérer toutes les tâches associées à ce projet
     if request.user.is_chefDeProjet_or_coordinateur_or_admin():
         print("newTask TaskForm selected")
         tasks = projet.task_set.all()  # Récupérer toutes les tâches associées à ce projet
@@ -314,6 +315,17 @@ def newTask(request, pk):
             else:
                 task.save()
                 form.save_m2m()  # Important lorsque vous avez des champs ManyToMany
+                ActionHistory.objects.create(
+                    user=request.user,
+                    action_type='Création de tâche',
+                    entity_type='Tâche',
+                    entity_id=task.id,
+                    action_details={
+                        'old_data': {},
+                        #'new_data': form.cleaned_data  # Les données après la création
+                        'new_data': TaskSerializer(task).data
+                    }
+                )
                 #form = TaskForm()
                 form = form_class()
         else:
@@ -327,10 +339,12 @@ def newTask(request, pk):
     template = loader.get_template('newTask.html')
     return HttpResponse(template.render(context, request))
 
+
 @login_required(login_url='/user/')
 def editTask(request, pk):
     task = get_object_or_404(Task, pk=pk)
 
+    # Choisissez le bon formulaire en fonction du rôle de l'utilisateur
     if request.user.is_chefDeProjet_or_coordinateur_or_admin():
         print("editTask TaskForm selected")
         form_class = TaskForm
@@ -342,28 +356,56 @@ def editTask(request, pk):
         if request.method == "POST":
             form = form_class(request.POST, request.FILES, instance=task)
             if form.is_valid():
-                form.save()  # Sauvegardez les données
-                updated_task = Task.objects.get(pk=pk)  # Récupérez l'objet mis à jour de la base de données
-                serializer = TaskSerializer(updated_task)  # Sérialisez les données mises à jour
-                # Retournez une réponse JSON avec les données mises à jour
+                original_task = Task.objects.get(pk=pk)  # Conservez l'état original de la tâche pour l'historique
+                form.save()  # Sauvegardez les modifications
+
+                # Enregistrez l'action dans l'historique
+                ActionHistory.objects.create(
+                    user=request.user,
+                    action_type='Modification',
+                    entity_type='Tâche',
+                    entity_id=task.pk,
+                    action_details={
+                        'old_data': TaskSerializer(original_task).data,
+                        'new_data': TaskSerializer(task).data
+                    }
+                )
+
+                # Récupérez l'objet mis à jour de la base de données
+                updated_task = Task.objects.get(pk=pk)
+                serializer = TaskSerializer(updated_task)
                 return JsonResponse({'status': 'success', 'message': 'Tâche modifiée avec succès', 'updated_task': serializer.data}, status=200)
             else:
-                # retourner une réponse JSON en cas d'échec de la validation du formulaire
                 print(form.errors)
-
                 return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
         else:
             serializer = TaskSerializer(task)
             return JsonResponse(serializer.data)
+
     else:
         if request.method == "POST":
             form = form_class(request.POST, request.FILES, instance=task)
             if form.is_valid():
-                form.save()
-            return HttpResponseRedirect(reverse('projectmanagement:detailprojet', args=(task.projet.pk,)))
-        else:
-            return HttpResponseRedirect(reverse('projectmanagement:detailprojet', args=(task.projet.pk,)))
+                original_task = Task.objects.get(pk=pk)  # Conservez l'état original de la tâche pour l'historique
+                form.save()  # Sauvegardez les modifications
 
+                # Enregistrez l'action dans l'historique
+                ActionHistory.objects.create(
+                    user=request.user,
+                    action_type='Modification',
+                    entity_type='Tâche',
+                    entity_id=task.pk,
+                    action_details={
+                        'old_data': TaskSerializer(original_task).data,
+                        'new_data': TaskSerializer(task).data
+                    }
+                )
+
+                # Redirigez l'utilisateur vers la page de détail du projet
+                return HttpResponseRedirect(reverse('projectmanagement:detailprojet', args=(task.projet.pk,)))
+
+        # Si la méthode n'est pas POST, redirigez simplement l'utilisateur
+        return HttpResponseRedirect(reverse('projectmanagement:detailprojet', args=(task.projet.pk,)))
 
 @login_required(login_url='/user/')
 def deleteTask(request, pk):

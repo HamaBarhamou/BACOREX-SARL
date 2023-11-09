@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'gestiondesstock.apps.GestiondesstockConfig',
     'bootstrap5',
     'plannig.apps.PlannigConfig',
+    'history.apps.HistoryConfig',
 ]
 
 MIDDLEWARE = [

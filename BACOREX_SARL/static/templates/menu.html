@@ -130,6 +130,11 @@
     {% endif %}
 
     <h4 class="text-danger font-weight-bold">Autres</h4>
+    
+    <a href="{% url 'history:history_list' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-history text-danger"></i> Historique
+    </a>
+    
     <a href="{% url 'mailmanagement:inbox' %}" class="list-group-item list-group-item-action">
         <i class="fas fa-envelope text-danger"></i> Courrier
     </a>

@@ -55,7 +55,8 @@
                     <h5 class="modal-title" id="newTaskModalLabel">Créer une nouvelle tâche</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="/projet/{{pk}}/newTask" method="post" enctype="multipart/form-data" id="taskForm">
+                <!-- <form action="/projet/{{pk}}/newTask" method="post" enctype="multipart/form-data" id="taskForm"> -->
+                <form action="{% url 'projectmanagement:newTask' pk=projet.pk %}" method="post" enctype="multipart/form-data" id="taskForm">
                     <div class="modal-body">
                         {% csrf_token %}
                         {% bootstrap_form form %}

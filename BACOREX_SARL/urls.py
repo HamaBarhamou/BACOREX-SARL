@@ -28,5 +28,6 @@ urlpatterns = [
     path('magasin/', include('gestiondesstock.urls', namespace='gestiondesstock')),  # Ajoutez l'espace de noms "gestiondesstock" pour l'application "gestiondesstock"
     path('projet/', include('gestionprojets.urls', namespace='gestionprojets')),  # Ajoutez l'espace de noms "gestionprojets" pour l'application "gestionprojets"
     path('plannig/', include('plannig.urls', namespace='plannig')),  # Ajoutez l'espace de noms "plannig" pour l'application "plannig"
+    path('history/',include('history.urls', namespace='history')),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

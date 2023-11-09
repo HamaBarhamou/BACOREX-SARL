@@ -9,6 +9,43 @@
 <!-- Conteneur pour le graphique de Gantt -->
 <div id="gantt_chart" style="width: 100%; height: 100%;"></div>
 
+<!-- Légende pour le graphique de Gantt -->
+<!-- <div id="legend-container">
+    <div id="gantt_legend" class="mt-3">
+        <h4>Légende: </h4>
+        <div><span class="legend-color-box" style="background-color: #76A7FA;"></span> Non débuté</div>
+        <div><span class="legend-color-box" style="background-color: #57B757;"></span> En cours</div>
+        <div><span class="legend-color-box" style="background-color: #F4C7C3;"></span> Terminé</div>
+        <div><span class="legend-color-box" style="background-color: #E6E6E6;"></span> Archivé</div>
+    </div>
+  </div>
+  
+
+
+<style>
+    .legend-color-box {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+      border: 1px solid #000;
+    }
+    #legend-container {
+    display: flex;
+    justify-content: center; 
+    margin-top: 10px; 
+    }
+
+    .legend-color-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border: 1px solid #000;
+    }
+
+  </style>
+ -->
 <script type="text/javascript">
     google.charts.load('current', {'packages':['gantt']});
     google.charts.setOnLoadCallback(drawChart);
