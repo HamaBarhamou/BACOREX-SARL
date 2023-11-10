@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task,Phase
+from .models import Task, Phase, Projet, Client
 from gestiondesstock.serializers import MaterielsSerializer
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -25,3 +25,17 @@ class PhaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Phase
         fields = ['id', 'name', 'description', 'start_date', 'end_date', 'projet']
+
+class ClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = ['id', 'name', 'adresse']
+
+class ProjetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Projet
+        fields = [
+            'id', 'name', 'description', 'start_date', 'end_date', 'coordinateur',
+            'coordinateur', 'chef_project', 'conducteur_travaux', 'list_intervenant',
+            'list_materiels', 'client', 'status', 'budget', 'pieces_jointes'
+        ]

@@ -71,11 +71,23 @@
                             <i class="bi bi-pencil-square" style="color: green;"></i>
                         </a>
                     </td>
-                    <td>
-                        <a href="#" title="Supprimer">
-                            <i class="bi bi-trash" style="color: red;"></i>
-                        </a>
-                    </td>
+                    {% if c.projet_set.count == 0 %}
+                        <td>
+                            <a href="#" title="Supprimer" class="text-danger delete-client-link" data-client-name="{{ c.name }}">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>
+                            <button class="btn btn-warning btn-sm" type="button" disabled>
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                            </button>
+                            <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="Ce client a des projets associés. Supprimez d'abord tous les projets pour pouvoir supprimer ce client.">
+                                Suppression non disponible
+                            </span>
+                        </td>
+                    {% endif %}
+
                 {% endif %}
             </tr>
             <!-- Liste cachée des projets -->
@@ -131,4 +143,10 @@
     </nav>
 </div>
 
+<script>
+    $(function () {
+      $('[data-bs-toggle="tooltip"]').tooltip()
+    })
+    </script>
+    
 {% endblock %}

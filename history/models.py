@@ -36,6 +36,10 @@ class ActionHistory(models.Model):
     
     
     def parse_detail(self, key, old_value, new_value):
+        if key == 'status':
+            correspondance = ['NON DÉBUTÉ', 'EN COURS', 'TERMINER', 'ARCHIVER']
+            old_value = correspondance[old_value-1]
+            new_value = correspondance[new_value-1]
         if isinstance(old_value, list) and isinstance(new_value, list):
             return f"{key} mis à jour avec {len(new_value)} élément(s)."
         elif isinstance(old_value, dict) and isinstance(new_value, dict):
@@ -55,7 +59,7 @@ class ActionHistory(models.Model):
         # Pour une création, affichez simplement le nom de l'entité créée.
         if 'Création' in self.action_type and not details.get('old_data'):
             #entity_name = details.get('new_data', {}).get('name', 'Inconnu')
-            return f"A créé une nouvelle {self.entity_type.lower()} (ID: {self.entity_id}) - '{entity_name}'."
+            return f"A créé {self.entity_type.lower()} (ID: {self.entity_id}) - '{entity_name}'."
 
         # Pour une suppression, affichez le nom de l'entité supprimée.
         if 'Suppression' in self.action_type:

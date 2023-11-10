@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from .forms import ClientForm, ProjetForm, TaskForm, TaskLimitedForm, PhaseForm
 from .models import Client, Projet, Task, Phase
 from plannig.models import Event
-from .serializers import TaskSerializer, PhaseSerializer
+from .serializers import TaskSerializer, PhaseSerializer, ProjetSerializer, ClientSerializer
 from django.views.decorators.http import require_POST
 import pandas as pd
 from openpyxl import Workbook
@@ -149,7 +149,19 @@ def newClient(request):
     if request.method == "POST":
         form = ClientForm(request.POST)
         if form.is_valid():
-            materiel = form.save()
+            client = form.save()
+            client_id = client.id
+            new_data = ClientSerializer(client).data
+            ActionHistory.objects.create(
+                user=request.user,
+                action_type='Création de Client',
+                entity_type='Client',
+                entity_id=client_id,
+                action_details={
+                    'old_data': {},
+                    'new_data': new_data
+                }
+            )
             return redirect('projectmanagement:clientlist') 
     else:
         form = ClientForm()
@@ -187,7 +199,17 @@ def newProjet(request):
     if request.method == "POST":
         form = ProjetForm(request.POST)
         if form.is_valid():
-            form.save()
+            projet = form.save()
+            ActionHistory.objects.create(
+                user=request.user,
+                action_type='Création de projet',
+                entity_type='Projet',
+                entity_id=projet.id,
+                action_details={
+                    'old_data': {},
+                    'new_data': ProjetSerializer(projet).data
+                }
+            )
             form = ProjetForm()
         else:
             form = ProjetForm(request.POST)
@@ -203,8 +225,20 @@ def editProjet(request, pk):
     projet = Projet.objects.get(pk=pk)
     if request.method == "POST":
         form = ProjetForm(request.POST, instance=projet)
+        old_data = ProjetSerializer(projet).data
         if form.is_valid():
             projet = form.save()
+            new_data = ProjetSerializer(projet).data
+            ActionHistory.objects.create(
+                user=request.user,
+                action_type='Modification de projet',
+                entity_type='Projet',
+                entity_id=projet.id,
+                action_details={
+                    'old_data': old_data,
+                    'new_data': new_data
+                }
+            )
             return redirect('projectmanagement:projectlist')
     else:
         form = ProjetForm(instance=projet)
@@ -215,7 +249,21 @@ def editProjet(request, pk):
 
 @login_required(login_url='/user/')
 def deletteProjet(request, pk):
-    Projet.objects.get(pk=pk).delete()
+    #Projet.objects.get(pk=pk).delete()
+    projet = Projet.objects.get(pk=pk)
+    projet_id = projet.id
+    old_data = ProjetSerializer(projet).data
+    projet.delete()
+    ActionHistory.objects.create(
+        user=request.user,
+        action_type = 'Suppression de projet',
+        entity_type = 'Projet',
+        entity_id = projet_id,
+        action_details = {
+            'old_data': old_data,
+            'new_data': {}
+        }
+    )
     return redirect('projectmanagement:projectlist')
 
 
