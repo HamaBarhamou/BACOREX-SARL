@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from .forms import ClientForm, ProjetForm, TaskForm, TaskLimitedForm, PhaseForm
 from .models import Client, Projet, Task, Phase
 from plannig.models import Event
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, PhaseSerializer
 from django.views.decorators.http import require_POST
 import pandas as pd
 from openpyxl import Workbook
@@ -411,12 +411,27 @@ def editTask(request, pk):
 def deleteTask(request, pk):
     task = get_object_or_404(Task, pk=pk)
     projet_pk = task.projet.pk  # Sauvegarde le pk du projet pour la redirection
+    # Sauvegarde des données de la tâche pour l'historique
+    old_data = TaskSerializer(task).data
+    task_id = task.id 
     task.delete()
+    # Création de l'historique avant la suppression
+    ActionHistory.objects.create(
+        user=request.user,
+        action_type='Suppression',
+        entity_type='Tâche',
+        entity_id=task_id,
+        action_details={
+            'old_data': old_data,
+            'new_data': {}
+        }
+    )
     return redirect('projectmanagement:newTask', pk=projet_pk)
 
 
 # vues pour la gestion des phases du projet
 
+@login_required(login_url='/user/')
 def list_phases_for_project(request, project_id):
     print('projetid=', project_id)
     projet = Projet.objects.get(pk=project_id)
@@ -425,14 +440,25 @@ def list_phases_for_project(request, project_id):
     template = loader.get_template('plannification.html')
     return HttpResponse(template.render(context, request))
 
+
+@login_required(login_url='/user/')
 def new_phase_for_project(request, project_id):
     if request.method == 'POST':
-        print('creation')
         form = PhaseForm(request.POST)
         if form.is_valid():
             phase = form.save(commit=False)
             phase.projet_id = project_id
             phase.save()
+            ActionHistory.objects.create(
+                    user=request.user,
+                    action_type='Création de phase',
+                    entity_type='Phase',
+                    entity_id=phase.id,
+                    action_details={
+                        'old_data': {},
+                        'new_data': PhaseSerializer(phase).data
+                    }
+                )
             return redirect('projectmanagement:list_phases_for_project', project_id=project_id)
     else:
         form = PhaseForm()
@@ -440,33 +466,59 @@ def new_phase_for_project(request, project_id):
     template = loader.get_template('plannification.html')
     return HttpResponse(template.render(context, request))
 
+
+@login_required(login_url='/user/')
 def phase_detail(request, phase_id, projet_id):
     phase = get_object_or_404(Phase, id=phase_id)
     context = {'phase': phase, 'pk':projet_id}
     template = loader.get_template('plannification.html')
     return HttpResponse(template.render(context, request))
 
+
+@login_required(login_url='/user/')
 def edit_phase(request, phase_id, projet_id):
     phase = get_object_or_404(Phase, id=phase_id)
+    old_data = PhaseSerializer(phase).data 
     if request.method == 'POST':
-        print('requette poste')
         form = PhaseForm(request.POST, instance=phase)
         if form.is_valid():
             form.save()
-            #return redirect('projectmanagement:phase_detail', phase_id=phase.id, projet_id=projet_id)
+            new_data = PhaseSerializer(phase).data  # Données après modification
+            ActionHistory.objects.create(
+                    user=request.user,
+                    action_type='Modification',
+                    entity_type='Phase',
+                    entity_id=phase.pk,
+                    action_details={
+                        'old_data': old_data,
+                        'new_data': new_data
+                    }
+                )
             return redirect('projectmanagement:list_phases_for_project', project_id=projet_id)
     else:
         form = PhaseForm(instance=phase)
-        #print(" vue de odification GET phase_id={} && projet_id={}".format(phase_id, projet_id))
     context = {'form': form, 'pk':projet_id, 'is_editing': True, 'phase': phase}
     template = loader.get_template('plannification.html')
     return HttpResponse(template.render(context, request))
 
+
 @require_POST
+@login_required(login_url='/user/')
 def delete_phase(request, phase_id, projet_id):
-    print('suppression e')
     phase = get_object_or_404(Phase, id=phase_id)
+    old_data = PhaseSerializer(phase).data 
+    phase_id = phase.id
     phase.delete()
+    ActionHistory.objects.create(
+        user=request.user,
+        action_type='Suppression',
+        entity_type='Phase',
+        entity_id=phase_id,
+        action_details={
+            'old_data': old_data,
+            'new_data': {}
+        }
+    )
     return redirect('projectmanagement:list_phases_for_project', project_id=projet_id)
 
 
