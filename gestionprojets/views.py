@@ -318,6 +318,15 @@ def detailProject(request, pk):
     template = loader.get_template('detailProjet.html')
     return HttpResponse(template.render(context, request))
 
+def caracteristiques_techniques(request, pk):
+    status = ['NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
+    projet = Projet.objects.get(pk=pk)
+    temps_restant = None
+    if projet.status == 2:  # Assumons que 2 signifie 'EN COURS'
+        temps_restant = (projet.end_date - datetime.now()).days
+    context = {'projet': projet, 'status': status[projet.status-1], 'temps_restant': temps_restant, 'pk': pk}
+    template = loader.get_template('caracteristiques_techniques.html')
+    return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/user/')
 def List_Intervenant_Project(request, pk):

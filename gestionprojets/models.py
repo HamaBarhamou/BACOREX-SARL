@@ -108,6 +108,10 @@ class Projet(models.Model):
         else:
             pourcentage_achevement = 0  # Eviter la division par zéro si le projet n'a pas de tâches
 
+        # Convertir en chaîne avec un point comme séparateur décimal
+        pourcentage_achevement_str = "{:.2f}".format(pourcentage_achevement).replace(',', '.')
+        
+        return pourcentage_achevement_str
         return round(pourcentage_achevement, 2)  # Arrondir à deux décimales pour la précision
     
     

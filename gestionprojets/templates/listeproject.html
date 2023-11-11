@@ -24,7 +24,7 @@
             {% for p in projets %}
                 <tr class="custom-table-row">
                     <td>
-                        <a href="{% url 'gestionprojets:detailprojet' p.id %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'projectmanagement:caracteristiques_techniques' p.id %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-info-circle-fill bi-3x text-primary"></i>
                         </a>
                     </td>

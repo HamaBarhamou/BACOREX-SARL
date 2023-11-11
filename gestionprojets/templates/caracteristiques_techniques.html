@@ -1,0 +1,63 @@
+{% extends "detailProjet.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Description du Projet</h5>
+                        <p class="card-text">{{ projet.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        Budget du Projet
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ projet.budget }} €</h5>
+                        <p class="card-text">Le budget alloué pour ce projet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        Avancement du Projet
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ projet.pourcentage_achevement }} %</h5>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ projet.pourcentage_achevement }}%;" aria-valuenow="{{ projet.pourcentage_achevement }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        Équipe du Projet
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Coordinateur: {{ projet.coordinateur.get_full_name }}</li>
+                        <li class="list-group-item">Chef de Projet: {{ projet.chef_project.get_full_name }}</li>
+                        <li class="list-group-item">Conducteur de Travaux: {{ projet.conducteur_travaux.get_full_name }}</li>
+                        <!-- Liste des intervenants -->
+                        {% for intervenant in projet.list_intervenant.all %}
+                        <li class="list-group-item">{{ intervenant.get_full_name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

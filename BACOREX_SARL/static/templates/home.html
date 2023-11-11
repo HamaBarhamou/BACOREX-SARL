@@ -1,18 +1,34 @@
 {% extends "base.html" %}
 
 {% block entete %}
-<div class="container-fluid bg-primary py-2"> <!-- Utilisation d'une couleur d'arrière-plan primaire pour l'en-tête -->
+<style>
+    .text-brown-light {
+        color: #df7752; /* Marron clair */
+        text-shadow: 2px 2px 4px #000000; /* Ombre noire pour le texte */
+    }
+    .text-brown-text {
+        color: rgb(241, 236, 234); /* Marron clair */
+        text-shadow: 2px 2px 4px #000000; /* Ombre noire pour le texte */
+    }
+    .bg-gradient {
+        background-color: #6c757d;
+        background-image: linear-gradient(315deg, #6c757d 0%, #d5d5d5 74%);
+        /* Ajout d'une légère transparence pour le fond */
+        opacity: 0.9; 
+    }
+</style>
+<div class="container-fluid py-4 bg-gradient">
     <div class="row">
         <div class="col-md-6">
-            <h2 class="text-white">BACOREX SARL</h2> <!-- Nom de l'entreprise ou du projet -->
+            <h2 class="text-brown-light display-4 font-weight-bold shadow-sm">BACOREX SARL</h2>
         </div>
         <div class="col-md-6 text-end">
-            <span class="text-white">Bienvenue, {{ user.username }}</span> <!-- Affiche le nom d'utilisateur connecté -->
+            <span class="text-brown-text lead">Bienvenue, {{ user.username }}</span>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <p class="text-white-50">Votre tableau de bord de gestion des projets</p> <!-- Description ou slogan -->
+            <p class="text-brown-text fst-italic">Votre tableau de bord de gestion des projets</p>
         </div>
     </div>
 </div>
