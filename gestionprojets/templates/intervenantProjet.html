@@ -1,32 +1,37 @@
 {% extends "detailProjet.html" %}
 
 {% block content %}
-    Liste des Intervenant {{pk}}
-    <table class="table table-hover">
-        <thead>
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Liste des Intervenants du Projet</h2>
+    <table class="table table-bordered table-striped table-hover shadow">
+        <thead class="table-dark">
             <tr>
                 <th>Username</th>
                 <th>Nom</th>
-                <th>Prenom</th>
+                <th>Prénom</th>
                 <th>Fonction</th>
-                <th>email</th>
-                <th>phone</th>
+                <th>Email</th>
+                <th>Téléphone</th>
             </tr>
         </thead>
         <tbody>
-            {% for u in intervenant %}
-                <tr>
-                    <td>{{u.username}}</td>
-                    <td>{{u.first_name}}</td>
-                    <td>{{u.last_name}}</td>
-                    <td>
-                        {% load index %}
-                        {{ fonction|index:u.fonction }}         
-                    </td>
-                    <td>{{u.email}}</td>
-                    <td> </td>
-                </tr>
+            {% for info in users_info %}
+            <tr class="{% if info.role == 'Chef de Projet' %}table-success{% elif info.role == 'Coordinateur' %}table-info{% elif info.role == 'Conducteur de travaux' %}table-warning{% else %}table-light{% endif %}">
+                <td>{{ info.user.username }}</td>
+                <td>{{ info.user.first_name }}</td>
+                <td>{{ info.user.last_name }}</td>
+                <td>
+                    <i class="{% if info.role == 'Chef de Projet' %}bi bi-person-fill{% elif info.role == 'Coordinateur' %}bi bi-people-fill{% elif info.role == 'Conducteur de travaux' %}bi bi-wrench{% else %}bi bi-person{% endif %} me-2"></i>
+                    <span class="badge {% if info.role == 'Chef de Projet' %}bg-success{% elif info.role == 'Coordinateur' %}bg-info{% elif info.role == 'Conducteur de travaux' %}bg-warning{% else %}bg-secondary{% endif %}">
+                        {{ info.role }}
+                    </span>
+                </td>
+                <td>{{ info.user.email }}</td>
+                <td>{{ info.user.phone|default:"Non défini" }}</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
+
 {% endblock %}

@@ -266,8 +266,13 @@ def deletteProjet(request, pk):
     )
     return redirect('projectmanagement:projectlist')
 
-
 @login_required(login_url='/user/')
+def listeProject(request):
+    projets = Projet.get_projects_by_user(request.user)
+    context = {'projets': [projet.to_dict() for projet in projets]}
+    return render(request, 'listeproject.html', context)
+
+""" @login_required(login_url='/user/')
 def listeProject(request):
     Directeur_Generale = 4
     Admin = 5
@@ -299,7 +304,7 @@ def listeProject(request):
 
     context = {'projets': projets}
     template = loader.get_template('listeproject.html')
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) """
 
 
 @login_required(login_url='/user/')
@@ -316,23 +321,24 @@ def detailProject(request, pk):
 
 @login_required(login_url='/user/')
 def List_Intervenant_Project(request, pk):
-    status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
-    projet = Projet.objects.get(pk=pk)
-    intervenant = [
-                    projet.coordinateur,
-                    projet.chef_project,
-                    projet.conducteur_travaux,
-                  ]
-
-    for loop in Projet.objects.get(pk=pk).list_intervenant.all():
-        intervenant.append(loop)
+    status = ['NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
+    projet = get_object_or_404(Projet, pk=pk)
+    intervenants = projet.get_all_users()
+    # Créer une liste pour stocker les informations et le rôle de chaque utilisateur
+    users_info = [
+        {
+            'user': user,
+            'role': projet.get_user_role(user)
+        }
+        for user in intervenants
+    ]
     
     context = {
                 'projet': projet,
-                'status': status[projet.status],
+                'status': status[projet.status-1],
                 'pk': pk,
-                'intervenant': intervenant,
-                'fonction': fonction
+                'intervenant': intervenants,
+                'users_info': users_info,
               }
     template = loader.get_template('intervenantProjet.html')
     return HttpResponse(template.render(context, request))

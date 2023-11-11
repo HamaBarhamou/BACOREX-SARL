@@ -27,6 +27,11 @@ class User(AbstractUser):
                 upload_to='media/avatars'
                 )
 
+    def get_fonction_label(self):
+      if self.fonction is not None:
+          return self.get_fonction_display()
+      return "Non défini"
+
     def __str__(self):
         fonction = "Admin"
         for loop in self.USER_TYPE_CHOICES:
@@ -43,7 +48,19 @@ class User(AbstractUser):
     def is_chefDeProjet(self):
       return self.fonction == 8
     
+    def is_Directeur(self):
+       return self.fonction == 4
+    
+    def is_conducteur_travaux(self):
+       return self.fonction == 7
+    
+    def is_Intervenant(self):
+       return self.fonction == 11
+    
     def is_chefDeProjet_or_coordinateur_or_admin(self):
       if self.is_superuser:
           return True
       return self.fonction in [5,6,8]
+    
+    def is_leader(self):
+       return self.is_admin_or_coordinator() or self.is_Directeur()
