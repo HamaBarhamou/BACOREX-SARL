@@ -626,11 +626,12 @@ def display_projet_data(request):
     for projet in projets:
         #print("p u: ",projet)
         projet.status_display = dict(projet.STATUS)[projet.status]
-        projet.users = [
+        projet.users = [user.username for user in projet.get_all_users()]
+        """ projet.users = [
             projet.coordinateur.username,
             projet.chef_project.username,
             projet.conducteur_travaux.username
-        ] + [user.username for user in projet.list_intervenant.all()]
+        ] + [user.username for user in projet.list_intervenant.all()] """
 
     return render(request, 'revuePortefeuille.html', {
         'projets': projets,
@@ -651,11 +652,12 @@ def download_projet_data(request):
 
     for projet in projets:
         #print("p d: ",projet)
-        users = [
+        """ users = [
             projet.coordinateur.username,
             projet.chef_project.username,
             projet.conducteur_travaux.username
-        ]
+        ] """
+        users = [user.username for user in projet.get_all_users()]
         users.extend([user.username for user in projet.list_intervenant.all()])
         users_str = ', '.join(users)
 
