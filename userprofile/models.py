@@ -64,3 +64,4 @@ class User(AbstractUser):
     
     def is_leader(self):
        return self.is_admin_or_coordinator() or self.is_Directeur()
+    

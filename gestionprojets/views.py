@@ -10,7 +10,7 @@ from datetime import datetime, timedelta,date
 from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
-from .forms import ClientForm, ProjetForm, TaskForm, TaskLimitedForm, PhaseForm
+from .forms import ClientForm, ProjetForm, TaskForm, TaskLimitedForm, PhaseForm, AgentForm
 from .models import Client, Projet, Task, Phase
 from plannig.models import Event
 from .serializers import TaskSerializer, PhaseSerializer, ProjetSerializer, ClientSerializer
@@ -268,9 +268,6 @@ def deletteProjet(request, pk):
 
 @login_required(login_url='/user/')
 def listeProject(request):
-    """ projets = Projet.get_projects_by_user(request.user)
-    context = {'projets': [projet.to_dict() for projet in projets]}
-    return render(request, 'listeproject.html', context) """
     query = request.GET.get('q')
     projets_list = Projet.get_projects_by_user(request.user)
     if query:
@@ -292,28 +289,98 @@ def listeProject(request):
 
 @login_required(login_url='/user/')
 def detailProject(request, pk):
-    status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
+    #status = ['', 'NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
     projet = Projet.objects.get(pk=pk)
     temps_restant = None
     if projet.status == 2:  # Assumons que 2 signifie 'EN COURS'
         temps_restant = (projet.end_date - datetime.now()).days
-    context = {'projet': projet, 'status': status[projet.status], 'temps_restant': temps_restant, 'pk': pk}
+    context = {'projet': projet, 'status': projet.get_status_display(), 'temps_restant': temps_restant, 'pk': pk}
     template = loader.get_template('detailProjet.html')
     return HttpResponse(template.render(context, request))
 
+
+@login_required(login_url='/user/')
 def caracteristiques_techniques(request, pk):
-    status = ['NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
     projet = Projet.objects.get(pk=pk)
     temps_restant = None
     if projet.status == 2:  # Assumons que 2 signifie 'EN COURS'
         temps_restant = (projet.end_date - datetime.now()).days
-    context = {'projet': projet, 'status': status[projet.status-1], 'temps_restant': temps_restant, 'pk': pk}
+    context = {'projet': projet, 'status': projet.get_status_display(), 'temps_restant': temps_restant, 'pk': pk}
     template = loader.get_template('caracteristiques_techniques.html')
     return HttpResponse(template.render(context, request))
 
+
+
+
+
+""" @login_required(login_url='/user/')
+def manage_agents(request, pk):
+    projet = get_object_or_404(Projet, pk=pk)
+    users = User.objects.filter(groups__name='PROJET_TEAM')
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+
+        if 'add' in request.POST:
+            projet.list_intervenant.add(user)
+        elif 'remove' in request.POST:
+            projet.list_intervenant.remove(user)
+
+        return redirect('projectmanagement:manage_agents', pk=projet.id)
+
+    context = {'projet': projet, 'users': users, 'pk':pk}
+    return render(request, 'manage_agents.html', context) """
+
+@login_required(login_url='/user/')
+def manage_agents(request, pk):
+    projet = get_object_or_404(Projet, pk=pk)
+    users = User.objects.filter(groups__name='PROJET_TEAM')
+
+    users_info = [
+        {
+            'user': user,
+            'role': projet.get_user_role(user)
+        }
+        for user in users
+    ]
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+
+        if 'add' in request.POST:
+            projet.list_intervenant.add(user)
+        elif 'remove' in request.POST:
+            projet.list_intervenant.remove(user)
+
+        return redirect('projectmanagement:manage_agents', pk=projet.id)
+
+    context = {'projet': projet, 'users_info': users_info, 'pk': pk}
+    return render(request, 'manage_agents.html', context)
+
+
+@login_required(login_url='/user/')
+def add_agent(request, project_id, user_id):
+    projet = get_object_or_404(Projet, pk=project_id)
+    user = get_object_or_404(User, pk=user_id)
+    projet.list_intervenant.add(user)
+    return redirect('projectmanagement:manage_agents', pk=projet.id)
+
+@login_required(login_url='/user/')
+def remove_agent(request, project_id, user_id):
+    projet = get_object_or_404(Projet, pk=project_id)
+    user = get_object_or_404(User, pk=user_id)
+    projet.list_intervenant.remove(user)
+    return redirect('projectmanagement:manage_agents', pk=projet.id)
+
+
+
+
+
+
 @login_required(login_url='/user/')
 def List_Intervenant_Project(request, pk):
-    status = ['NON DÉBUTÉ', 'EN COURS' ,'TERMINER', 'ARCHIVER']
     projet = get_object_or_404(Projet, pk=pk)
     intervenants = projet.get_all_users()
     # Créer une liste pour stocker les informations et le rôle de chaque utilisateur
@@ -327,7 +394,7 @@ def List_Intervenant_Project(request, pk):
     
     context = {
                 'projet': projet,
-                'status': status[projet.status-1],
+                'status': projet.get_status_display(),
                 'pk': pk,
                 'intervenant': intervenants,
                 'users_info': users_info,
@@ -619,11 +686,6 @@ def display_projet_data(request):
         #print("p u: ",projet)
         projet.status_display = dict(projet.STATUS)[projet.status]
         projet.users = [user.username for user in projet.get_all_users()]
-        """ projet.users = [
-            projet.coordinateur.username,
-            projet.chef_project.username,
-            projet.conducteur_travaux.username
-        ] + [user.username for user in projet.list_intervenant.all()] """
 
     return render(request, 'revuePortefeuille.html', {
         'projets': projets,
@@ -643,12 +705,6 @@ def download_projet_data(request):
     data = []
 
     for projet in projets:
-        #print("p d: ",projet)
-        """ users = [
-            projet.coordinateur.username,
-            projet.chef_project.username,
-            projet.conducteur_travaux.username
-        ] """
         users = [user.username for user in projet.get_all_users()]
         users.extend([user.username for user in projet.list_intervenant.all()])
         users_str = ', '.join(users)
@@ -691,3 +747,5 @@ def get_user_projects():
         user_projects[user.username] = projects
 
     return user_projects
+
+

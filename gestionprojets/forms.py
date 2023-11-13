@@ -157,3 +157,18 @@ class PhaseForm(forms.ModelForm):
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
+
+
+class AgentForm(forms.Form):
+    user = forms.ModelChoiceField(
+        queryset=User.objects.none(),
+        label="Sélectionnez un agent"
+    )
+
+    def __init__(self, *args, **kwargs):
+        projet = kwargs.pop('projet')
+        super(AgentForm, self).__init__(*args, **kwargs)
+        all_users_in_project = projet.get_all_users()
+        self.fields['user'].queryset = User.objects.exclude(
+            id__in=[user.id for user in all_users_in_project]
+        )

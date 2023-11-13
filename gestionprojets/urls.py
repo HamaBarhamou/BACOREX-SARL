@@ -5,6 +5,12 @@ from . import views
 app_name = 'projectmanagement'
 
 urlpatterns = [
+    #path('<int:pk>/new-agent/', views.new_agent, name='new_agent'),
+
+    path('projet/<int:pk>/manage-agents/', views.manage_agents, name='manage_agents'),
+    path('projet/<int:project_id>/add-agent/<int:user_id>/', views.add_agent, name='add_agent'),
+    path('projet/<int:project_id>/remove-agent/<int:user_id>/', views.remove_agent, name='remove_agent'),
+
     path('ganttchartprojects', views.ganttchartprojects, name='ganttchartprojects'),
     path('taskliste', views.Taskliste, name='taskliste'),
     path('projectlist', views.listeProject, name='projectlist'),

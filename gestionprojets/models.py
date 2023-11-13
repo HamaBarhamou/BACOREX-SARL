@@ -208,7 +208,7 @@ class Projet(models.Model):
         elif user in self.list_intervenant.all():
             return 'Intervenant'
         else:
-            return 'Participant'
+            return 'Aucun'
 
 
 class Task(models.Model):

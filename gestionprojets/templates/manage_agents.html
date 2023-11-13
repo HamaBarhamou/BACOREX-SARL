@@ -1,0 +1,38 @@
+{% extends "detailProjet.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Gestion des agents pour le projet: {{ projet.name }}</h2>
+    <table class="table table-hover mt-4">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Rôle</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for info in users_info %}
+                <tr>
+                    <td>{{ info.user.get_full_name }}</td>
+                    <td>{{ info.role }}</td>
+                    <td>
+                        <form action="{% url 'projectmanagement:manage_agents' projet.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ info.user.id }}">
+                            {% if info.user in projet.get_all_users %}
+                                <button type="submit" name="remove" class="btn btn-danger btn-sm">Retirer</button>
+                            {% else %}
+                                <button type="submit" name="add" class="btn btn-success btn-sm">Ajouter</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+{% endblock %}
