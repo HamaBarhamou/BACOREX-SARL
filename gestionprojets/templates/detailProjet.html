@@ -39,7 +39,7 @@
         {% else %} 
             <a href="{% url 'projectmanagement:newTask' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-tasks text-secondary"></i> Travaux a faire</a>
         {% endif %}
-        <a href="{% url 'projectmanagement:caracteristiques_techniques' pk=projet.pk %}" class="list-group-item list-group-item-action"><i class="fa fa-cogs text-purple"></i> Carateristiques techniques</a>
+        <a href="{% url 'projectmanagement:caracteristiques_techniques' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-cogs text-purple"></i> Carateristiques techniques</a>
         <h5 class="text-white border-bottom pb-1 mt-2">Gestion et suivi</h5>
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-list text-purple"></i> Liste des modifications</a>
         {% comment %} <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-folder-open text-danger"></i> Revue portefeuille</a> {% endcomment %}

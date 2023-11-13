@@ -97,7 +97,7 @@
                         <ul class="list-group list-group-flush">
                             {% for projet in c.projet_set.all %}
                                 <li class="list-group-item">
-                                    <a href="{% url 'gestionprojets:detailprojet' projet.id %}">{{ projet.name }}</a>
+                                    <a href="{% url 'projectmanagement:caracteristiques_techniques' projet.id %}">{{ projet.name }}</a>
                                 </li>
                             {% empty %}
                                 <li class="list-group-item">Aucun projet</li>

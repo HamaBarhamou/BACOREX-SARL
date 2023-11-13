@@ -173,7 +173,6 @@ class Projet(models.Model):
             'status': self.get_status_display(),  # Affiche la représentation textuelle du statut
             'budget': self.budget,
             'pourcentage_achevement': self.pourcentage_achevement(),
-            # Vous pouvez ajouter d'autres champs ici si nécessaire
         }
 
         # Ajoutez la logique des jours restants ici
@@ -187,6 +186,14 @@ class Projet(models.Model):
             data['days_remaining'] = f"{days_remaining} jours restants"
 
         return data
+    
+    def days_remaining(self):
+        if date.today() < self.start_date:
+            return f"Commence dans {(self.start_date - date.today()).days} jours"
+        elif date.today() > self.end_date:
+            return "Terminé"
+        else:
+            return f"{(self.end_date - date.today()).days} jours restants"
     
     def get_user_role(self, user):
         """

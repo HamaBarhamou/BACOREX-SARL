@@ -268,43 +268,26 @@ def deletteProjet(request, pk):
 
 @login_required(login_url='/user/')
 def listeProject(request):
-    projets = Projet.get_projects_by_user(request.user)
+    """ projets = Projet.get_projects_by_user(request.user)
     context = {'projets': [projet.to_dict() for projet in projets]}
+    return render(request, 'listeproject.html', context) """
+    query = request.GET.get('q')
+    projets_list = Projet.get_projects_by_user(request.user)
+    if query:
+        projets_list = projets_list.filter(name__icontains=query)  # Recherche par nom de projet
+    page = request.GET.get('page', 1)
+    paginator = Paginator(projets_list, 10)  # 10 projets par page
+
+    try:
+        projets = paginator.page(page)
+    except PageNotAnInteger:
+        projets = paginator.page(1)
+    except EmptyPage:
+        projets = paginator.page(paginator.num_pages)
+
+    context = {'projets': projets, 'query':query}
+
     return render(request, 'listeproject.html', context)
-
-""" @login_required(login_url='/user/')
-def listeProject(request):
-    Directeur_Generale = 4
-    Admin = 5
-    Coordinateur_des_Operations = 6
-    Conducteurs_des_Travaux = 7
-    Chef_de_Projet = 8
-    Intervenant = 11
-
-    leader = [Directeur_Generale, Admin, Coordinateur_des_Operations]
-    projets = []  # Définir projets comme une liste vide par défaut
-    if request.user.fonction in leader or request.user.is_superuser:
-        projets = Projet.objects.all().values()
-    elif request.user.fonction == Chef_de_Projet:
-        projets = Projet.objects.filter(chef_project=request.user).values()
-    elif request.user.fonction == Conducteurs_des_Travaux:
-        projets = Projet.objects.filter(conducteur_travaux=request.user).values()
-    
-    for projet in projets:
-        start_date = projet['start_date']
-        end_date = projet['end_date']
-
-        if date.today() < start_date:
-            days_until_start = (start_date - date.today()).days
-            projet['days_remaining'] = f"Commence dans {days_until_start} jours"
-        else:
-            days_remaining = (end_date - date.today()).days
-            projet['days_remaining'] = f"{days_remaining if days_remaining > 0 else 'Terminé'} jours restants"
-
-
-    context = {'projets': projets}
-    template = loader.get_template('listeproject.html')
-    return HttpResponse(template.render(context, request)) """
 
 
 @login_required(login_url='/user/')

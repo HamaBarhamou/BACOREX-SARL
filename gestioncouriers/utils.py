@@ -2,6 +2,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models import QuerySet
 
+
 def send_notification_email(receivers, objet, message_content=None):
     subject = 'Vous avez reçu un nouveau message'
     
