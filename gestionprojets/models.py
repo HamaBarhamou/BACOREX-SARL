@@ -199,7 +199,9 @@ class Projet(models.Model):
         """
         Détermine le rôle de l'utilisateur dans le projet.
         """
-        if user == self.coordinateur:
+        if user.is_superuser:
+            return 'Admin'
+        elif user == self.coordinateur:
             return 'Coordinateur'
         elif user == self.chef_project:
             return 'Chef de Projet'

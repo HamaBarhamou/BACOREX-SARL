@@ -312,26 +312,6 @@ def caracteristiques_techniques(request, pk):
 
 
 
-
-""" @login_required(login_url='/user/')
-def manage_agents(request, pk):
-    projet = get_object_or_404(Projet, pk=pk)
-    users = User.objects.filter(groups__name='PROJET_TEAM')
-
-    if request.method == 'POST':
-        user_id = request.POST.get('user_id')
-        user = get_object_or_404(User, pk=user_id)
-
-        if 'add' in request.POST:
-            projet.list_intervenant.add(user)
-        elif 'remove' in request.POST:
-            projet.list_intervenant.remove(user)
-
-        return redirect('projectmanagement:manage_agents', pk=projet.id)
-
-    context = {'projet': projet, 'users': users, 'pk':pk}
-    return render(request, 'manage_agents.html', context) """
-
 @login_required(login_url='/user/')
 def manage_agents(request, pk):
     projet = get_object_or_404(Projet, pk=pk)
@@ -356,7 +336,13 @@ def manage_agents(request, pk):
 
         return redirect('projectmanagement:manage_agents', pk=projet.id)
 
-    context = {'projet': projet, 'users_info': users_info, 'pk': pk}
+    context = {
+        'projet': projet,
+        'users_info': users_info,
+        'pk': pk,
+        'status': projet.get_status_display()
+    }
+
     return render(request, 'manage_agents.html', context)
 
 
@@ -403,13 +389,14 @@ def List_Intervenant_Project(request, pk):
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+""" @login_required(login_url='/user/')
 def newTask(request, pk):
     projet = get_object_or_404(Projet, pk=pk)
     if request.user.is_chefDeProjet_or_coordinateur_or_admin():
         print("newTask TaskForm selected")
         tasks = projet.task_set.all()  # Récupérer toutes les tâches associées à ce projet
         form_class = TaskForm
+        #form_class = TaskForm(projet=projet) 
     else:
         print("newTask InterventionForm selected")
         tasks = projet.task_set.filter(attribuer_a=request.user)  # Récupérer seulement les tâches attribuées à cet utilisateur
@@ -450,7 +437,33 @@ def newTask(request, pk):
    
     context = {'form': form, 'pk': pk, 'tasks': tasks, 'projet': projet}
     template = loader.get_template('newTask.html')
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) """
+
+@login_required(login_url='/user/')
+def newTask(request, pk):
+    projet = get_object_or_404(Projet, pk=pk)
+    tasks = projet.task_set.all() if request.user.is_chefDeProjet_or_coordinateur_or_admin() else projet.task_set.filter(attribuer_a=request.user)
+
+    if request.method == "POST":
+        form = TaskForm(request.POST, request.FILES, projet=projet) if request.user.is_chefDeProjet_or_coordinateur_or_admin() else TaskLimitedForm(request.POST, request.FILES)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.projet = projet
+            try:
+                task.full_clean()
+            except ValidationError as e:
+                form.add_error(None, e)
+            else:
+                task.save()
+                form.save_m2m()
+                # ... [le reste de votre logique pour enregistrer l'historique des actions]
+                form = TaskForm(projet=projet) if request.user.is_chefDeProjet_or_coordinateur_or_admin() else TaskLimitedForm()
+    else:
+        form = TaskForm(projet=projet) if request.user.is_chefDeProjet_or_coordinateur_or_admin() else TaskLimitedForm()
+   
+    context = {'form': form, 'pk': pk, 'tasks': tasks, 'projet': projet}
+    return render(request, 'newTask.html', context)
+
 
 
 @login_required(login_url='/user/')
@@ -549,7 +562,14 @@ def list_phases_for_project(request, project_id):
     print('projetid=', project_id)
     projet = Projet.objects.get(pk=project_id)
     phases = Phase.objects.filter(projet_id=project_id)
-    context = {'projet': projet, 'phases': phases,'pk':project_id, 'form':PhaseForm(), 'is_editing': False}
+    context = {
+        'projet': projet,
+        'phases': phases,
+        'pk':project_id,
+        'form':PhaseForm(),
+        'is_editing': False,
+        'status': projet.get_status_display()
+    }
     template = loader.get_template('plannification.html')
     return HttpResponse(template.render(context, request))
 

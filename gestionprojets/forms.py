@@ -122,6 +122,15 @@ class TaskForm(ModelForm):
             raise ValidationError(_("La date de fin de la tâche doit être postérieure à la date de début."))
 
         return cleaned_data
+    
+    def __init__(self, *args, **kwargs):
+        projet = kwargs.pop('projet', None)
+        super(TaskForm, self).__init__(*args, **kwargs)
+        
+        if projet is not None:
+            user_set = projet.get_all_users()  # Ceci est un set d'utilisateurs
+            user_ids = [user.id for user in user_set]  # Convertir en liste d'IDs
+            self.fields['attribuer_a'].queryset = User.objects.filter(id__in=user_ids)
 
 
 class TaskLimitedForm(ModelForm):
