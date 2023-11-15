@@ -1,39 +1,69 @@
 {% extends "home.html" %}
 
-{% block entete_messagerie %} 
-
+{% block entete_messagerie %}   
     <div class="row container-fluid border border-warning">
-        <div class="d-flex p-2 bd-highligh col-sm border border-success">
+        <div class="d-flex p-2 bd-highlight col-sm border border-success">
             {% load static %}
-            <a href="#"> {% load static %} </a>
-            <a href="/boitereception/message"> <img src="{% static 'images/write_email.png' %}" alt="email" title="email" /> </a>
-            {% include "recherche.html" %}
+            {% if projet_id %}
+                <!-- Lien vers la messagerie du projet -->
+                <a href="{% url 'mailmanagement:messagerie' projet_id %}"> 
+                    <img src="{% static 'images/write_email.png' %}" alt="email" title="email" />
+                </a>
+            {% else %}
+                <!-- Lien vers la messagerie générale -->
+                <a href="{% url 'mailmanagement:messagerie_general' %}"> 
+                    <img src="{% static 'images/write_email.png' %}" alt="email" title="email" />
+                </a>
+            {% endif %}
+            <form method="POST" action="{% url 'mailmanagement:messagerie' projet_id %}  role="search" style="width: 15em; margin: 0.3em 2em;">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-default">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+                </div>
+            </form> 
         </div>
-    </div>                
+    </div>                    
 {% endblock %}
 
 {% block menu %}
     {{ user.email }}
     <div class="list-group">
         {% load static %}
-        <a href="{% url 'mailmanagement:entrant' %}" class="list-group-item list-group-item-action"> 
-            <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courier entrant 
-        </a>
-        <a href="#" class="list-group-item list-group-item-action">
-            <img src="{% static 'images/brouillon.png' %}" alt="email" title="email" />
-            Brouillons
-        </a>
-        <a href="{% url 'mailmanagement:courier_envoye' %}" class="list-group-item list-group-item-action">
-            <img src="{% static 'images/envoye.png' %}" alt="email" title="email" />
-            Envoyés
-        </a>
-        <a href="#" class="list-group-item list-group-item-action">
-            <img src="{% static 'images/corbeille.png' %}" alt="email" title="email" />
-            Corbeille
-        </a>
+        {% if projet_id %}
+            <a href="{% url 'mailmanagement:entrant' projet_id %}" class="list-group-item list-group-item-action"> 
+                <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courrier entrant du Projet
+            </a>
+            <a href="#" class="list-group-item list-group-item-action"> <img src="{% static 'images/brouillon.png' %}" alt="email" title="email" /> Brouillons du Projet</a>
+            <a href="{% url 'mailmanagement:courier_envoye' projet_id %}" class="list-group-item list-group-item-action">
+                <img src="{% static 'images/envoye.png' %}" alt="email" title="email" />Courrier Envoyés du Projet</a>
+            <a href="#" class="list-group-item list-group-item-action"><img src="{% static 'images/corbeille.png' %}" alt="email" title="email" />Corbeille du Projet</a>
+            <!-- Ajouter d'autres liens spécifiques au projet ici -->
+        {% else %}
+            <a href="{% url 'mailmanagement:entrant_general' %}" class="list-group-item list-group-item-action"> 
+                <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courier entrant 
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <img src="{% static 'images/brouillon.png' %}" alt="email" title="email" />
+                Brouillons
+            </a>
+            <a href="{% url 'mailmanagement:courier_envoye_general' %}" class="list-group-item list-group-item-action">
+                <img src="{% static 'images/envoye.png' %}" alt="email" title="email" />
+                Envoyés
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <img src="{% static 'images/corbeille.png' %}" alt="email" title="email" />
+                Corbeille
+            </a>
+        {% endif %}
         <a href="/" class="list-group-item list-group-item-action">
             <img src="{% static 'images/menu.png' %}" alt="email" title="menu " />
             Return to Menu
         </a>
+
     </div>
 {% endblock %}

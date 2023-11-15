@@ -456,7 +456,16 @@ def newTask(request, pk):
             else:
                 task.save()
                 form.save_m2m()
-                # ... [le reste de votre logique pour enregistrer l'historique des actions]
+                ActionHistory.objects.create(
+                    user=request.user,
+                    action_type='Création de tâche',
+                    entity_type='Tâche',
+                    entity_id=task.id,
+                    action_details={
+                        'old_data': {},
+                        'new_data': TaskSerializer(task).data
+                    }
+                )
                 form = TaskForm(projet=projet) if request.user.is_chefDeProjet_or_coordinateur_or_admin() else TaskLimitedForm()
     else:
         form = TaskForm(projet=projet) if request.user.is_chefDeProjet_or_coordinateur_or_admin() else TaskLimitedForm()

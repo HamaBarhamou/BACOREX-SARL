@@ -14,7 +14,7 @@
             </thead>
             <tbody>
 
-            {% for msg in message %}
+            {% for msg in messages %}
                 <tr class="clickable-row" data-href="{% url 'mailmanagement:detail_message' msg.id %}">
                     <td>F</td>
                     <td>{{ msg.objet }}</td>

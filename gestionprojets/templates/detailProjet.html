@@ -46,7 +46,7 @@
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-shopping-cart text-purple"></i> Achat</a>
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-user-friends text-cyan"></i> Client</a>
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-file text-teal"></i> CRET</a>
-        <a href="/boitereception" class="list-group-item list-group-item-action"><i class="fa fa-envelope text-yellow"></i> Courier</a>
+        <a href="{% url 'mailmanagement:inbox_projet' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-envelope text-yellow"></i> Courrier</a>
         <a href="{% url 'projectmanagement:projectlist' %}" class="list-group-item list-group-item-action"><i class="fa fa-arrow-left text-gray"></i> Retour</a>
     </div>
 {% endblock %}
