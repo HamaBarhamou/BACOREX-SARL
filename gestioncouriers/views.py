@@ -21,6 +21,7 @@ def messagerie(request, projet_id=None):
         projet = get_object_or_404(Projet, pk=projet_id)
         context['projet_id'] = projet_id
     if request.method == 'POST':
+        print('message POST')
         form = MessageForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             objet = form.cleaned_data["objet"]
@@ -42,6 +43,7 @@ def messagerie(request, projet_id=None):
             #form = MessageForm(user=request.user)
             form = MessageForm(user=request.user, projet=projet) 
     else:
+        print('message GET')
         #form = MessageForm(user=request.user)
         form = MessageForm(user=request.user, projet=projet) 
     #context = {'form': form}

@@ -5,30 +5,29 @@
         <div class="d-flex p-2 bd-highlight col-sm border border-success">
             {% load static %}
             {% if projet_id %}
-                <!-- Lien vers la messagerie du projet -->
                 <a href="{% url 'mailmanagement:messagerie' projet_id %}"> 
                     <img src="{% static 'images/write_email.png' %}" alt="email" title="email" />
                 </a>
             {% else %}
-                <!-- Lien vers la messagerie générale -->
                 <a href="{% url 'mailmanagement:messagerie_general' %}"> 
                     <img src="{% static 'images/write_email.png' %}" alt="email" title="email" />
                 </a>
             {% endif %}
-            <form method="POST" action="{% url 'mailmanagement:messagerie' projet_id %}  role="search" style="width: 15em; margin: 0.3em 2em;">
-                {% csrf_token %}
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </button>
-                    </div>
+            <form method="POST" action="{% url 'mailmanagement:messagerie_general' %}" role="search" style="width: 15em; margin: 0.3em 2em;"></form>
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search">
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-default">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
                 </div>
-            </form> 
-        </div>
-    </div>                    
+            </div>
+        </form> 
+    </div>
+</div>                    
 {% endblock %}
+
 
 {% block menu %}
     {{ user.email }}
@@ -36,7 +35,7 @@
         {% load static %}
         {% if projet_id %}
             <a href="{% url 'mailmanagement:entrant' projet_id %}" class="list-group-item list-group-item-action"> 
-                <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courrier entrant du Projet
+                <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courrier entrant du Projet {{ projet_id }}
             </a>
             <a href="#" class="list-group-item list-group-item-action"> <img src="{% static 'images/brouillon.png' %}" alt="email" title="email" /> Brouillons du Projet</a>
             <a href="{% url 'mailmanagement:courier_envoye' projet_id %}" class="list-group-item list-group-item-action">

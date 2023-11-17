@@ -3,10 +3,19 @@
 
 {% block content %}
     <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
-    <form action="/boitereception/message" method="post" enctype="multipart/form-data">
+    <!-- <form action="/boitereception/message" method="post" enctype="multipart/form-data"> -->
+    <!-- Choix de l'URL en fonction de la présence ou non de projet_id -->
+    {% if projet_id %}
+        <!-- Construction de l'URL de la balise form pour messagerie liée au projet -->
+        <form method="POST" action="{% url 'mailmanagement:messagerie' projet_id %}" role="search" style="width: 15em; margin: 0.3em 2em;">
+    {% else %}
+        <!-- Construction de l'URL de la balise form pour messagerie générale -->
+        <form method="POST" action="{% url 'mailmanagement:messagerie_general' %}" role="search" style="width: 15em; margin: 0.3em 2em;">
+    {% endif %}
         {% csrf_token %}
         {{ form.media }}
         {{ form.as_p }}
         <button type="submit"> Envoyer</button>
     </form>
 {% endblock %}
+ 
