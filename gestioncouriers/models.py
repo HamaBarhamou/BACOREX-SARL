@@ -39,12 +39,17 @@ class Message(models.Model):
 
 
 class MessagePredefini(models.Model):
-    projet = models.ForeignKey(Projet, on_delete=models.CASCADE, related_name='messages_predefinis')
+    
     titre = models.CharField(max_length=200)
     corps = models.TextField()
-    expeditaire_role = models.CharField(max_length=100)  # Par exemple : 'DEGP', 'Coordinateur des operations', etc.
-    destinataire_role = models.CharField(max_length=100)  # Par exemple : 'Chargé d'étude', 'Chef de projet', etc.
-
+    expeditaire_role = models.PositiveSmallIntegerField(
+        choices=User.USER_TYPE_CHOICES,
+        null=True
+    )
+    destinataire_role = models.PositiveSmallIntegerField(
+        choices=User.USER_TYPE_CHOICES,
+        null=True
+    )
     def __str__(self):
         return self.titre
 

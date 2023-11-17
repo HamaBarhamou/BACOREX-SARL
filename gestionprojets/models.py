@@ -202,15 +202,29 @@ class Projet(models.Model):
         if user.is_superuser:
             return 'Admin'
         elif user == self.coordinateur:
-            return 'Coordinateur'
+            return 'Coordinateur des Operations'
+            #return 'Coordinateur'
         elif user == self.chef_project:
             return 'Chef de Projet'
         elif user == self.conducteur_travaux:
-            return 'Conducteur de Travaux'
+            return 'Conducteurs des Travaux'
         elif user in self.list_intervenant.all():
             return 'Intervenant'
         else:
             return 'Aucun'
+    
+    def get_user_by_role_name(self, role_name):
+        """
+        Récupère l'utilisateur ayant le rôle spécifié dans ce projet.
+        Retourne None si aucun utilisateur ne correspond à ce rôle.
+        """
+        if role_name == 'Coordinateur des Operations':
+            return self.coordinateur
+        elif role_name == 'Chef de Projet':
+            return self.chef_project
+        elif role_name == 'Conducteurs des Travaux':
+            return self.conducteur_travaux
+        return None
 
 
 class Task(models.Model):

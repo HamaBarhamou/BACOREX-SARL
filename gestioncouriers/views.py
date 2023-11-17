@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .forms import MessageForm
 from django.template import loader
 from userprofile.forms import LoginForm
-from .models import Message, Document
+from .models import Message, Document, MessagePredefini
 import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -12,8 +12,9 @@ from django.shortcuts import get_object_or_404
 from gestionprojets.models import Projet
 
 
+
 # Create your views here.
-@login_required(login_url='/user/')
+""" @login_required(login_url='/user/')
 def messagerie(request, projet_id=None):
     projet = None
     context = {}
@@ -21,12 +22,12 @@ def messagerie(request, projet_id=None):
         projet = get_object_or_404(Projet, pk=projet_id)
         context['projet_id'] = projet_id
     if request.method == 'POST':
-        print('message POST')
         form = MessageForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             objet = form.cleaned_data["objet"]
             messages = form.cleaned_data["messages"]
-            recepteurs = form.cleaned_data["recepteurs"]
+            message_predefini = form.cleaned_data.get("message_predefini")
+
             msg = Message(
                 objet=objet,
                 messages=messages,
@@ -36,20 +37,76 @@ def messagerie(request, projet_id=None):
                 projet = projet
             )
             msg.save()
-            for user in recepteurs:
-                msg.recepteurs.add(user)
-                #send_notification_email(user, objet)
+
+            if message_predefini:
+                recepteur = projet.get_user_by_role_name(message_predefini.destinataire_role)
+                msg.recepteurs.add(recepteur)
+            else:
+                recepteurs = form.cleaned_data["recepteurs"]
+                for user in recepteurs:
+                    msg.recepteurs.add(user)
+                    #send_notification_email(user, objet)
                 
-            #form = MessageForm(user=request.user)
             form = MessageForm(user=request.user, projet=projet) 
+            if 'message_predefini' in form.cleaned_data and form.cleaned_data['message_predefini']:
+                form.update_messages_field(form.cleaned_data['message_predefini'].id)
+                # Ici, vous pouvez ajuster le traitement du message en fonction du message prédéfini choisi
     else:
-        print('message GET')
-        #form = MessageForm(user=request.user)
         form = MessageForm(user=request.user, projet=projet) 
-    #context = {'form': form}
+    context['form'] = form
+    template = loader.get_template('message.html')
+    return HttpResponse(template.render(context, request)) """
+
+@login_required(login_url='/user/')
+def messagerie(request, projet_id=None):
+    projet = None
+    context = {}
+    if projet_id:
+        projet = get_object_or_404(Projet, pk=projet_id)
+        context['projet_id'] = projet_id
+
+    if request.method == 'POST':
+        form = MessageForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            objet = form.cleaned_data["objet"]
+            messages = form.cleaned_data["messages"]
+            message_predefini = form.cleaned_data.get("message_predefini")
+            print("Message prédéfini: ", message_predefini)  # Debug
+
+            msg = Message(
+                objet=objet,
+                messages=messages,
+                emetteur=request.user,
+                date_envoie=datetime.datetime.now(datetime.timezone.utc),
+                status_envoie=True,
+                projet=projet
+            )
+            msg.save()
+            print("Message enregistré: ", msg.id)  # Vérifiez si l'ID est généré
+
+            if message_predefini:
+                print("Avant Recepteur: ") 
+                recepteur = projet.get_user_by_role_name(message_predefini.destinataire_role)
+                print("Recepteur: ", recepteur) 
+                msg.recepteurs.add(recepteur)
+            else:
+                recepteurs = form.cleaned_data["recepteurs"]
+                for user in recepteurs:
+                    msg.recepteurs.add(user)
+                    #send_notification_email(user, objet)
+
+            # Recréer le formulaire pour la prochaine utilisation
+            form = MessageForm(user=request.user, projet=projet)
+            if message_predefini:
+                form.update_messages_field(message_predefini.id)
+                # Ici, vous pouvez ajuster le traitement du message en fonction du message prédéfini choisi
+    else:
+        form = MessageForm(user=request.user, projet=projet) 
+
     context['form'] = form
     template = loader.get_template('message.html')
     return HttpResponse(template.render(context, request))
+
 
 
 @login_required(login_url='/user/')
@@ -130,3 +187,14 @@ def reply_to_message(request, message_id):
         }, user=request.user)
     return render(request, 'reply.html', {'form': form, 'original_message': original_message})
 
+
+def get_predefined_message(request, message_id):
+    message_predefini = get_object_or_404(MessagePredefini, pk=message_id)
+    print('message_predefini=',message_predefini)
+    data = {
+        'titre': message_predefini.titre,
+        'corps': message_predefini.corps,
+        'expeditaire_role': message_predefini.expeditaire_role,
+        'destinataire_role': message_predefini.destinataire_role
+    }
+    return JsonResponse(data)

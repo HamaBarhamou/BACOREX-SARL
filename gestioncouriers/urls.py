@@ -17,4 +17,6 @@ urlpatterns = [
     path('message/', views.messagerie, name="messagerie_general"),
     path('entrant/', views.courier_entrant, name="entrant_general"),
     path('envoye/', views.courier_envoye, name='courier_envoye_general'),
+
+    path('get_predefined_message/<int:message_id>/', views.get_predefined_message, name='get_predefined_message'),
 ]

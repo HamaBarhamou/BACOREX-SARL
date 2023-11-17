@@ -2,20 +2,73 @@
 {% load static %}
 
 {% block content %}
-    <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
-    <!-- <form action="/boitereception/message" method="post" enctype="multipart/form-data"> -->
-    <!-- Choix de l'URL en fonction de la présence ou non de projet_id -->
-    {% if projet_id %}
-        <!-- Construction de l'URL de la balise form pour messagerie liée au projet -->
-        <form method="POST" action="{% url 'mailmanagement:messagerie' projet_id %}" role="search" style="width: 15em; margin: 0.3em 2em;">
-    {% else %}
-        <!-- Construction de l'URL de la balise form pour messagerie générale -->
-        <form method="POST" action="{% url 'mailmanagement:messagerie_general' %}" role="search" style="width: 15em; margin: 0.3em 2em;">
-    {% endif %}
-        {% csrf_token %}
-        {{ form.media }}
-        {{ form.as_p }}
-        <button type="submit"> Envoyer</button>
-    </form>
+<script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+
+{% if projet_id %}
+<form method="POST" action="{% url 'mailmanagement:messagerie' projet_id %}" role="search" style="width: 15em; margin: 0.3em 2em;">
+{% else %}
+<form method="POST" action="{% url 'mailmanagement:messagerie_general' %}" role="search" style="width: 15em; margin: 0.3em 2em;">
+{% endif %}
+    {% csrf_token %}
+    {{ form.media }}
+
+    <!-- Affichage personnalisé pour le champ message_prédéfini -->
+    <p>{{ form.message_predefini.label_tag }} {{ form.message_predefini }}</p>
+
+    <!-- Affichage personnalisé pour le champ objet -->
+    <p>{{ form.objet.label_tag }} {{ form.objet }}</p>
+
+    <!-- Affichage personnalisé pour le champ messages avec l'éditeur CKEditor -->
+    <p>{{ form.messages.label_tag }} {{ form.messages }}</p>
+
+    <!-- Champ Recepteurs qui sera caché ou affiché en fonction de la sélection -->
+    <div id="recepteursField" style="display: none;"> <!-- Cachez ce champ par défaut -->
+        <p>{{ form.recepteurs.label_tag }} {{ form.recepteurs }}</p>
+    </div>
+
+    {{ form.objet.as_p }}
+    {{ form.documents.as_p }}
+
+    <button type="submit"> Envoyer</button>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const predefSelect = document.getElementById('id_message_predefini');
+        const messageField = CKEDITOR.instances['id_messages'];
+        const recepteursField = document.getElementById('recepteursField');
+        const objetField = document.getElementById('id_objet')
+
+        // Assurez-vous que le champ récepteurs est visible par défaut
+        recepteursField.style.display = 'block';
+
+        predefSelect.addEventListener('change', function() {
+            const selectedOption = predefSelect.options[predefSelect.selectedIndex];
+            if(selectedOption && selectedOption.value) {
+                /* fetch(`/get_predefined_message/${selectedOption.value}`) */
+                fetch(`{% url 'mailmanagement:get_predefined_message' 0 %}`.replace('0', selectedOption.value))
+                .then(response => response.json())
+                .then(data => {
+                    console.log('data=',data)
+                    messageField.setData(data.corps);
+                    objetField.value = data.titre;
+
+                    // Gérer l'affichage du champ Recepteurs
+                    if (data.destinataire_role) {
+                        recepteursField.style.display = 'none';
+                        // Vous devez ajouter une logique pour remplir automatiquement le champ recepteurs
+                    } else {
+                        recepteursField.style.display = 'block';
+                    }
+                });
+            } else {
+                // Réinitialiser les champs si aucune sélection n'est faite
+                messageField.setData('');  // Effacer le contenu de CKEditor
+                objetField.value = '';  // Effacer le contenu du champ objet
+                recepteursField.style.display = 'block';
+            }
+        });
+    });
+</script>
+
 {% endblock %}
- 
