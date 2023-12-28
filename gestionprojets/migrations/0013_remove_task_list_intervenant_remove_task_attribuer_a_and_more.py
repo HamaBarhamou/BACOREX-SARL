@@ -5,24 +5,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('gestionprojets', '0012_rename_cordinateur_projet_projet_coordinateur'),
+        ("gestionprojets", "0012_rename_cordinateur_projet_projet_coordinateur"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='task',
-            name='list_intervenant',
+            model_name="task",
+            name="list_intervenant",
         ),
         migrations.RemoveField(
-            model_name='task',
-            name='attribuer_a',
+            model_name="task",
+            name="attribuer_a",
         ),
         migrations.AddField(
-            model_name='task',
-            name='attribuer_a',
-            field=models.ManyToManyField(related_name='attribuer_a', to=settings.AUTH_USER_MODEL),
+            model_name="task",
+            name="attribuer_a",
+            field=models.ManyToManyField(
+                related_name="attribuer_a", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

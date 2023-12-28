@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestioncouriers', '0006_message_projet_messagepredefini'),
+        ("gestioncouriers", "0006_message_projet_messagepredefini"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='messagepredefini',
-            name='projet',
+            model_name="messagepredefini",
+            name="projet",
         ),
     ]

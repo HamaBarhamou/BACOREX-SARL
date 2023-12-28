@@ -4,21 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Message',
+            name="Message",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('objet', models.CharField(default=None, max_length=200)),
-                ('messages', models.TextField()),
-                ('date_envoie', models.DateTimeField()),
-                ('status_envoie', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("objet", models.CharField(default=None, max_length=200)),
+                ("messages", models.TextField()),
+                ("date_envoie", models.DateTimeField()),
+                ("status_envoie", models.BooleanField(default=False)),
             ],
         ),
     ]

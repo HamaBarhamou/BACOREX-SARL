@@ -7,7 +7,6 @@ from gestiondesstock.models import Materiels
 from django.db.models import Q
 
 
-
 # Create your models here.
 class Client(models.Model):
     name = models.CharField(max_length=50, default=None)
@@ -19,10 +18,10 @@ class Client(models.Model):
 
 class Projet(models.Model):
     STATUS = (
-        (1, 'NON DÉBUTÉ'),
-        (2, 'EN COURS'),
-        (3, 'TERMINER'),
-        (4, 'ARCHIVER'),
+        (1, "NON DÉBUTÉ"),
+        (2, "EN COURS"),
+        (3, "TERMINER"),
+        (4, "ARCHIVER"),
     )
 
     name = models.CharField(max_length=100, default=None)
@@ -30,58 +29,37 @@ class Projet(models.Model):
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
     coordinateur = models.ForeignKey(
-                    User,
-                    on_delete=models.CASCADE,
-                    related_name='cordinateur_projet',
-                    default=None
-                    )
+        User, on_delete=models.CASCADE, related_name="cordinateur_projet", default=None
+    )
     chef_project = models.ForeignKey(
-                    User,
-                    on_delete=models.CASCADE,
-                    related_name='chef_project',
-                    default=None
-                    )
+        User, on_delete=models.CASCADE, related_name="chef_project", default=None
+    )
     conducteur_travaux = models.ForeignKey(
-                            User,
-                            on_delete=models.CASCADE,
-                            related_name='conducteur_travaux',
-                            default=None
-                            )
-    list_intervenant = models.ManyToManyField(
-                            User,
-                            related_name='intervenant'
-                            )
+        User, on_delete=models.CASCADE, related_name="conducteur_travaux", default=None
+    )
+    list_intervenant = models.ManyToManyField(User, related_name="intervenant")
     list_materiels = models.ManyToManyField(Materiels)
-    client = models.ForeignKey(
-                Client,
-                on_delete=models.CASCADE,
-                default=None
-                )
-    status = models.PositiveSmallIntegerField(
-                choices=STATUS,
-                default=1
-                )
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, default=None)
+    status = models.PositiveSmallIntegerField(choices=STATUS, default=1)
     budget = models.IntegerField(default=0)
     pieces_jointes = models.FileField(
-                        verbose_name='image',
-                        upload_to='media/upload/documents',
-                        null=True
-                        )
+        verbose_name="image", upload_to="media/upload/documents", null=True
+    )
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         from plannig.models import Event
 
-        event = Event.objects.filter(pk_projet = self.pk).first()
-        
+        event = Event.objects.filter(pk_projet=self.pk).first()
+
         if event is None:
             event = Event(
-                        title=self.name,
-                        description=self.description,
-                        start_time=self.start_date,
-                        end_time=self.end_date,
-                        pk_projet = self.pk
-                        )
+                title=self.name,
+                description=self.description,
+                start_time=self.start_date,
+                end_time=self.end_date,
+                pk_projet=self.pk,
+            )
         else:
             event.title = self.name
             event.description = self.description
@@ -90,31 +68,40 @@ class Projet(models.Model):
 
         event.save()
 
-
     def delete(self, *args, **kwargs):
         from plannig.models import Event
-        Event.objects.filter(pk_projet = self.pk).first().delete()
+
+        Event.objects.filter(pk_projet=self.pk).first().delete()
         super(Projet, self).delete(*args, **kwargs)
-    
+
     def pourcentage_achevement(self):
         # Obtenir toutes les tâches pour ce projet
-        taches = self.task_set.all()  # Assurez-vous que votre modèle de tâche est lié à votre projet avec un ForeignKey
+        taches = (
+            self.task_set.all()
+        )  # Assurez-vous que votre modèle de tâche est lié à votre projet avec un ForeignKey
         total_taches = taches.count()  # Compter le nombre total de tâches
-        taches_terminees = taches.filter(status=3).count()  # Compter les tâches terminées
+        taches_terminees = taches.filter(
+            status=3
+        ).count()  # Compter les tâches terminées
 
         # Calculer le pourcentage
         if total_taches > 0:
             pourcentage_achevement = (taches_terminees / total_taches) * 100
         else:
-            pourcentage_achevement = 0  # Eviter la division par zéro si le projet n'a pas de tâches
+            pourcentage_achevement = (
+                0  # Eviter la division par zéro si le projet n'a pas de tâches
+            )
 
         # Convertir en chaîne avec un point comme séparateur décimal
-        pourcentage_achevement_str = "{:.2f}".format(pourcentage_achevement).replace(',', '.')
-        
+        pourcentage_achevement_str = "{:.2f}".format(pourcentage_achevement).replace(
+            ",", "."
+        )
+
         return pourcentage_achevement_str
-        return round(pourcentage_achevement, 2)  # Arrondir à deux décimales pour la précision
-    
-    
+        return round(
+            pourcentage_achevement, 2
+        )  # Arrondir à deux décimales pour la précision
+
     @staticmethod
     def get_projects_by_user(user):
         # Les leaders peuvent voir tous les projets.
@@ -123,26 +110,19 @@ class Projet(models.Model):
 
         # Les chefs de projet et les conducteurs de travaux peuvent voir les projets où ils sont responsables.
         projects = Projet.objects.filter(
-            Q(chef_project=user) | 
-            Q(conducteur_travaux=user) |
-            Q(list_intervenant=user)
+            Q(chef_project=user) | Q(conducteur_travaux=user) | Q(list_intervenant=user)
         )
 
         # Inclure les projets où l'utilisateur est affecté à une tâche.
         tasks = Task.objects.filter(attribuer_a=user)
         for task in tasks:
             projects |= Projet.objects.filter(pk=task.projet.pk)
-        
-        return projects.distinct()
 
+        return projects.distinct()
 
     # Retourner tous les utilisateurs impliqués dans un projet
     def get_all_users(self):
-        users = set([
-            self.coordinateur,
-            self.chef_project,
-            self.conducteur_travaux
-        ])
+        users = set([self.coordinateur, self.chef_project, self.conducteur_travaux])
         users.update(self.list_intervenant.all())
         tasks = self.task_set.all()
         for task in tasks:
@@ -150,31 +130,36 @@ class Projet(models.Model):
         users.discard(None)
         return users
 
-    
     def to_dict(self):
         data = {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'start_date': self.start_date,
-            'end_date': self.end_date,
-            'coordinateur': self.coordinateur.get_full_name() if self.coordinateur else None,
-            'chef_project': self.chef_project.get_full_name() if self.chef_project else None,
-            'conducteur_travaux': self.conducteur_travaux.get_full_name() if self.conducteur_travaux else None,
-            'status': self.get_status_display(),
-            'budget': self.budget,
-            'pourcentage_achevement': self.pourcentage_achevement(),
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "start_date": self.start_date,
+            "end_date": self.end_date,
+            "coordinateur": self.coordinateur.get_full_name()
+            if self.coordinateur
+            else None,
+            "chef_project": self.chef_project.get_full_name()
+            if self.chef_project
+            else None,
+            "conducteur_travaux": self.conducteur_travaux.get_full_name()
+            if self.conducteur_travaux
+            else None,
+            "status": self.get_status_display(),
+            "budget": self.budget,
+            "pourcentage_achevement": self.pourcentage_achevement(),
         }
         if date.today() < self.start_date:
             days_until_start = (self.start_date - date.today()).days
-            data['days_remaining'] = f"Commence dans {days_until_start} jours"
+            data["days_remaining"] = f"Commence dans {days_until_start} jours"
         elif date.today() > self.end_date:
-            data['days_remaining'] = "Terminé"
+            data["days_remaining"] = "Terminé"
         else:
             days_remaining = (self.end_date - date.today()).days
-            data['days_remaining'] = f"{days_remaining} jours restants"
+            data["days_remaining"] = f"{days_remaining} jours restants"
         return data
-    
+
     def days_remaining(self):
         if date.today() < self.start_date:
             return f"Commence dans {(self.start_date - date.today()).days} jours"
@@ -182,43 +167,43 @@ class Projet(models.Model):
             return "Terminé"
         else:
             return f"{(self.end_date - date.today()).days} jours restants"
-    
+
     def get_user_role(self, user):
         """
         Détermine le rôle de l'utilisateur dans le projet.
         """
         if user.is_superuser:
-            return 'Admin'
+            return "Admin"
         elif user == self.coordinateur:
-            return 'Coordinateur des Operations'
+            return "Coordinateur des Operations"
         elif user == self.chef_project:
-            return 'Chef de Projet'
+            return "Chef de Projet"
         elif user == self.conducteur_travaux:
-            return 'Conducteurs des Travaux'
+            return "Conducteurs des Travaux"
         elif user in self.list_intervenant.all():
-            return 'Intervenant'
+            return "Intervenant"
         else:
-            return 'Aucun'
-    
+            return "Aucun"
+
     def get_user_by_role_name(self, role_name):
         """
         Récupère l'utilisateur ayant le rôle spécifié dans ce projet.
         Retourne None si aucun utilisateur ne correspond à ce rôle.
         """
-        if role_name == 'Coordinateur des Operations':
+        if role_name == "Coordinateur des Operations":
             return self.coordinateur
-        elif role_name == 'Chef de Projet':
+        elif role_name == "Chef de Projet":
             return self.chef_project
-        elif role_name == 'Conducteurs des Travaux':
+        elif role_name == "Conducteurs des Travaux":
             return self.conducteur_travaux
         return None
-    
+
     def get_user_by_type_choice(self, id):
         USER_TYPE_CHOICES = {
-            6: 'Coordinateur des Operations',
-            7: 'Conducteurs des Travaux',
-            8: 'Chef de Projet'
-            #11: 'Intervenant',
+            6: "Coordinateur des Operations",
+            7: "Conducteurs des Travaux",
+            8: "Chef de Projet"
+            # 11: 'Intervenant',
         }
 
         return USER_TYPE_CHOICES[id]
@@ -226,9 +211,9 @@ class Projet(models.Model):
 
 class Task(models.Model):
     STATUS = (
-        (1, 'NON DÉBUTÉ'),
-        (2, 'EN COURS'),
-        (3, 'Terminer'),
+        (1, "NON DÉBUTÉ"),
+        (2, "EN COURS"),
+        (3, "Terminer"),
     )
     name = models.CharField(max_length=100, default=None)
     description = models.TextField()
@@ -237,18 +222,15 @@ class Task(models.Model):
     status = models.PositiveSmallIntegerField(choices=STATUS, default=1)
     list_materiels = models.ManyToManyField(Materiels)
     budget = models.IntegerField(default=0)
-    attribuer_a = models.ManyToManyField(
-                            User,
-                            related_name='attribuer_a'
-                            )                
+    attribuer_a = models.ManyToManyField(User, related_name="attribuer_a")
     projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=None)
     pieces_jointes = models.FileField(
-                        verbose_name='image',
-                        upload_to='media/upload/documents',
-                        null=True,
-                        blank=True, 
-                        default=None
-                        )
+        verbose_name="image",
+        upload_to="media/upload/documents",
+        null=True,
+        blank=True,
+        default=None,
+    )
 
     def __str__(self):
         """
@@ -261,14 +243,16 @@ class Task(models.Model):
         Vérifie que la date de fin n'est pas antérieure à la date de début.
         """
         if self.end_date < self.start_date:
-            raise ValidationError("La date de fin ne peut pas être antérieure à la date de début.")
+            raise ValidationError(
+                "La date de fin ne peut pas être antérieure à la date de début."
+            )
 
     def duration(self):
         """
         Retourne la durée de la tâche en jours.
         """
         return (self.end_date - self.start_date).days
-    
+
     def remaining_time(self):
         """
         Retourne le temps restant pour la tâche en jours.
@@ -294,14 +278,16 @@ class Phase(models.Model):
         Vérifie que la date de fin n'est pas antérieure à la date de début.
         """
         if self.end_date < self.start_date:
-            raise ValidationError("La date de fin ne peut pas être antérieure à la date de début.")
+            raise ValidationError(
+                "La date de fin ne peut pas être antérieure à la date de début."
+            )
 
     def duration(self):
         """
         Retourne la durée de la phase en jours.
         """
         return (self.end_date - self.start_date).days
-    
+
     def remaining_time(self):
         """
         Retourne le temps restant pour la phase en jours.
@@ -315,3 +301,37 @@ class Notification(models.Model):
     message = models.TextField()
     read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Achat(models.Model):
+    STATUT_CHOICES = [
+        ("en_attente", "En attente"),
+        ("approuve", "Approuvé"),
+        ("rejete", "Rejeté"),
+    ]
+    projet = models.ForeignKey(Projet, on_delete=models.CASCADE)
+    chef_projet = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.TextField()
+    budget_demande = models.DecimalField(max_digits=10, decimal_places=2)
+    approbation_dg_coordinateur = models.CharField(
+        max_length=20, choices=STATUT_CHOICES, default="en_attente"
+    )
+    approbation_daf = models.CharField(
+        max_length=20, choices=STATUT_CHOICES, default="en_attente"
+    )
+    approbation_pdg = models.CharField(
+        max_length=20, choices=STATUT_CHOICES, default="en_attente"
+    )
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
+
+
+class ArticleAchat(models.Model):
+    demande = models.ForeignKey(
+        Achat, related_name="articles", on_delete=models.CASCADE
+    )
+    article = models.CharField(max_length=200)
+    quantite = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.article} - {self.quantite}"

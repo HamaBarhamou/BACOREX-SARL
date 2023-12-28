@@ -9,25 +9,21 @@ class CustumerUser(UserAdmin):
     add_form = UserCreationForm
     form = UserChangeForm
     model = User
-    list_display = ['pk',
-                    'email',
-                    'username',
-                    'first_name',
-                    'last_name',
-                    'fonction'
-                    ]
+    list_display = ["pk", "email", "username", "first_name", "last_name", "fonction"]
     add_fieldsets = UserAdmin.add_fieldsets + (
-        (None,
-            {'fields': (
-                        'email',
-                        'first_name',
-                        'last_name',
-                        'fonction',
-                        'groups',
-                        'avatar'
-                        )
-             }
-         ),
+        (
+            None,
+            {
+                "fields": (
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "fonction",
+                    "groups",
+                    "avatar",
+                )
+            },
+        ),
     )
     fieldsets = UserAdmin.fieldsets
 

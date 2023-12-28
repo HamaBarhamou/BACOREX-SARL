@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestionprojets', '0014_alter_task_pieces_jointes'),
+        ("gestionprojets", "0014_alter_task_pieces_jointes"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='pieces_jointes',
-            field=models.FileField(null=True, upload_to='media/upload/documents', verbose_name='image'),
+            model_name="task",
+            name="pieces_jointes",
+            field=models.FileField(
+                null=True, upload_to="media/upload/documents", verbose_name="image"
+            ),
         ),
     ]

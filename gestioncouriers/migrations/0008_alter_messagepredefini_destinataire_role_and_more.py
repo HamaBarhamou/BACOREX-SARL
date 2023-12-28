@@ -4,20 +4,49 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestioncouriers', '0007_remove_messagepredefini_projet'),
+        ("gestioncouriers", "0007_remove_messagepredefini_projet"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='messagepredefini',
-            name='destinataire_role',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'Assistant DAO'), (2, 'Chef Service Etude'), (3, 'Chef Departement Etude'), (4, 'Directeur Generale'), (5, 'admin'), (6, 'Coordinateur des Operations'), (7, 'Conducteurs des Travaux'), (8, 'Chef de Projet'), (9, 'DEGP'), (10, 'Magasinier'), (11, 'Intervenant')], null=True),
+            model_name="messagepredefini",
+            name="destinataire_role",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (1, "Assistant DAO"),
+                    (2, "Chef Service Etude"),
+                    (3, "Chef Departement Etude"),
+                    (4, "Directeur Generale"),
+                    (5, "admin"),
+                    (6, "Coordinateur des Operations"),
+                    (7, "Conducteurs des Travaux"),
+                    (8, "Chef de Projet"),
+                    (9, "DEGP"),
+                    (10, "Magasinier"),
+                    (11, "Intervenant"),
+                ],
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='messagepredefini',
-            name='expeditaire_role',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'Assistant DAO'), (2, 'Chef Service Etude'), (3, 'Chef Departement Etude'), (4, 'Directeur Generale'), (5, 'admin'), (6, 'Coordinateur des Operations'), (7, 'Conducteurs des Travaux'), (8, 'Chef de Projet'), (9, 'DEGP'), (10, 'Magasinier'), (11, 'Intervenant')], null=True),
+            model_name="messagepredefini",
+            name="expeditaire_role",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (1, "Assistant DAO"),
+                    (2, "Chef Service Etude"),
+                    (3, "Chef Departement Etude"),
+                    (4, "Directeur Generale"),
+                    (5, "admin"),
+                    (6, "Coordinateur des Operations"),
+                    (7, "Conducteurs des Travaux"),
+                    (8, "Chef de Projet"),
+                    (9, "DEGP"),
+                    (10, "Magasinier"),
+                    (11, "Intervenant"),
+                ],
+                null=True,
+            ),
         ),
     ]

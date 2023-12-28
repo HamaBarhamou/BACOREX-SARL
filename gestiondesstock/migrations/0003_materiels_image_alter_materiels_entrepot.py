@@ -5,20 +5,24 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestiondesstock', '0002_entrepot_materiels_qte_materiels_entrepot'),
+        ("gestiondesstock", "0002_entrepot_materiels_qte_materiels_entrepot"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='materiels',
-            name='image',
-            field=models.ImageField(default=None, upload_to='media', verbose_name='image materiel'),
+            model_name="materiels",
+            name="image",
+            field=models.ImageField(
+                default=None, upload_to="media", verbose_name="image materiel"
+            ),
         ),
         migrations.AlterField(
-            model_name='materiels',
-            name='entrepot',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gestiondesstock.entrepot'),
+            model_name="materiels",
+            name="entrepot",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="gestiondesstock.entrepot",
+            ),
         ),
     ]

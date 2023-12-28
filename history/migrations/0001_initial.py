@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,20 +14,53 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ActionHistory',
+            name="ActionHistory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('action_type', models.CharField(max_length=50, verbose_name="Type d'Action")),
-                ('entity_type', models.CharField(max_length=50, verbose_name="Type d'Entité")),
-                ('entity_id', models.PositiveIntegerField(verbose_name="ID de l'Entité")),
-                ('action_details', models.JSONField(blank=True, null=True, verbose_name="Détails de l'Action")),
-                ('timestamp', models.DateTimeField(auto_now_add=True, verbose_name='Horodatage')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='actions', to=settings.AUTH_USER_MODEL, verbose_name='Utilisateur')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "action_type",
+                    models.CharField(max_length=50, verbose_name="Type d'Action"),
+                ),
+                (
+                    "entity_type",
+                    models.CharField(max_length=50, verbose_name="Type d'Entité"),
+                ),
+                (
+                    "entity_id",
+                    models.PositiveIntegerField(verbose_name="ID de l'Entité"),
+                ),
+                (
+                    "action_details",
+                    models.JSONField(
+                        blank=True, null=True, verbose_name="Détails de l'Action"
+                    ),
+                ),
+                (
+                    "timestamp",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Horodatage"),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="actions",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Utilisateur",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': "Historique d'Action",
-                'verbose_name_plural': "Historiques d'Action",
-                'ordering': ['-timestamp'],
+                "verbose_name": "Historique d'Action",
+                "verbose_name_plural": "Historiques d'Action",
+                "ordering": ["-timestamp"],
             },
         ),
     ]

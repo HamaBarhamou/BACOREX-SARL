@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestionprojets', '0003_task_attribuer_a_alter_projet_list_intervenant_and_more'),
+        (
+            "gestionprojets",
+            "0003_task_attribuer_a_alter_projet_list_intervenant_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='status',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'NON DÉBUTÉ'), (2, 'EN COURS'), (3, 'Terminer')], null=True),
+            model_name="task",
+            name="status",
+            field=models.PositiveSmallIntegerField(
+                choices=[(1, "NON DÉBUTÉ"), (2, "EN COURS"), (3, "Terminer")], null=True
+            ),
         ),
     ]

@@ -4,25 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DAO',
+            name="DAO",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('dao_number', models.CharField(max_length=200)),
-                ('dao_title', models.CharField(max_length=200)),
-                ('date_publication', models.DateTimeField()),
-                ('date_soumission', models.DateTimeField()),
-                ('approbation_chef_service', models.BooleanField(default=False)),
-                ('approbation_chef_depatement', models.BooleanField(default=False)),
-                ('approbation_direction', models.BooleanField(default=False)),
-                ('document_link', models.URLField(blank=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("dao_number", models.CharField(max_length=200)),
+                ("dao_title", models.CharField(max_length=200)),
+                ("date_publication", models.DateTimeField()),
+                ("date_soumission", models.DateTimeField()),
+                ("approbation_chef_service", models.BooleanField(default=False)),
+                ("approbation_chef_depatement", models.BooleanField(default=False)),
+                ("approbation_direction", models.BooleanField(default=False)),
+                ("document_link", models.URLField(blank=True)),
             ],
         ),
     ]

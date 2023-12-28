@@ -7,33 +7,67 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('gestionprojets', '0017_alter_task_pieces_jointes'),
+        ("gestionprojets", "0017_alter_task_pieces_jointes"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Phase',
+            name="Phase",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=None, max_length=100)),
-                ('description', models.TextField()),
-                ('start_date', models.DateField(default=django.utils.timezone.now)),
-                ('end_date', models.DateField(default=django.utils.timezone.now)),
-                ('projet', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='gestionprojets.projet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default=None, max_length=100)),
+                ("description", models.TextField()),
+                ("start_date", models.DateField(default=django.utils.timezone.now)),
+                ("end_date", models.DateField(default=django.utils.timezone.now)),
+                (
+                    "projet",
+                    models.ForeignKey(
+                        default=None,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="gestionprojets.projet",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Notification',
+            name="Notification",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.TextField()),
-                ('read', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('phase', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gestionprojets.phase')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", models.TextField()),
+                ("read", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "phase",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="gestionprojets.phase",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

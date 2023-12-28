@@ -5,29 +5,40 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestiondesstock', '0001_initial'),
+        ("gestiondesstock", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Entrepot',
+            name="Entrepot",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=None, max_length=100)),
-                ('adresse', models.CharField(default=None, max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default=None, max_length=100)),
+                ("adresse", models.CharField(default=None, max_length=100)),
             ],
         ),
         migrations.AddField(
-            model_name='materiels',
-            name='qte',
+            model_name="materiels",
+            name="qte",
             field=models.IntegerField(default=None),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='materiels',
-            name='entrepot',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='gestiondesstock.entrepot'),
+            model_name="materiels",
+            name="entrepot",
+            field=models.ForeignKey(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="gestiondesstock.entrepot",
+            ),
         ),
     ]

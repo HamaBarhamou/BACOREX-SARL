@@ -22,16 +22,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-d1_7$t29pd+xqv-bql0&-)pwjb#kvf8do^^ax4ggdzog@(f^#m')
-#SECRET_KEY = 'django-insecure-d1_7$t29pd+xqv-bql0&-)pwjb#kvf8do^^ax4ggdzog@(f^#m'
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    default="django-insecure-d1_7$t29pd+xqv-bql0&-)pwjb#kvf8do^^ax4ggdzog@(f^#m",
+)
+# SECRET_KEY = 'django-insecure-d1_7$t29pd+xqv-bql0&-)pwjb#kvf8do^^ax4ggdzog@(f^#m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-#DEBUG = 'RENDER' not in os.environ
+# DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = []
 
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
@@ -39,48 +42,48 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'ckeditor',
-    'rest_framework',
-    'dao.apps.DaoConfig',
-    'userprofile.apps.UserprofileConfig',
-    'gestioncouriers.apps.GestioncouriersConfig',
-    'gestionprojets.apps.GestionprojetsConfig',
-    'gestiondesstock.apps.GestiondesstockConfig',
-    'bootstrap5',
-    'plannig.apps.PlannigConfig',
-    'history.apps.HistoryConfig',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "ckeditor",
+    "rest_framework",
+    "dao.apps.DaoConfig",
+    "userprofile.apps.UserprofileConfig",
+    "gestioncouriers.apps.GestioncouriersConfig",
+    "gestionprojets.apps.GestionprojetsConfig",
+    "gestiondesstock.apps.GestiondesstockConfig",
+    "bootstrap5",
+    "plannig.apps.PlannigConfig",
+    "history.apps.HistoryConfig",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'BACOREX_SARL.urls'
+ROOT_URLCONF = "BACOREX_SARL.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'BACOREX_SARL/static/templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "BACOREX_SARL/static/templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
@@ -100,7 +103,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "userprofile/static"
 ] """
 
-WSGI_APPLICATION = 'BACOREX_SARL.wsgi.application'
+WSGI_APPLICATION = "BACOREX_SARL.wsgi.application"
 
 
 # Database
@@ -124,22 +127,21 @@ WSGI_APPLICATION = 'BACOREX_SARL.wsgi.application'
     }
 } """
 
-if 'RENDER' not in os.environ: # If local environment
+if "RENDER" not in os.environ:  # If local environment
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bacorex_db',
-        'USER': 'bacorex_user',
-        'PASSWORD': 'bac0rex',
-        'HOST': 'localhost',
-        'PORT': '',
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": "bacorex_db",
+            "USER": "bacorex_user",
+            "PASSWORD": "bac0rex",
+            "HOST": "localhost",
+            "PORT": "",
+        }
     }
-}
-else: # If production environment
+else:  # If production environment
     DATABASES = {
-        'default': dj_database_url.config(
-            default= os.environ.get('DATABASE_URL'),
-            conn_max_age=600
+        "default": dj_database_url.config(
+            default=os.environ.get("DATABASE_URL"), conn_max_age=600
         )
     }
 
@@ -149,16 +151,16 @@ else: # If production environment
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -166,58 +168,59 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'fr-fr'
+LANGUAGE_CODE = "fr-fr"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-#STATIC_URL = 'static/'
-#STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-STATIC_URL = '/static/'
+# STATIC_URL = 'static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_URL = "/static/"
 
 # Following settings only make sense on production and may break development environments.
 if not DEBUG:
     # Tell Django to copy statics to the `staticfiles` directory
     # in your application directory on Render.
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
     # Turn on WhiteNoise storage backend that takes care of compressing static files
     # and creating unique names for each version so they can safely be cached forever.
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-STATIC_ROOT = 'static/'
+STATIC_ROOT = "static/"
 
-MEDIA_URL = '/BACOREX_SARL/static/images/'
- 
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'BACOREX_SA#RL/static/images')
-MEDIA_ROOT = 'static/images'
+MEDIA_URL = "/BACOREX_SARL/static/images/"
 
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'BACOREX_SA#RL/static/images')
+MEDIA_ROOT = "static/images"
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'userprofile.User'
+AUTH_USER_MODEL = "userprofile.User"
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'send.one.com'  # votre serveur sortant
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "send.one.com"  # votre serveur sortant
 EMAIL_PORT = 465  # votre port sortant
-EMAIL_USE_TLS = False  
-EMAIL_USE_SSL = True  
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-print('EMAIL_HOST_USER = {} EMAIL_HOST_PASSWORD = {}'.format(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD))
+print(
+    "EMAIL_HOST_USER = {} EMAIL_HOST_PASSWORD = {}".format(
+        EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
+    )
+)

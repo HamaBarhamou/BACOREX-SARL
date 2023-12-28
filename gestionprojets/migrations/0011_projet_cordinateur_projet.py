@@ -6,16 +6,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('gestionprojets', '0010_alter_projet_pieces_jointes'),
+        ("gestionprojets", "0010_alter_projet_pieces_jointes"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='projet',
-            name='cordinateur_projet',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='cordinateur_projet', to=settings.AUTH_USER_MODEL),
+            model_name="projet",
+            name="cordinateur_projet",
+            field=models.ForeignKey(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="cordinateur_projet",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

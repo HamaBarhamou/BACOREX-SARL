@@ -9,9 +9,9 @@ from .models import CategoriMateriel, Materiels, Entrepot
 
 
 # Create your views here.
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def newEntrepot(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = EntrepotForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data["name"]
@@ -22,29 +22,29 @@ def newEntrepot(request):
             form = EntrepotForm()
     else:
         form = EntrepotForm()
-    context = {'form': form}
-    template = loader.get_template('newEntrepot.html')
+    context = {"form": form}
+    template = loader.get_template("newEntrepot.html")
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def listEntrepot(request):
     e = Entrepot.objects.all()
-    context = {'entrepot': e}
-    template = loader.get_template('listeEntrepot.html')
+    context = {"entrepot": e}
+    template = loader.get_template("listeEntrepot.html")
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def listeCategorie(request):
-    context = {'categorie': CategoriMateriel.objects.all()}
-    template = loader.get_template('listeCategorie.html')
+    context = {"categorie": CategoriMateriel.objects.all()}
+    template = loader.get_template("listeCategorie.html")
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def newCategorie(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CategoriMaterielForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data["name"]
@@ -55,14 +55,14 @@ def newCategorie(request):
     else:
         form = CategoriMaterielForm()
 
-    context = {'form': form}
-    template = loader.get_template('newCategorie.html')
+    context = {"form": form}
+    template = loader.get_template("newCategorie.html")
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def newMateriel(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = MaterielsForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             name = form.cleaned_data["name"]
@@ -72,47 +72,47 @@ def newMateriel(request):
             entrepot = form.cleaned_data["entrepot"]
             image = form.cleaned_data["image"]
             materiel = Materiels(
-                            name=name,
-                            description=description,
-                            qte=qte,
-                            categorie=categorie,
-                            entrepot=entrepot,
-                            image=image
-                            )
+                name=name,
+                description=description,
+                qte=qte,
+                categorie=categorie,
+                entrepot=entrepot,
+                image=image,
+            )
             materiel.save()
             form = MaterielsForm()
         else:
             print("Données formulaire Non valid")
     else:
         form = MaterielsForm()
-    context = {'form': form}
-    template = loader.get_template('newMateriel.html')
+    context = {"form": form}
+    template = loader.get_template("newMateriel.html")
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def editMateriel(request, pk):
     materiel = Materiels.objects.get(pk=pk)
     if request.method == "POST":
         form = MaterielsForm(request.POST, instance=materiel)
         if form.is_valid():
             materiel = form.save()
-            return redirect('listeMateriel')
+            return redirect("listeMateriel")
     else:
         form = MaterielsForm(instance=materiel)
-        context = {'form': form, 'pk': materiel.pk}
-        template = loader.get_template('editMateriel.html')
+        context = {"form": form, "pk": materiel.pk}
+        template = loader.get_template("editMateriel.html")
         return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def deletteMateriel(request, pk):
     Materiels.objects.get(pk=pk).delete()
-    return redirect('listeMateriel')
+    return redirect("listeMateriel")
 
 
-@login_required(login_url='/user/')
+@login_required(login_url="/user/")
 def listeMateriel(request):
-    context = {'materiel': Materiels.objects.all()}
-    template = loader.get_template('listeMateriels.html')
+    context = {"materiel": Materiels.objects.all()}
+    template = loader.get_template("listeMateriels.html")
     return HttpResponse(template.render(context, request))

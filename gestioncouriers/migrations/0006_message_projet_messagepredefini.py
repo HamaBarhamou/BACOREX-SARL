@@ -5,27 +5,45 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestionprojets', '0018_phase_notification'),
-        ('gestioncouriers', '0005_message_created_at_message_updated_at_and_more'),
+        ("gestionprojets", "0018_phase_notification"),
+        ("gestioncouriers", "0005_message_created_at_message_updated_at_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='message',
-            name='projet',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='gestionprojets.projet'),
+            model_name="message",
+            name="projet",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="gestionprojets.projet",
+            ),
         ),
         migrations.CreateModel(
-            name='MessagePredefini',
+            name="MessagePredefini",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('titre', models.CharField(max_length=200)),
-                ('corps', models.TextField()),
-                ('expeditaire_role', models.CharField(max_length=100)),
-                ('destinataire_role', models.CharField(max_length=100)),
-                ('projet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages_predefinis', to='gestionprojets.projet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("titre", models.CharField(max_length=200)),
+                ("corps", models.TextField()),
+                ("expeditaire_role", models.CharField(max_length=100)),
+                ("destinataire_role", models.CharField(max_length=100)),
+                (
+                    "projet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messages_predefinis",
+                        to="gestionprojets.projet",
+                    ),
+                ),
             ],
         ),
     ]

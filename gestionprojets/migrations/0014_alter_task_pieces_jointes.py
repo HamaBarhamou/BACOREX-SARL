@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestionprojets', '0013_remove_task_list_intervenant_remove_task_attribuer_a_and_more'),
+        (
+            "gestionprojets",
+            "0013_remove_task_list_intervenant_remove_task_attribuer_a_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='pieces_jointes',
-            field=models.FileField(null=True, upload_to='media/upload/documents'),
+            model_name="task",
+            name="pieces_jointes",
+            field=models.FileField(null=True, upload_to="media/upload/documents"),
         ),
     ]

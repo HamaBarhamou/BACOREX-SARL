@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestiondesstock', '0003_materiels_image_alter_materiels_entrepot'),
+        ("gestiondesstock", "0003_materiels_image_alter_materiels_entrepot"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='materiels',
-            name='image',
-            field=models.ImageField(default=None, null=True, upload_to='media', verbose_name='image materiel'),
+            model_name="materiels",
+            name="image",
+            field=models.ImageField(
+                default=None,
+                null=True,
+                upload_to="media",
+                verbose_name="image materiel",
+            ),
         ),
     ]

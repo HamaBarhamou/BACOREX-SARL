@@ -4,15 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestionprojets', '0006_task_projet'),
+        ("gestionprojets", "0006_task_projet"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projet',
-            name='status',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'NON DÉBUTÉ'), (2, 'EN COURS'), (3, 'TERMINER'), (4, 'ARCHIVER')], null=True),
+            model_name="projet",
+            name="status",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (1, "NON DÉBUTÉ"),
+                    (2, "EN COURS"),
+                    (3, "TERMINER"),
+                    (4, "ARCHIVER"),
+                ],
+                null=True,
+            ),
         ),
     ]

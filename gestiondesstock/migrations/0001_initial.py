@@ -5,28 +5,48 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CategoriMateriel',
+            name="CategoriMateriel",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=None, max_length=50)),
-                ('description', models.CharField(default=None, max_length=150)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default=None, max_length=50)),
+                ("description", models.CharField(default=None, max_length=150)),
             ],
         ),
         migrations.CreateModel(
-            name='Materiels',
+            name="Materiels",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=None, max_length=50)),
-                ('description', models.CharField(default=None, max_length=150)),
-                ('categorie', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gestiondesstock.categorimateriel')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default=None, max_length=50)),
+                ("description", models.CharField(default=None, max_length=150)),
+                (
+                    "categorie",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="gestiondesstock.categorimateriel",
+                    ),
+                ),
             ],
         ),
     ]

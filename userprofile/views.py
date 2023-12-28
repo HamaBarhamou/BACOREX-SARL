@@ -18,25 +18,21 @@ def login_page(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return redirect('/')
+                return redirect("/")
             else:
                 error = True
     else:
         form = LoginForm()
 
-    context = {
-        'error': error,
-        'form': form
-    }
+    context = {"error": error, "form": form}
 
-    template = loader.get_template('login.html')
+    template = loader.get_template("login.html")
     return HttpResponse(template.render(context, request))
 
 
 def deconnexion(request):
     logout(request)
     form = LoginForm()
-    context = {'form': form}
-    template = loader.get_template('login.html')
+    context = {"form": form}
+    template = loader.get_template("login.html")
     return HttpResponse(template.render(context, request))
-

@@ -5,15 +5,18 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('gestionprojets', '0005_remove_client_start_date'),
+        ("gestionprojets", "0005_remove_client_start_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='task',
-            name='projet',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='gestionprojets.projet'),
+            model_name="task",
+            name="projet",
+            field=models.ForeignKey(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="gestionprojets.projet",
+            ),
         ),
     ]
