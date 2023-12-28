@@ -63,16 +63,14 @@ def messagerie(request, projet_id=None):
     context = {}
     if projet_id:
         projet = get_object_or_404(Projet, pk=projet_id)
-        context['projet_id'] = projet_id
-
+        context['projet_id'] = projet_id 
+        context['projet'] = projet 
     if request.method == 'POST':
-        form = MessageForm(request.POST, request.FILES, user=request.user)
+        form = MessageForm(request.POST, request.FILES, user=request.user, projet=projet)
         if form.is_valid():
             objet = form.cleaned_data["objet"]
             messages = form.cleaned_data["messages"]
             message_predefini = form.cleaned_data.get("message_predefini")
-            print("Message prédéfini: ", message_predefini)  # Debug
-
             msg = Message(
                 objet=objet,
                 messages=messages,
@@ -82,27 +80,21 @@ def messagerie(request, projet_id=None):
                 projet=projet
             )
             msg.save()
-            print("Message enregistré: ", msg.id)  # Vérifiez si l'ID est généré
-
             if message_predefini:
-                print("Avant Recepteur: ") 
-                recepteur = projet.get_user_by_role_name(message_predefini.destinataire_role)
-                print("Recepteur: ", recepteur) 
-                msg.recepteurs.add(recepteur)
+                role_user = projet.get_user_by_type_choice(message_predefini.destinataire_role)
+                recepteur = projet.get_user_by_role_name(role_user)
+                if recepteur is not None:
+                    msg.recepteurs.add(recepteur)
             else:
                 recepteurs = form.cleaned_data["recepteurs"]
                 for user in recepteurs:
                     msg.recepteurs.add(user)
                     #send_notification_email(user, objet)
-
-            # Recréer le formulaire pour la prochaine utilisation
             form = MessageForm(user=request.user, projet=projet)
             if message_predefini:
                 form.update_messages_field(message_predefini.id)
-                # Ici, vous pouvez ajuster le traitement du message en fonction du message prédéfini choisi
     else:
         form = MessageForm(user=request.user, projet=projet) 
-
     context['form'] = form
     template = loader.get_template('message.html')
     return HttpResponse(template.render(context, request))
@@ -111,7 +103,8 @@ def messagerie(request, projet_id=None):
 
 @login_required(login_url='/user/')
 def boitemessagerie(request, projet_id=None):
-    context = {'projet_id':projet_id}
+    projet = get_object_or_404(Projet, pk=projet_id)
+    context = {'projet_id':projet_id, 'projet':projet}
     template = loader.get_template('messagerie.html')
     return HttpResponse(template.render(context, request))
 
@@ -122,6 +115,7 @@ def courier_entrant(request, projet_id=None):
     if projet_id:
         projet = get_object_or_404(Projet, pk=projet_id)
         context['projet_id'] = projet_id
+        context['projet'] = projet
         messages = Message.objects.filter(recepteurs=request.user, projet=projet).order_by('-date_envoie')
     else:
         messages = Message.objects.filter(recepteurs=request.user).order_by('-date_envoie')
@@ -139,6 +133,7 @@ def courier_envoye(request, projet_id=None):
         projet = get_object_or_404(Projet, pk=projet_id)
         messages_envoyes = Message.objects.filter(emetteur=request.user, projet=projet).order_by('-date_envoie')
         context['projet_id'] = projet_id
+        context['projet'] = projet
     else:
         # Sinon, montrer tous les messages envoyés par l'utilisateur
         messages_envoyes = Message.objects.filter(emetteur=request.user).order_by('-date_envoie')
@@ -155,8 +150,7 @@ def detail_message(request, message_id):
 @login_required(login_url='/user/')
 def reply_to_message(request, message_id):
     original_message = get_object_or_404(Message, id=message_id)
-    projet = original_message.projet  # Récupérer le projet du message original
-
+    projet = original_message.projet
     if request.method == 'POST':
         form = MessageForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
@@ -165,7 +159,7 @@ def reply_to_message(request, message_id):
             new_message.messages = form.cleaned_data.get('messages')
             new_message.emetteur = request.user
             new_message.status_envoie = True
-            new_message.projet = projet  # Associer le nouveau message au même projet que le message original
+            new_message.projet = projet
             new_message.fil_de_discussion = original_message
             new_message.save()
             new_message.recepteurs.add(original_message.emetteur)
@@ -190,7 +184,6 @@ def reply_to_message(request, message_id):
 
 def get_predefined_message(request, message_id):
     message_predefini = get_object_or_404(MessagePredefini, pk=message_id)
-    print('message_predefini=',message_predefini)
     data = {
         'titre': message_predefini.titre,
         'corps': message_predefini.corps,

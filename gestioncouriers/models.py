@@ -39,7 +39,6 @@ class Message(models.Model):
 
 
 class MessagePredefini(models.Model):
-    
     titre = models.CharField(max_length=200)
     corps = models.TextField()
     expeditaire_role = models.PositiveSmallIntegerField(

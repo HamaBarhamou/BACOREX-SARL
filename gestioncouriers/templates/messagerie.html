@@ -1,5 +1,32 @@
 {% extends "home.html" %}
 
+{% if projet %}
+    {% block entete %} 
+    <div class="container-fluid mt-4 p-4" style="background: linear-gradient(135deg, #fbc36e, #8a8b86); border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,.1);">
+        <div class="row align-items-center text-white">
+            <div class="col-lg-6">
+                <h2><i class="bi bi-envelope-fill"></i> Gestion du Courrier</h2>
+                <h4>Projet: {{ projet.name }}</h4>
+                <p>Status: <span class="badge bg-success">{{ projet.status }}</span></p>
+                <p>Date: {{ projet.date | date:"d M Y" }}</p>
+            </div>
+            <div class="col-lg-4 mt-3 mt-lg-0">
+                <p class="mb-0" style="font-size: 1.2rem;"><i class="bi bi-person-circle"></i> {{ user.email }}</p>
+                <p>Rôle : {{ user.role }}</p>
+            </div>
+            <div class="col-lg-2 text-lg-right mt-3 mt-lg-0">
+                {% if projet %}
+                    <a href="{% url 'mailmanagement:messagerie' projet_id %}" class="btn btn-light text-primary">+ Nouveau Message</a>
+                {% else %}
+                    <a href="{% url 'mailmanagement:messagerie_general' %}" class="btn btn-light text-primary">+ Nouveau Message</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+{% endif %}
+
 {% block entete_messagerie %}   
     <div class="row container-fluid border border-warning">
         <div class="d-flex p-2 bd-highlight col-sm border border-success">
@@ -30,12 +57,11 @@
 
 
 {% block menu %}
-    {{ user.email }}
     <div class="list-group">
         {% load static %}
         {% if projet_id %}
             <a href="{% url 'mailmanagement:entrant' projet_id %}" class="list-group-item list-group-item-action"> 
-                <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courrier entrant du Projet {{ projet_id }}
+                <img src="{% static 'images/courrier-entrant.png' %}" alt="email" title="email" />  Courrier entrant du Projet
             </a>
             <a href="#" class="list-group-item list-group-item-action"> <img src="{% static 'images/brouillon.png' %}" alt="email" title="email" /> Brouillons du Projet</a>
             <a href="{% url 'mailmanagement:courier_envoye' projet_id %}" class="list-group-item list-group-item-action">

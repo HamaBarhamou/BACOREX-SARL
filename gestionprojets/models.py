@@ -136,31 +136,22 @@ class Projet(models.Model):
         return projects.distinct()
 
 
-    # Ajout de la méthode pour obtenir tous les utilisateurs impliqués dans un projet
+    # Retourner tous les utilisateurs impliqués dans un projet
     def get_all_users(self):
-        # Commencez par ajouter les rôles principaux du projet.
         users = set([
             self.coordinateur,
             self.chef_project,
             self.conducteur_travaux
         ])
-
-        # Ajouter tous les intervenants directement liés au projet.
         users.update(self.list_intervenant.all())
-
-        # Ajouter tous les utilisateurs attribués à des tâches dans ce projet.
         tasks = self.task_set.all()
         for task in tasks:
             users.update(task.attribuer_a.all())
-        
-        # Retirer les éventuelles valeurs None (si des relations sont nulles).
         users.discard(None)
-
         return users
 
     
     def to_dict(self):
-        # Convertissez l'instance Projet en dictionnaire, y compris des informations supplémentaires
         data = {
             'id': self.id,
             'name': self.name,
@@ -170,12 +161,10 @@ class Projet(models.Model):
             'coordinateur': self.coordinateur.get_full_name() if self.coordinateur else None,
             'chef_project': self.chef_project.get_full_name() if self.chef_project else None,
             'conducteur_travaux': self.conducteur_travaux.get_full_name() if self.conducteur_travaux else None,
-            'status': self.get_status_display(),  # Affiche la représentation textuelle du statut
+            'status': self.get_status_display(),
             'budget': self.budget,
             'pourcentage_achevement': self.pourcentage_achevement(),
         }
-
-        # Ajoutez la logique des jours restants ici
         if date.today() < self.start_date:
             days_until_start = (self.start_date - date.today()).days
             data['days_remaining'] = f"Commence dans {days_until_start} jours"
@@ -184,7 +173,6 @@ class Projet(models.Model):
         else:
             days_remaining = (self.end_date - date.today()).days
             data['days_remaining'] = f"{days_remaining} jours restants"
-
         return data
     
     def days_remaining(self):
@@ -203,7 +191,6 @@ class Projet(models.Model):
             return 'Admin'
         elif user == self.coordinateur:
             return 'Coordinateur des Operations'
-            #return 'Coordinateur'
         elif user == self.chef_project:
             return 'Chef de Projet'
         elif user == self.conducteur_travaux:
@@ -225,6 +212,16 @@ class Projet(models.Model):
         elif role_name == 'Conducteurs des Travaux':
             return self.conducteur_travaux
         return None
+    
+    def get_user_by_type_choice(self, id):
+        USER_TYPE_CHOICES = {
+            6: 'Coordinateur des Operations',
+            7: 'Conducteurs des Travaux',
+            8: 'Chef de Projet'
+            #11: 'Intervenant',
+        }
+
+        return USER_TYPE_CHOICES[id]
 
 
 class Task(models.Model):

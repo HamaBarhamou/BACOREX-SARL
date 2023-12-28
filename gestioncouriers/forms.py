@@ -33,6 +33,7 @@ class MessageForm(forms.Form):
         if user:
             self.fields['recepteurs'].queryset = User.objects.exclude(id=user.id)
 
+        #print('projet=',projet)
         if projet:
             # Convertir les utilisateurs du projet en liste d'identifiants
             user_ids = [u.id for u in projet.get_all_users()]
@@ -49,6 +50,7 @@ class MessageForm(forms.Form):
             if user_role_value is not None:
                 self.fields['message_predefini'].queryset = MessagePredefini.objects.filter(expeditaire_role=user_role_value)
                 self.fields['message_predefini'].label_from_instance = lambda obj: f"{obj.titre}"
+                #print("Queryset mis à jour pour message_predefini: ", self.fields['message_predefini'].queryset)
             else:
                 # Masquer le champ si aucun rôle n'est déterminé
                 self.fields['message_predefini'].widget = forms.HiddenInput()
