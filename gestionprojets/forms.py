@@ -153,6 +153,7 @@ class TaskLimitedForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
         return cleaned_data
 
 
@@ -190,18 +191,18 @@ class AgentForm(forms.Form):
 class AchatForm(forms.ModelForm):
     class Meta:
         model = Achat
-        fields = ["description", "budget_demande"]
+        fields = ["description"]
         widgets = {
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
-            "budget_demande": forms.NumberInput(attrs={"class": "form-control"}),
         }
 
 
 class ArticleAchatForm(forms.ModelForm):
     class Meta:
         model = ArticleAchat
-        fields = ["article", "quantite"]
+        fields = ["article", "quantite", "prix"]
         widgets = {
             "article": forms.TextInput(attrs={"class": "form-control"}),
             "quantite": forms.NumberInput(attrs={"class": "form-control", "min": 1}),
+            "prix": forms.NumberInput(attrs={"class": "form-control", "min": 1}),
         }

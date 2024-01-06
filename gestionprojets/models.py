@@ -309,10 +309,16 @@ class Achat(models.Model):
         ("approuve", "Approuvé"),
         ("rejete", "Rejeté"),
     ]
+    STATUT_CHOICES_2 = [
+        ("non_envoyer", "Non Envoyer"),
+        ("envoyer", "Envoyer"),
+        ("archiver", "Archiver"),
+    ]
     projet = models.ForeignKey(Projet, on_delete=models.CASCADE)
-    chef_projet = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
-    budget_demande = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(
+        max_length=20, choices=STATUT_CHOICES_2, default="non_envoyer"
+    )
     approbation_dg_coordinateur = models.CharField(
         max_length=20, choices=STATUT_CHOICES, default="en_attente"
     )
@@ -325,12 +331,39 @@ class Achat(models.Model):
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
 
+    def approuver(self, user):
+        """
+        Met à jour le statut d'approbation en fonction du rôle de l'utilisateur.
+        """
+        if user.is_chefDeProjet:
+            self.status = "envoyer"
+        elif user.is_coordinateur_or_directeur_energie:
+            self.approbation_dg_coordinateur = "approuve"
+        elif user.is_daf:
+            self.approbation_daf = "approuve"
+        elif user.is_pdg:
+            self.approbation_pdg = "approuve"
+        self.save()
+
+    def rejeter(self, user):
+        """
+        Met à jour le statut de rejet en fonction du rôle de l'utilisateur.
+        """
+        if user.is_chefDeProjet:
+            self.status = "non_envoyer"
+        elif user.is_coordinateur_or_directeur_energie:
+            self.approbation_dg_coordinateur = "rejete"
+        elif user.is_daf:
+            self.approbation_daf = "rejete"
+        elif user.is_pdg:
+            self.approbation_pdg = "rejete"
+        self.save()
+
 
 class ArticleAchat(models.Model):
-    demande = models.ForeignKey(
-        Achat, related_name="articles", on_delete=models.CASCADE
-    )
+    achat = models.ForeignKey(Achat, related_name="articles", on_delete=models.CASCADE)
     article = models.CharField(max_length=200)
+    prix = models.PositiveIntegerField()
     quantite = models.PositiveIntegerField()
 
     def __str__(self):

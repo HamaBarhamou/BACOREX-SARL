@@ -42,8 +42,9 @@
         <a href="{% url 'projectmanagement:caracteristiques_techniques' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-cogs text-purple"></i> Carateristiques techniques</a>
         <h5 class="text-white border-bottom pb-1 mt-2">Gestion et suivi</h5>
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-list text-purple"></i> Liste des modifications</a>
-        {% comment %} <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-folder-open text-danger"></i> Revue portefeuille</a> {% endcomment %}
-        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-shopping-cart text-purple"></i> Achat</a>
+        {% if request.user.is_member_workflot_achats %}
+            <a href="{% url 'projectmanagement:liste_achats' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-shopping-cart text-purple"></i> Achats</a>
+        {% endif %}
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-user-friends text-cyan"></i> Client</a>
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-file text-teal"></i> CRET</a>
         <a href="{% url 'mailmanagement:inbox_projet' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-envelope text-yellow"></i> Courrier</a>

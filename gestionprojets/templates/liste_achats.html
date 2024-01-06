@@ -1,0 +1,47 @@
+{% extends "detailProjet.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <!-- Bouton pour créer un nouvel achat -->
+        {% if request.user.is_chefDeProjet %}
+            <a href="{% url 'projectmanagement:nouvel_achat' pk %}" class="btn btn-primary mb-3">+ Nouvel Achat</a>
+        {% endif %}
+
+        <!-- Tableau pour afficher la liste des achats -->
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Description</th>
+                    <th>Budget Demandé</th>
+                    <th>Status</th>
+                    <th>Appobation du DG/Coordinateur</th>
+                    <th>Appobation du DAF</th>
+                    <th>Appobation du PDG</th>
+                    <th>Date Création</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for achat in achats %}
+                <tr>
+                    <td>{{ achat.description }}</td>
+                    <td class="text-center">{{ achat.total_budget }} FCFA</td>
+                    <td class="text-center">{{ achat.status }}</td>
+                    <td class="text-center">{{ achat.approbation_dg_coordinateur }}</td>
+                    <td class="text-center">{{ achat.approbation_daf }}</td>
+                    <td class="text-center">{{ achat.approbation_pdg }}</td>
+                    <td class="text-center">{{ achat.date_creation|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'projectmanagement:detail_achat' pk achat.id %}" class="btn btn-sm btn-primary">Détails</a>
+                        <a href="{% url 'projectmanagement:approuver_achat' pk achat.id %}" class="btn btn-sm btn-danger">{% if request.user.is_chefDeProjet %} Envoyer {% else %} Approuver {% endif %}</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Aucun achat trouvé pour ce projet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

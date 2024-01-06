@@ -8,7 +8,7 @@ class User(AbstractUser):
         (1, "Assistant DAO"),
         (2, "Chef Service Etude"),
         (3, "Chef Departement Etude"),
-        (4, "Directeur Generale"),
+        (4, "Directeur Energie"),
         (5, "admin"),
         (6, "Coordinateur des Operations"),
         (7, "Conducteurs des Travaux"),
@@ -16,6 +16,8 @@ class User(AbstractUser):
         (9, "DEGP"),
         (10, "Magasinier"),
         (11, "Intervenant"),
+        (12, "PDG"),
+        (13, "DAF"),
     )
 
     fonction = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
@@ -44,7 +46,7 @@ class User(AbstractUser):
     def is_chefDeProjet(self):
         return self.fonction == 8
 
-    def is_Directeur(self):
+    def is_Directeur_energie(self):
         return self.fonction == 4
 
     def is_conducteur_travaux(self):
@@ -59,4 +61,16 @@ class User(AbstractUser):
         return self.fonction in [5, 6, 8]
 
     def is_leader(self):
-        return self.is_admin_or_coordinator() or self.is_Directeur()
+        return self.is_admin_or_coordinator() or self.is_Directeur_energie()
+
+    def is_member_workflot_achats(self):
+        return self.is_superuser or self.fonction in [4, 6, 8, 12, 13]
+
+    def is_coordinateur_or_directeur_energie(self):
+        return self.fonction in [4, 6]
+
+    def is_daf(self):
+        return self.fonction == 13
+
+    def is_pdg(self):
+        return self.fonction == 12

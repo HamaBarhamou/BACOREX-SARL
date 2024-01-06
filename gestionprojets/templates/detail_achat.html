@@ -1,0 +1,111 @@
+{% extends "detailProjet.html" %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white ">
+            <h4 class="mb-0">Détails de l'Achat #{{ achat.id }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="card-title">
+                        Description 
+                        <a href="{% url 'projectmanagement:modifier_achat' pk achat.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </h5>
+                    <p class="card-text">{{ achat.description }}</p>
+                    
+                </div>
+                <div class="col-md-6">
+                    <p class="card-text">Budget demandé : <strong>{{ budget_demander }} FCFA</strong></p>
+                    <p class="card-text"><small>Date de création : {{ achat.date_creation|date:"d/m/Y H:i" }}</small></p>
+                    <p class="card-text"><small>Dernière modification : {{ achat.date_modification|date:"d/m/Y H:i" }}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white text-center">
+            <h4 class="mb-0">Articles Associés</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped ">
+                <thead>
+                    <tr class="text-center">
+                        <th>Désignation</th>
+                        <th>Quantité</th>
+                        <th>Prix Unitaire</th>
+                        <th>Sous Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                    <tr>
+                        <td>{{ article.article }}</td>
+                        <td class="text-center">{{ article.quantite }}</td>
+                        <td class="text-center">{{ article.prix }}</td>
+                        <td class="text-center">{{ article.quantite|multiply:article.prix }} FCFA</td>
+                        <td class="text-center">
+                            <a href="{% url 'projectmanagement:modifier_article' pk achat.id article.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'projectmanagement:supprimer_article' pk achat.id article.id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                            <!-- <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button> -->
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">Aucun article ajouté à cet achat.</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3"><strong>Total Général</strong></td>
+                        <td class="text-center"><strong>{{ budget_demander }} FCFA</strong></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white text-center">
+            <h4 class="mb-0">Ajouter un Article</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        {{ form.article.label_tag }}
+                        {{ form.article }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.quantite.label_tag }}
+                        {{ form.quantite }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.prix.label_tag }}
+                        {{ form.prix }}
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-info">Ajouter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'projectmanagement:liste_achats' pk %}" class="btn btn-secondary">Retour à la liste des achats</a>
+    </div>
+</div>
+{% endblock %}

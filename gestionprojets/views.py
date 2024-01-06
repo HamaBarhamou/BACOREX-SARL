@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseRedirect
@@ -31,10 +32,9 @@ from .serializers import (
 from django.views.decorators.http import require_POST
 import pandas as pd
 from openpyxl import Workbook
-from django.db.models import F
+from django.db.models import F, Q, Sum
 from userprofile.models import User
 from django.db.models import Prefetch
-from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.timezone import now
 from history.models import ActionHistory
@@ -275,9 +275,7 @@ def listeProject(request):
     return render(request, "listeproject.html", context)
 
 
-@login_required(login_url="/user/")
-def detailProject(request, pk):
-    projet = Projet.objects.get(pk=pk)
+def contexte_projet_detail(projet):
     temps_restant = None
     if projet.status == 2:
         temps_restant = (projet.end_date - datetime.now()).days
@@ -285,8 +283,16 @@ def detailProject(request, pk):
         "projet": projet,
         "status": projet.get_status_display(),
         "temps_restant": temps_restant,
-        "pk": pk,
+        "pk": projet.id,
     }
+    return context
+
+
+@login_required(login_url="/user/")
+def detailProject(request, pk):
+    projet = Projet.objects.get(pk=pk)
+    context = contexte_projet_detail(projet)
+    context["pk"] = pk
     template = loader.get_template("detailProjet.html")
     return HttpResponse(template.render(context, request))
 
@@ -294,15 +300,8 @@ def detailProject(request, pk):
 @login_required(login_url="/user/")
 def caracteristiques_techniques(request, pk):
     projet = Projet.objects.get(pk=pk)
-    temps_restant = None
-    if projet.status == 2:
-        temps_restant = (projet.end_date - datetime.now()).days
-    context = {
-        "projet": projet,
-        "status": projet.get_status_display(),
-        "temps_restant": temps_restant,
-        "pk": pk,
-    }
+    context = contexte_projet_detail(projet)
+    context["pk"] = pk
     template = loader.get_template("caracteristiques_techniques.html")
     return HttpResponse(template.render(context, request))
 
@@ -371,7 +370,6 @@ def newTask(request, pk):
         if request.user.is_chefDeProjet_or_coordinateur_or_admin()
         else projet.task_set.filter(attribuer_a=request.user)
     )
-
     if request.method == "POST":
         form = (
             TaskForm(request.POST, request.FILES, projet=projet)
@@ -695,9 +693,15 @@ def get_user_projects():
 def liste_achats(request, projet_id):
     projet = get_object_or_404(Projet, pk=projet_id)
     achats = Achat.objects.filter(projet=projet)
-    return render(
-        request, "achats/liste_achats.html", {"achats": achats, "projet": projet}
-    )
+    for achat in achats:
+        total_budget = ArticleAchat.objects.filter(achat=achat).aggregate(
+            budget_demande=Sum(F("prix") * F("quantite"))
+        )["budget_demande"]
+        achat.total_budget = total_budget if total_budget is not None else 0
+    context = contexte_projet_detail(projet)
+    context["pk"] = projet_id
+    context["achats"] = achats
+    return render(request, "liste_achats.html", context)
 
 
 def nouvel_achat(request, projet_id):
@@ -708,26 +712,119 @@ def nouvel_achat(request, projet_id):
             achat = form.save(commit=False)
             achat.projet = projet
             achat.save()
-            return redirect("detail_achat", projet_id=projet.id, achat_id=achat.id)
+            return redirect(
+                "projectmanagement:detail_achat", projet_id=projet.id, achat_id=achat.id
+            )
     else:
         form = AchatForm()
-    return render(request, "achats/nouvel_achat.html", {"form": form, "projet": projet})
+    context = contexte_projet_detail(projet)
+    context["form"] = form
+    context["pk"] = projet_id
+    return render(request, "nouvel_achat.html", context)
 
 
 def detail_achat(request, projet_id, achat_id):
+    projet = get_object_or_404(Projet, pk=projet_id)
+    context = contexte_projet_detail(projet)
     achat = get_object_or_404(Achat, pk=achat_id, projet__id=projet_id)
-    articles = achat.articles.all()
-    return render(
-        request, "achats/detail_achat.html", {"achat": achat, "articles": articles}
-    )
+    if request.method == "POST":
+        form = ArticleAchatForm(request.POST)
+        if form.is_valid():
+            nouvel_article = form.save(commit=False)
+            nouvel_article.achat = achat
+            nouvel_article.achat.date_modification = datetime.now()
+            nouvel_article.achat.save()
+            nouvel_article.save()
+    form = ArticleAchatForm()
+    context["pk"] = projet_id
+    context["articles"] = achat.articles.all()
+    context["achat"] = achat
+    context["form"] = form
+    total_budget = ArticleAchat.objects.filter(achat=achat).aggregate(
+        budget_demande=Sum(F("prix") * F("quantite"))
+    )["budget_demande"]
+    context["budget_demander"] = total_budget if total_budget is not None else 0
+    return render(request, "detail_achat.html", context)
 
 
 def modifier_achat(request, projet_id, achat_id):
-    # Logique similaire à nouvel_achat mais pour modifier un achat existant
-    pass
-
-
-def approuver_achat(request, projet_id, achat_id):
+    projet = get_object_or_404(Projet, pk=projet_id)
     achat = get_object_or_404(Achat, pk=achat_id, projet__id=projet_id)
-    # Logique pour changer le statut d'approbation
-    return redirect("detail_achat", projet_id=projet_id, achat_id=achat_id)
+    context = contexte_projet_detail(projet)
+    if request.method == "POST":
+        form = AchatForm(request.POST, instance=achat)
+        if form.is_valid():
+            form.save()
+            achat.date_modification = datetime.now()
+            achat.save()
+            return redirect(
+                "projectmanagement:detail_achat", projet_id=projet_id, achat_id=achat_id
+            )
+    else:
+        form = AchatForm(instance=achat)
+    context["form"] = form
+    context["achat"] = achat
+    return render(request, "modifier_achat.html", context)
+
+
+def modifier_article(request, projet_id, achat_id, article_id):
+    projet = get_object_or_404(Projet, pk=projet_id)
+    achat = get_object_or_404(Achat, pk=achat_id, projet__id=projet_id)
+    article = get_object_or_404(ArticleAchat, pk=article_id)
+    context = contexte_projet_detail(projet)
+    if request.method == "POST":
+        form = ArticleAchatForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            article.achat.date_modification = datetime.now()
+            achat.save()
+            return redirect(
+                "projectmanagement:detail_achat", projet_id=projet_id, achat_id=achat_id
+            )
+    else:
+        form = ArticleAchatForm(instance=article)
+    context["form"] = form
+    context["achat"] = achat
+    return render(request, "modifier_achat.html", context)
+
+
+def suppromer_article(request, projet_id, achat_id, article_id):
+    article = get_object_or_404(ArticleAchat, pk=article_id)
+    article.delete()
+    return redirect(
+        "projectmanagement:detail_achat", projet_id=projet_id, achat_id=achat_id
+    )
+
+
+def ajouter_article(request, projet_id, achat_id):
+    projet = get_object_or_404(Projet, pk=projet_id)
+    achat = get_object_or_404(Achat, pk=achat_id)
+    context = contexte_projet_detail(projet)
+    if request.method == "POST":
+        form = ArticleAchatForm(request.POST)
+        if form.is_valid():
+            nouvel_article = form.save(commit=False)
+            nouvel_article.achat = achat
+            nouvel_article.achat.date_modification = datetime.now()
+            nouvel_article.achat.save()
+            nouvel_article.save()
+            return redirect(
+                "projectmanagement:detail_achat", projet_id=projet_id, achat_id=achat_id
+            )
+    else:
+        form = ArticleAchatForm()
+    context["form"] = form
+    context["achat"] = achat
+    return render(request, "ajouter_article.html", context)
+
+
+def approuver(request, projet_id, achat_id):
+    achats = get_object_or_404(Achat, pk=achat_id)
+    achats.approuver(request.user)
+    return redirect("projectmanagement:liste_achats", projet_id=projet_id)
+
+
+def rejeter(request, projet_id, achat_id):
+    achats = get_object_or_404(Achat, pk=achat_id)
+    achats.rejeter(request.user)
+    return redirect("projectmanagement:liste_achats", projet_id=projet_id)

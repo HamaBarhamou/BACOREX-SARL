@@ -82,8 +82,28 @@ urlpatterns = [
         name="modifier_achat",
     ),
     path(
-        "projet/<int:projet_id>/achat/<int:achat_id>/approuver/",
-        views.approuver_achat,
+        "projet/<int:projet_id>/achat/<int:achat_id>/add/",
+        views.ajouter_article,
+        name="ajouter_article",
+    ),
+    path(
+        "projet/<int:projet_id>/achat/<int:achat_id>/modifer/<int:article_id>/",
+        views.modifier_article,
+        name="modifier_article",
+    ),
+    path(
+        "projet/<int:projet_id>/achat/<int:achat_id>/supprimer/<int:article_id>/",
+        views.suppromer_article,
+        name="supprimer_article",
+    ),
+    path(
+        "projet/<int:projet_id>/approuver_achat/<int:achat_id>/",
+        views.approuver,
         name="approuver_achat",
+    ),
+    path(
+        "projet/<int:projet_id>/rejetter_achat/<int:achat_id>/",
+        views.approuver,
+        name="rejetter_achat",
     ),
 ]
