@@ -279,7 +279,8 @@ def listeProject(request):
 def contexte_projet_detail(projet):
     temps_restant = None
     if projet.status == 2:
-        temps_restant = (projet.end_date - datetime.now()).days
+        # temps_restant = (projet.end_date - datetime.now()).days
+        temps_restant = projet.jours_restant()
     context = {
         "projet": projet,
         "status": projet.get_status_display(),

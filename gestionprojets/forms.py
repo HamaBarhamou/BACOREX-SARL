@@ -20,7 +20,7 @@ class ProjetForm(ModelForm):
     class Meta:
         model = Projet
         fields = "__all__"
-        exclude = ("status",)
+        # exclude = ("status",)
         labels = {
             "name": _("Nom du projet"),
             "start_date": _("Debut du projet"),

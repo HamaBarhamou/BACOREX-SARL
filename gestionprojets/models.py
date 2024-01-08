@@ -37,6 +37,15 @@ class Projet(models.Model):
     conducteur_travaux = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="conducteur_travaux", default=None
     )
+    """ directeur_energie = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="directeur_energie", default=None
+    )
+    daf = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="daf", default=None
+    )
+    pdg = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="pdg", default=None
+    ) """
     list_intervenant = models.ManyToManyField(User, related_name="intervenant")
     list_materiels = models.ManyToManyField(Materiels)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, default=None)
@@ -167,6 +176,9 @@ class Projet(models.Model):
             return "Terminé"
         else:
             return f"{(self.end_date - date.today()).days} jours restants"
+
+    def jours_restant(self):
+        return (self.end_date - date.today()).days
 
     def get_user_role(self, user):
         """

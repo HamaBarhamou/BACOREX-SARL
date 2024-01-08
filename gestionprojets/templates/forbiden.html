@@ -1,5 +1,16 @@
 {% extends "home.html" %}
 
+{% load static %}
+
 {% block content %}
-    Vous n'etes pas autoriser a acceder a la ressource demander
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center">
+            <img src="{% static 'images/forbiden.jpg' %}" alt="Access Denied" style="width: 200px;" class="mb-4">
+            <h2 class="text-danger">Accès Refusé</h2>
+            <p class="lead">Vous n'êtes pas autorisé à accéder à cette ressource.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3"><i class="bi bi-house-door-fill"></i> Retour à l'accueil</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
