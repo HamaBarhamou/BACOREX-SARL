@@ -51,6 +51,21 @@ class ProjetForm(ModelForm):
         label="Conducteur des Travaux",
         empty_label="Faite un choix",
     )
+    directeur_energie = forms.ModelChoiceField(
+        queryset=User.objects.filter(fonction=4),
+        label="Directeur Energie",
+        empty_label="Faite un choix",
+    )
+    daf = forms.ModelChoiceField(
+        queryset=User.objects.filter(fonction=13),
+        label="Directeur Administratif et Finacier (DAF)",
+        empty_label="Faite un choix",
+    )
+    pdg = forms.ModelChoiceField(
+        queryset=User.objects.filter(fonction=12),
+        label="President Directeur Général (PDG)",
+        empty_label="Faite un choix",
+    )
     list_intervenant = forms.ModelMultipleChoiceField(
         queryset=User.objects.filter(fonction=11),
         label="Liste des Intdervenants",

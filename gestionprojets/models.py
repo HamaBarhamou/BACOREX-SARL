@@ -37,15 +37,19 @@ class Projet(models.Model):
     conducteur_travaux = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="conducteur_travaux", default=None
     )
-    """ directeur_energie = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="directeur_energie", default=None
+    directeur_energie = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="directeur_energie",
+        default=None,
+        null=True,
     )
     daf = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="daf", default=None
+        User, on_delete=models.CASCADE, related_name="daf", default=None, null=True
     )
     pdg = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="pdg", default=None
-    ) """
+        User, on_delete=models.CASCADE, related_name="pdg", default=None, null=True
+    )
     list_intervenant = models.ManyToManyField(User, related_name="intervenant")
     list_materiels = models.ManyToManyField(Materiels)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, default=None)
@@ -60,7 +64,6 @@ class Projet(models.Model):
         from plannig.models import Event
 
         event = Event.objects.filter(pk_projet=self.pk).first()
-
         if event is None:
             event = Event(
                 title=self.name,
@@ -74,7 +77,6 @@ class Projet(models.Model):
             event.description = self.description
             event.start_time = self.start_date
             event.end_time = self.end_date
-
         event.save()
 
     def delete(self, *args, **kwargs):
@@ -84,54 +86,42 @@ class Projet(models.Model):
         super(Projet, self).delete(*args, **kwargs)
 
     def pourcentage_achevement(self):
-        # Obtenir toutes les tâches pour ce projet
-        taches = (
-            self.task_set.all()
-        )  # Assurez-vous que votre modèle de tâche est lié à votre projet avec un ForeignKey
-        total_taches = taches.count()  # Compter le nombre total de tâches
-        taches_terminees = taches.filter(
-            status=3
-        ).count()  # Compter les tâches terminées
-
-        # Calculer le pourcentage
+        taches = self.task_set.all()
+        total_taches = taches.count()
+        taches_terminees = taches.filter(status=3).count()
         if total_taches > 0:
             pourcentage_achevement = (taches_terminees / total_taches) * 100
         else:
-            pourcentage_achevement = (
-                0  # Eviter la division par zéro si le projet n'a pas de tâches
-            )
-
-        # Convertir en chaîne avec un point comme séparateur décimal
+            pourcentage_achevement = 0
         pourcentage_achevement_str = "{:.2f}".format(pourcentage_achevement).replace(
             ",", "."
         )
-
         return pourcentage_achevement_str
-        return round(
-            pourcentage_achevement, 2
-        )  # Arrondir à deux décimales pour la précision
 
     @staticmethod
     def get_projects_by_user(user):
-        # Les leaders peuvent voir tous les projets.
         if user.is_leader():
             return Projet.objects.all()
-
-        # Les chefs de projet et les conducteurs de travaux peuvent voir les projets où ils sont responsables.
         projects = Projet.objects.filter(
             Q(chef_project=user) | Q(conducteur_travaux=user) | Q(list_intervenant=user)
         )
-
-        # Inclure les projets où l'utilisateur est affecté à une tâche.
         tasks = Task.objects.filter(attribuer_a=user)
         for task in tasks:
             projects |= Projet.objects.filter(pk=task.projet.pk)
-
         return projects.distinct()
 
     # Retourner tous les utilisateurs impliqués dans un projet
     def get_all_users(self):
-        users = set([self.coordinateur, self.chef_project, self.conducteur_travaux])
+        users = set(
+            [
+                self.coordinateur,
+                self.chef_project,
+                self.conducteur_travaux,
+                self.directeur_energie,
+                self.daf,
+                self.pdg,
+            ]
+        )
         users.update(self.list_intervenant.all())
         tasks = self.task_set.all()
         for task in tasks:
@@ -194,6 +184,12 @@ class Projet(models.Model):
             return "Conducteurs des Travaux"
         elif user in self.list_intervenant.all():
             return "Intervenant"
+        elif user == self.directeur_energie:
+            return "Directeur Energie"
+        elif user == self.daf:
+            return "Directeur Administratif et Financier"
+        elif user == self.pdg:
+            return "Président Directeur Générale"
         else:
             return "Aucun"
 
@@ -208,13 +204,22 @@ class Projet(models.Model):
             return self.chef_project
         elif role_name == "Conducteurs des Travaux":
             return self.conducteur_travaux
+        elif role_name == "Directeur Energie":
+            return self.directeur_energie
+        elif role_name == "PDG":
+            return self.pdg
+        elif role_name == "DAF":
+            return self.daf
         return None
 
     def get_user_by_type_choice(self, id):
         USER_TYPE_CHOICES = {
+            4: "Directeur Energie",
             6: "Coordinateur des Operations",
             7: "Conducteurs des Travaux",
-            8: "Chef de Projet"
+            8: "Chef de Projet",
+            12: "PDG",
+            13: "DAF",
             # 11: 'Intervenant',
         }
 
