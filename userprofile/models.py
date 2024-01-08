@@ -61,7 +61,12 @@ class User(AbstractUser):
         return self.fonction in [5, 6, 8]
 
     def is_leader(self):
-        return self.is_admin_or_coordinator() or self.is_Directeur_energie()
+        return (
+            self.is_admin_or_coordinator()
+            or self.is_Directeur_energie()
+            or self.is_daf()
+            or self.is_pdg()
+        )
 
     def is_member_workflot_achats(self):
         return self.is_superuser or self.fonction in [4, 6, 8, 12, 13]

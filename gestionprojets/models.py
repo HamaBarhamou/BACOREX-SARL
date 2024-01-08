@@ -335,13 +335,13 @@ class Achat(models.Model):
         """
         Met à jour le statut d'approbation en fonction du rôle de l'utilisateur.
         """
-        if user.is_chefDeProjet:
+        if user.is_chefDeProjet():
             self.status = "envoyer"
-        elif user.is_coordinateur_or_directeur_energie:
+        elif user.is_coordinateur_or_directeur_energie():
             self.approbation_dg_coordinateur = "approuve"
-        elif user.is_daf:
+        elif user.is_daf():
             self.approbation_daf = "approuve"
-        elif user.is_pdg:
+        elif user.is_pdg():
             self.approbation_pdg = "approuve"
         self.save()
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseRedirect
@@ -302,7 +303,10 @@ def caracteristiques_techniques(request, pk):
     projet = Projet.objects.get(pk=pk)
     context = contexte_projet_detail(projet)
     context["pk"] = pk
-    template = loader.get_template("caracteristiques_techniques.html")
+    if request.user not in projet.get_all_users():
+        template = loader.get_template("forbiden.html")
+    else:
+        template = loader.get_template("caracteristiques_techniques.html")
     return HttpResponse(template.render(context, request))
 
 
@@ -692,7 +696,23 @@ def get_user_projects():
 
 def liste_achats(request, projet_id):
     projet = get_object_or_404(Projet, pk=projet_id)
-    achats = Achat.objects.filter(projet=projet)
+    if request.user.is_chefDeProjet():
+        achats = Achat.objects.filter(projet=projet)
+    elif request.user.is_coordinateur_or_directeur_energie():
+        achats = Achat.objects.filter(projet=projet, status="envoyer")
+    elif request.user.is_daf():
+        achats = Achat.objects.filter(
+            projet=projet, status="envoyer", approbation_dg_coordinateur="approuve"
+        )
+    elif request.user.is_pdg():
+        achats = Achat.objects.filter(
+            projet=projet,
+            status="envoyer",
+            approbation_dg_coordinateur="approuve",
+            approbation_daf="approuve",
+        )
+    else:
+        raise PermissionDenied
     for achat in achats:
         total_budget = ArticleAchat.objects.filter(achat=achat).aggregate(
             budget_demande=Sum(F("prix") * F("quantite"))
