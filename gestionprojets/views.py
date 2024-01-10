@@ -511,6 +511,26 @@ def deleteTask(request, pk):
 
 
 @login_required(login_url="/user/")
+def detailleTask(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    context = {
+        "task": task,
+        "name": task.name,
+        "description": task.description,
+        "start_date": task.start_date,
+        "end_date": task.end_date,
+        "status": task.get_status_display(),
+        "budget": task.budget,
+        "materials": task.list_materiels.all(),
+        "assigned_to": task.attribuer_a.all(),
+        "projet": task.projet,
+        "attachments": task.pieces_jointes,
+    }
+    print("assiger:", context["assigned_to"])
+    return render(request, "detailleTask.html", context)
+
+
+@login_required(login_url="/user/")
 def list_phases_for_project(request, project_id):
     projet = Projet.objects.get(pk=project_id)
     phases = Phase.objects.filter(projet_id=project_id)

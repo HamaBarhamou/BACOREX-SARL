@@ -34,6 +34,7 @@ urlpatterns = [
     path("taskliste", views.Taskliste, name="taskliste"),
     path("editTask/<int:pk>/", views.editTask, name="editTask"),
     path("deleteTask/<int:pk>/", views.deleteTask, name="deleteTask"),
+    path("detailleTask/<int:pk>/", views.detailleTask, name="detailleTask"),
     path(
         "projet/<int:pk>/caracteristiques-techniques/",
         views.caracteristiques_techniques,

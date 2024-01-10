@@ -1,0 +1,76 @@
+{% extends "home.html" %}
+
+{% load static %}
+
+{% block entete %} 
+    <div class="card mb-3 w-100 bg-dark text-white">
+        <div class="card-header {% if status == 'EN COURS' %} bg-success text-white {% elif status == 'TERMINER' %} bg-light text-dark {% elif status == 'NON DÉBUTÉ' %} bg-info text-white {% elif status == 'ARCHIVER' %} bg-warning text-dark {% endif %}">
+            <h3 class="card-title text-center">{{projet.name}}</h3>
+        </div>
+        <div class="card-body d-flex flex-column flex-md-row justify-content-md-between align-items-md-center">
+            <p class="card-text mb-2 mb-md-0">
+                <strong>Début :</strong> {{projet.start_date | date:"M d, Y" }}  
+            </p>
+            <p class="card-text mb-2 mb-md-0">
+                <strong>Fin :</strong> {{projet.end_date | date:"M d, Y" }}
+            </p>
+            <p class="card-text mb-2 mb-md-0">
+                <strong>Statut :</strong> <span class="badge {% if status == 'EN COURS' %} bg-success {% elif status == 'TERMINER' %} bg-dark {% elif status == 'NON DÉBUTÉ' %} bg-primary {% elif status == 'ARCHIVER' %} bg-secondary {% endif %}">{{status}}</span>
+            </p>
+            <p class="card-text mb-2 mb-md-0">
+                <strong>Taux d'achèvement :</strong> {{ projet.pourcentage_achevement }} <strong>%</strong>
+            </p>
+            <!-- <p class="card-text mb-2 mb-md-0">
+                {% if temps_restant != None %}
+                    <strong>Temps restant :</strong> {{ temps_restant }} jours
+                {% endif %}
+            </p> -->
+        </div>   
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+ <h1 class="my-4 text-primary">Détails de la tâche # {{ task.id}}</h1>
+ <div class="row">
+    <div class="col-lg-8 mb-4">
+        <!-- Task details card -->
+        <div class="card h-100 bg-light">
+            <div class="card-body">
+               <h2 class="card-title text-success">{{ name }}</h2>
+               <p class="card-text">{{ description }}</p>
+               <p class="card-text"><strong>Date de début:</strong> {{ start_date }}</p>
+               <p class="card-text"><strong>Date de fin:</strong> {{ end_date }}</p>
+               <p class="card-text"><strong>Statut:</strong> {{ status }}</p>
+               <p class="card-text"><strong>Budget:</strong> {{ budget }}</p>
+               <!-- Materials -->
+               <h2 class="card-title text-success">Matériels</h2>
+               {% for material in materials %}
+                 <p class="card-text">{{ material.name }}</p>
+               {% endfor %}
+               <!-- Assigned to -->
+               <h2 class="card-title text-danger">Assigné à</h2>
+               {% for user in assigned_to %}
+                 <p class="card-text">{{ user.username }} </p>
+               {% empty %}
+                 <p class="card-text">Aucun utilisateur assigné à cette tâche.</p>
+               {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <!-- Project and attachments card -->
+        <div class="card h-100 bg-light">
+            <div class="card-body">
+              <h2 class="card-title text-info">Projet</h2>
+              <p class="card-text">{{ projet.name }}</p>
+              <h2 class="card-title text-warning">Pièces jointes</h2>
+              {% if attachments %}
+              <a href="{{ attachments.url }}" class="btn btn-primary">Télécharger</a>
+              {% endif %}
+            </div>
+        </div>
+    </div>
+ </div>
+</div>
+{% endblock %}
