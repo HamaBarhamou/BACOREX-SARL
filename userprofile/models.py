@@ -79,3 +79,6 @@ class User(AbstractUser):
 
     def is_pdg(self):
         return self.fonction == 12
+
+    def is_directeur_energie_or_pdg_or_daf(self):
+        return self.fonction in [4, 12, 13]

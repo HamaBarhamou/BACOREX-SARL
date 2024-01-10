@@ -18,7 +18,6 @@ urlpatterns = [
         name="remove_agent",
     ),
     path("ganttchartprojects", views.ganttchartprojects, name="ganttchartprojects"),
-    path("taskliste", views.Taskliste, name="taskliste"),
     path("projectlist", views.listeProject, name="projectlist"),
     path("listeclient", views.listeClient, name="clientlist"),
     path("newclient", views.newClient, name="newclient"),
@@ -32,6 +31,7 @@ urlpatterns = [
         name="List_Intervenant_Project",
     ),
     path("<int:pk>/newTask", views.newTask, name="newTask"),
+    path("taskliste", views.Taskliste, name="taskliste"),
     path("editTask/<int:pk>/", views.editTask, name="editTask"),
     path("deleteTask/<int:pk>/", views.deleteTask, name="deleteTask"),
     path(

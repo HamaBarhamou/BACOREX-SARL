@@ -99,11 +99,14 @@ def ganttchartprojects(request):
 
 @login_required(login_url="/user/")
 def Taskliste(request):
-    user_tasks = (
-        Task.objects.filter(attribuer_a__in=[request.user])
-        .prefetch_related("attribuer_a")
-        .order_by("end_date", "start_date")
-    )
+    if request.user.is_directeur_energie_or_pdg_or_daf():
+        user_tasks = Task.objects.all()
+    else:
+        user_tasks = (
+            Task.objects.filter(attribuer_a__in=[request.user])
+            .prefetch_related("attribuer_a")
+            .order_by("end_date", "start_date")
+        )
     gantt_labels = []
     gantt_data = []
     for task in user_tasks:
@@ -135,11 +138,17 @@ def Taskliste(request):
     upcoming_tasks = user_tasks.filter(start_date__gt=date.today())
     expired_tasks = user_tasks.filter(end_date__lt=date.today(), status__in=[1, 2])
     completed_tasks = user_tasks.filter(status=3)
+
     other_tasks = (
-        Task.objects.exclude(attribuer_a__in=[request.user])
-        .prefetch_related("attribuer_a")
-        .order_by("end_date", "start_date")
+        (
+            Task.objects.exclude(attribuer_a__in=[request.user])
+            .prefetch_related("attribuer_a")
+            .order_by("end_date", "start_date")
+        )
+        if not request.user.is_directeur_energie_or_pdg_or_daf()
+        else None
     )
+
     context = {
         "not_started_tasks": not_started_tasks,
         "ongoing_tasks": ongoing_tasks,

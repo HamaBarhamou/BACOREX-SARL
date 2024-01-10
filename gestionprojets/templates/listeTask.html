@@ -46,16 +46,9 @@
                 <h4 style="color: #555;">Travaux en Cours</h4>
                 <div class="list-group">
                     {% for task in ongoing_tasks %}
-                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-warning">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ task.name }}</h5>
-                            <small>Fin prévue le {{ task.end_date }}</small>
-                        </div>
-                        <p class="mb-1">{{ task.description }}</p>
-                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
-                    </a>
+                        {% include 'task_card.html' with status_class='list-group-item-warning' task_date=task.end_date %}
                     {% empty %}
-                    <div class="list-group-item">Aucun travail en cours.</div>
+                        <div class="list-group-item">Aucun travail en cours.</div>
                     {% endfor %}
                 </div>
             </div>
@@ -63,16 +56,9 @@
                 <h4 style="color: #555;">Travaux à Venir</h4>
                 <div class="list-group">
                     {% for task in upcoming_tasks %}
-                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-info">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ task.name }}</h5>
-                            <small>Début prévu le {{ task.start_date }}</small>
-                        </div>
-                        <p class="mb-1">{{ task.description }}</p>
-                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
-                    </a>
+                        {% include 'task_card.html' with status_class='list-group-item-info' task_date=task.end_date %}
                     {% empty %}
-                    <div class="list-group-item">Aucun travail à venir.</div>
+                        <div class="list-group-item">Aucun travail à venir.</div>
                     {% endfor %}
                 </div>
             </div>
@@ -80,16 +66,9 @@
                 <h4 style="color: #555;">Travaux Expirés</h4>
                 <div class="list-group">
                     {% for task in expired_tasks %}
-                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-danger">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ task.name }}</h5>
-                            <small>Terminé le {{ task.end_date }}</small>
-                        </div>
-                        <p class="mb-1">{{ task.description }}</p>
-                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
-                    </a>
+                        {% include 'task_card.html' with status_class='list-group-item-danger' task_date=task.end_date %}
                     {% empty %}
-                    <div class="list-group-item">Aucun travail expiré.</div>
+                        <div class="list-group-item">Aucun travail expiré.</div>
                     {% endfor %}
                 </div>
             </div>
@@ -97,20 +76,14 @@
                 <h4 style="color: #555;">Travaux Terminés</h4>
                 <div class="list-group">
                     {% for task in completed_tasks %}
-                    <a href="{% url 'projectmanagement:newTask' task.projet.id  %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-success">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ task.name }}</h5>
-                            <small>Terminé le {{ task.end_date }}</small>
-                        </div>
-                        <p class="mb-1">{{ task.description }}</p>
-                        <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
-                    </a>
+                        {% include 'task_card.html' with status_class='list-group-item-success' task_date=task.end_date %}
                     {% empty %}
-                    <div class="list-group-item">Aucun travail terminé.</div>
+                        <div class="list-group-item">Aucun travail terminé.</div>
                     {% endfor %}
                 </div>
             </div>
 
+            {% if not request.user.is_directeur_energie_or_pdg_or_daf %}
             <div class="col-md-12 mb-4">
                 <h4 style="color: #555;">Autres Travaux</h4>
                 <div class="list-group">
@@ -154,6 +127,7 @@
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
 
         </div>
     {% else %}
@@ -217,7 +191,6 @@
             trackHeight: rowHeight
         }
     };
-
 
     var chart = new google.visualization.Gantt(document.getElementById('gantt_chart'));
 

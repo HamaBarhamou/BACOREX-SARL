@@ -1,0 +1,23 @@
+{% if not request.user.is_directeur_energie_or_pdg_or_daf %}
+  <a href="{% url 'projectmanagement:newTask' task.projet.id %}" 
+     class="list-group-item list-group-item-action flex-column align-items-start {% if status_class %} {{ status_class }}{% endif %}"
+     >
+      <h5 class="mb-1"><strong>Projet : {{ task.projet.name|truncatechars:20 }}</strong></h5>
+      <h5 class="mb-1">Tâche : {{ task.name }}</h5>
+      <div class="d-flex w-100 justify-content-between">
+          <small>{{ task_date }}</small>
+          <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
+      </div>
+      <p class="mb-1">Description : {{ task.description }}</p>
+   </a>
+{% else %}
+  <div class="list-group-item list-group-item-action flex-column align-items-start {% if status_class %} {{ status_class }}{% endif %}">
+      <h5 class="mb-1"><strong>Projet : {{ task.projet.name|truncatechars:40 }}</strong></h5>
+      <h5 class="mb-1">Tâche : {{ task.name }}</h5>
+      <div class="d-flex w-100 justify-content-between">
+          <small>{{ task_date }}</small>
+          <small>Assigné à : {{ task.attribuer_a.all|join:", " }}</small>
+      </div>
+      <p class="mb-1">Description : {{ task.description }}</p>
+  </div>
+{% endif %}
