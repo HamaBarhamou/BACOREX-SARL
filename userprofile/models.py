@@ -1,23 +1,37 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+ASSISTANT_DAO = 1
+CHEF_SERVICE_ETUDE = 2
+CHEF_DEPARTEMENT_ETUDE = 3
+DIRECTEUR_ENERGIE = 4
+ADMIN = 5
+COORDINATEUR_OPERATIONS = 6
+CONDUCTEUR_TRAVAUX = 7
+CHEF_PROJET = 8
+DEGP = 9
+MAGASINIER = 10
+INTERVENANT = 11
+PRESIDENT_DIRECTEUR_GENERALE = 12
+DIRECTEUR_ADMINISTRATIF_FINANCIER = 13
+
 
 # Create your models here.
 class User(AbstractUser):
     USER_TYPE_CHOICES = (
-        (1, "Assistant DAO"),
-        (2, "Chef Service Etude"),
-        (3, "Chef Departement Etude"),
-        (4, "Directeur Energie"),
-        (5, "admin"),
-        (6, "Coordinateur des Operations"),
-        (7, "Conducteurs des Travaux"),
-        (8, "Chef de Projet"),
-        (9, "DEGP"),
-        (10, "Magasinier"),
-        (11, "Intervenant"),
-        (12, "PDG"),
-        (13, "DAF"),
+        (ASSISTANT_DAO, "Assistant DAO"),
+        (CHEF_SERVICE_ETUDE, "Chef Service Etude"),
+        (CHEF_DEPARTEMENT_ETUDE, "Chef Departement Etude"),
+        (DIRECTEUR_ENERGIE, "Directeur Energie"),
+        (ADMIN, "admin"),
+        (COORDINATEUR_OPERATIONS, "Coordinateur des Operations"),
+        (CONDUCTEUR_TRAVAUX, "Conducteurs des Travaux"),
+        (CHEF_PROJET, "Chef de Projet"),
+        (DEGP, "DEGP"),
+        (MAGASINIER, "Magasinier"),
+        (INTERVENANT, "Intervenant"),
+        (PRESIDENT_DIRECTEUR_GENERALE, "PDG"),
+        (DIRECTEUR_ADMINISTRATIF_FINANCIER, "DAF"),
     )
 
     fonction = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
@@ -38,47 +52,69 @@ class User(AbstractUser):
                 break
         return "{} : {}".format(self.username, fonction)
 
+    def has_role(self, roles):
+        if self.is_superuser:
+            return True
+        return self.fonction in roles
+
     def is_admin_or_coordinator(self):
         if self.is_superuser:
             return True
-        return self.fonction in [5, 6]
+        return self.has_role([ADMIN, COORDINATEUR_OPERATIONS])
 
     def is_chefDeProjet(self):
-        return self.fonction == 8
+        return self.has_role([CHEF_PROJET])
 
     def is_Directeur_energie(self):
-        return self.fonction == 4
+        return self.has_role([DIRECTEUR_ENERGIE])
 
     def is_conducteur_travaux(self):
-        return self.fonction == 7
+        return self.has_role([CONDUCTEUR_TRAVAUX])
 
     def is_Intervenant(self):
-        return self.fonction == 11
+        return self.has_role([INTERVENANT])
 
     def is_chefDeProjet_or_coordinateur_or_admin(self):
         if self.is_superuser:
             return True
-        return self.fonction in [5, 6, 8]
+        return self.has_role([CHEF_PROJET, COORDINATEUR_OPERATIONS, ADMIN])
 
     def is_leader(self):
-        return (
-            self.is_admin_or_coordinator()
-            or self.is_Directeur_energie()
-            or self.is_daf()
-            or self.is_pdg()
+        return self.has_role(
+            [
+                ADMIN,
+                COORDINATEUR_OPERATIONS,
+                DIRECTEUR_ENERGIE,
+                DIRECTEUR_ADMINISTRATIF_FINANCIER,
+                PRESIDENT_DIRECTEUR_GENERALE,
+            ]
         )
 
     def is_member_workflot_achats(self):
-        return self.is_superuser or self.fonction in [4, 6, 8, 12, 13]
+        return self.is_superuser or self.has_role(
+            [
+                DIRECTEUR_ENERGIE,
+                COORDINATEUR_OPERATIONS,
+                CHEF_PROJET,
+                DIRECTEUR_ADMINISTRATIF_FINANCIER,
+                PRESIDENT_DIRECTEUR_GENERALE,
+            ]
+        )
 
     def is_coordinateur_or_directeur_energie(self):
-        return self.fonction in [4, 6]
+        return self.has_role([COORDINATEUR_OPERATIONS, DIRECTEUR_ENERGIE])
 
     def is_daf(self):
-        return self.fonction == 13
+        return self.has_role([DIRECTEUR_ADMINISTRATIF_FINANCIER])
 
     def is_pdg(self):
-        return self.fonction == 12
+        return self.has_role([PRESIDENT_DIRECTEUR_GENERALE])
 
     def is_directeur_energie_or_pdg_or_daf(self):
-        return self.fonction in [4, 12, 13]
+        return self.has_role(
+            [
+                DIRECTEUR_ENERGIE,
+                PRESIDENT_DIRECTEUR_GENERALE,
+                DIRECTEUR_ADMINISTRATIF_FINANCIER,
+            ]
+        )
