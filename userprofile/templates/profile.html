@@ -18,23 +18,27 @@
 </div>
  -->
 
- <div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        {% if user.avatar %}
-            <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle" style="width:30px; height:30px;">
-        {% else %}
-            <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" class="rounded-circle" style="width:30px; height:30px;">
-        {% endif %}
-        {{ user.username }}
-        <span class="position-relative">
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                3 <!-- Dynamiquement, afficher ici le nombre de notifications non lues -->
-                <span class="visually-hidden">non lues</span>
-            </span>
-        </span>
+ <div class="dropdown text-center">
+    <button class="btn btn-primary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="d-flex flex-column align-items-center">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle mb-2" style="width:120px; height:100px;">
+            {% else %}
+                <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" class="rounded-circle mb-2" style="width:120px; height:100px;">
+            {% endif %}
+            <div class="d-flex align-items-center">
+                <span class="me-2">{{ user.username }}</span>
+                <span class="position-relative">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        3 <!-- Dynamiquement, afficher ici le nombre de notifications non lues -->
+                        <span class="visually-hidden">notifications non lues</span>
+                    </span>
+                </span>
+            </div>
+        </div>
     </button>
 
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
         <li><a class="dropdown-item" href="#">Votre Profile</a></li>
         <li><a class="dropdown-item" href="#">Paramètres</a></li>
         <li><hr class="dropdown-divider"></li>
@@ -43,3 +47,4 @@
         <li><a class="dropdown-item" href="#"><i class="bi bi-bell-fill"></i> Notifications <span class="badge bg-danger">3</span></a></li>
     </ul>
 </div>
+
