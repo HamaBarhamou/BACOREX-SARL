@@ -30,7 +30,6 @@
 {% block menu %}
     <div class="list-group">
         <h5 class="text-white border-bottom pb-1">Caracteristique générales</h5>
-        {% comment %} <a href="#" class="list-group-item list-group-item-action">Affaires </a> {% endcomment %}
         <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-file-contract text-primary"></i> Contrat</a>
         <a href="{% url 'projectmanagement:List_Intervenant_Project' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-user-tie text-success"></i> Intervenant</a> 
         <a href="{% url 'projectmanagement:list_phases_for_project' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-calendar-alt text-warning"></i> Plannification</a>
@@ -46,8 +45,6 @@
         {% if request.user.is_member_workflot_achats %}
             <a href="{% url 'projectmanagement:liste_achats' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-shopping-cart text-purple"></i> Achats</a>
         {% endif %}
-        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-user-friends text-cyan"></i> Client</a>
-        <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-file text-teal"></i> CRET</a>
         <a href="{% url 'mailmanagement:inbox_projet' pk %}" class="list-group-item list-group-item-action"><i class="fa fa-envelope text-yellow"></i> Courrier</a>
         <a href="{% url 'projectmanagement:projectlist' %}" class="list-group-item list-group-item-action"><i class="fa fa-arrow-left text-gray"></i> Retour</a>
     </div>

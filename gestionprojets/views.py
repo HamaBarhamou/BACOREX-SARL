@@ -42,7 +42,7 @@ from history.models import ActionHistory
 import json
 
 
-fonction = [
+""" fonction = [
     "",
     "Assistant DAO",
     "Chef Service Etude",
@@ -55,7 +55,7 @@ fonction = [
     "DEGP",
     "Magasinier",
     "Intervenant",
-]
+] """
 
 
 @login_required(login_url="/user/")
