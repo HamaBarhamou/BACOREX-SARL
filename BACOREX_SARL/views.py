@@ -11,3 +11,9 @@ def home(request):
     template = loader.get_template("home.html")
     context = {}
     return HttpResponse(template.render(context, request))
+
+
+def notifications(request):
+    template = loader.get_template("notifications.html")
+    context = {}
+    return HttpResponse(template.render(context, request))

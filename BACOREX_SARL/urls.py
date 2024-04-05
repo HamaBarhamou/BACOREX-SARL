@@ -20,8 +20,11 @@ from . import views
 from django.conf.urls.static import static
 from django.conf import settings
 
+# app_name = "bacorex"
+
 urlpatterns = [
     path("", views.home, name="home"),
+    path("notifications", views.notifications, name="notifications"),
     path(
         "dao/", include("dao.urls", namespace="dao")
     ),  # Ajoutez l'espace de noms "dao" pour l'application "dao"
@@ -41,5 +44,6 @@ urlpatterns = [
         "plannig/", include("plannig.urls", namespace="plannig")
     ),  # Ajoutez l'espace de noms "plannig" pour l'application "plannig"
     path("history/", include("history.urls", namespace="history")),
+    path("django_notifly", include("django_notifly.urls", namespace="django_notifly")),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

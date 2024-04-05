@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "bootstrap5",
     "plannig.apps.PlannigConfig",
     "history.apps.HistoryConfig",
+    "django_notifly.apps.DjangoNotiflyConfig",
 ]
 
 MIDDLEWARE = [

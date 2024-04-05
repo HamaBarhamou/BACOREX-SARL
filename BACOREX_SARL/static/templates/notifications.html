@@ -1,0 +1,9 @@
+{% extends "home.html" %}
+{% load django_notifly_tags %}
+
+{% block content %} 
+<div id="notifications">
+    {% render_notifications %}
+</div>
+
+{% endblock %} 
