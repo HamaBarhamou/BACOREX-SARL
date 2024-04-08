@@ -2,8 +2,7 @@
 {% load django_notifly_tags %}
 
 {% block content %} 
-<div id="notifications">
-    {% user_notifications %}
-</div>
-
+    <div>
+        {% all_notifications %}
+    </div>
 {% endblock %} 

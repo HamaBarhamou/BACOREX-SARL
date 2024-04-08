@@ -1,15 +1,17 @@
 from django import template
 from django_notifly.models import Notification, UserNotification
 from django.template.loader import render_to_string
+from django.utils.html import format_html
+from django.urls import reverse
 
 register = template.Library()
 
 
-@register.inclusion_tag("django_Notifly/all_notifications.html", takes_context=True)
+""" @register.inclusion_tag("django_Notifly/all_notifications.html", takes_context=True)
 def render_notifications(context):
     request = context["request"]
-    notifications = Notification.objects.filter(recipient=request.user, is_read=False)
-    return {"notifications": notifications}
+    notifications = UserNotification.objects.filter(user=request.user)
+    return {"notifications": notifications} """
 
 
 @register.inclusion_tag("django_Notifly/notifications_dropdown.html", takes_context=True)
@@ -30,3 +32,15 @@ def unread_notifications_count(context):
             'user': request.user,
         })
     return ''
+
+
+""" @register.simple_tag(takes_context=True)
+def all_notifications(context):
+    return format_html('<div hx-get="{}" hx-trigger="load, every 5s" hx-swap="outerHTML"></div>',
+                       reverse('notifly:all_notifications'))  # Assurez-vous que l'URL est correcte """
+
+@register.inclusion_tag("django_Notifly/all_notifications.html", takes_context=True)
+def all_notifications(context):
+    request = context["request"]
+    notifications = UserNotification.objects.filter(user=request.user)
+    return {"notifications": notifications}

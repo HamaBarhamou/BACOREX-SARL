@@ -13,3 +13,9 @@ def notification_click(request, user_notification_id):
 def unread_count(request):
     count = count = UserNotification.objects.filter(user=request.user, is_read=False).count()
     return render(request, 'django_Notifly/unread_notifications_count.html', {'count': count})
+
+
+# @login_required
+def all_notifications_view(request):
+    notifications = UserNotification.objects.filter(user=request.user)
+    return render(request, "django_Notifly/all_notifications.html", {'notifications': notifications})

@@ -1,10 +1,10 @@
-
-<h2 class="mb-4 text-center">Liste des notifications: template tags</h2>
-<ul>
-  {% for notification in notifications %}
-      <li>{{ notification.message }}</li>
-  {% endfor %}
-</ul>
-
-
-
+<!-- _all_notifications.html -->
+<div hx-get="{% url 'notifly:all_notifications' %}" hx-trigger="load, every 60s" hx-swap="outerHTML">
+  <ul class="list-group">
+    {% for notification in notifications %}
+        <li class="list-group-item">{{ notification.notification.message }}</li>
+    {% empty %}
+        <li class="list-group-item">Aucune notification.</li>
+    {% endfor %}
+  </ul>
+</div>
