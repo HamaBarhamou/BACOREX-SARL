@@ -1,0 +1,7 @@
+<!-- templates/django_Notifly/unread_notifications_count.html -->
+{% if user.is_authenticated %}
+    <span hx-get="{% url 'notifly:unread_count' %}" hx-trigger="every 5s" hx-swap="outerHTML">
+        {{ unread_count }}
+        <span class="visually-hidden">notifications non lues</span>
+    </span>
+{% endif %}

@@ -1,8 +1,9 @@
+# django_Notifly/urls.py
 from django.urls import path
-from . import views
+from .views import unread_count
 
-app_name = "djnagonotifly"
+app_name = 'notifly'
 
 urlpatterns = [
-    path("", views.all_notifications, name="all_notifications"),
+    path('unread-count/', unread_count, name='unread_count'),
 ]

@@ -18,6 +18,8 @@
 </div>
  -->
 
+ {% load django_notifly_tags %}
+
  <div class="dropdown text-center">
     <button class="btn btn-primary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
         <div class="d-flex flex-column align-items-center">
@@ -30,7 +32,7 @@
                 <span class="me-2">{{ user.username }}</span>
                 <span class="position-relative">
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        3 <!-- Dynamiquement, afficher ici le nombre de notifications non lues -->
+                        {% unread_notifications_count %} <!-- Dynamiquement, afficher ici le nombre de notifications non lues -->
                         <span class="visually-hidden">notifications non lues</span>
                     </span>
                 </span>
@@ -44,8 +46,7 @@
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="/user/logout">Se déconnecter</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'notifications' %}"><i class="bi bi-bell-fill"></i> Notifications <span class="badge bg-danger">3</span></a></li>
-        <!-- <li><a class="dropdown-item" href="{% url 'djnagonotifly:all_notifications' %}"><i class="bi bi-bell-fill"></i> Notifications <span class="badge bg-danger">3</span></a></li> -->
+        <li><a class="dropdown-item" href="{% url 'notifications' %}"><i class="bi bi-bell-fill"></i> Notifications <span class="badge bg-danger">{% unread_notifications_count %}</span></a></li>
     </ul>
 </div>
 
