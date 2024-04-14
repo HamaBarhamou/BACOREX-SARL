@@ -44,6 +44,8 @@ urlpatterns = [
         "plannig/", include("plannig.urls", namespace="plannig")
     ),  # Ajoutez l'espace de noms "plannig" pour l'application "plannig"
     path("history/", include("history.urls", namespace="history")),
-    path("django_notifly/", include("django_notifly.urls", namespace="dajango_notifly")),
+    path(
+        "django_notifly/", include("django_notifly.urls", namespace="dajango_notifly")
+    ),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -9,13 +9,15 @@ from django.utils import timezone
 
 User = get_user_model()
 
+
 class Notification(models.Model):
     NOTIFICATION_TYPES = (
         ("1", "Nouveau Projet"),
         ("2", "Modification de Projet"),
         ("3", "Nouvelle Tâche"),
         ("4", "Mise à jour de Tâche"),
-        ("5", "Autre"),
+        ("5", "Demande d'achats"),
+        ("6", "Autre"),
     )
 
     notification_type = models.CharField(max_length=1, choices=NOTIFICATION_TYPES)
@@ -25,7 +27,9 @@ class Notification(models.Model):
     extra_info = models.JSONField(null=True, blank=True)
 
     # Champ ManyToMany avec le modèle intermédiaire 'UserNotification'
-    recipients = models.ManyToManyField(User, through='UserNotification', related_name='notifications')
+    recipients = models.ManyToManyField(
+        User, through="UserNotification", related_name="notifications"
+    )
 
     # Nouveaux champs pour l'envoi par e-mail
     send_email = models.BooleanField(default=False)
@@ -37,8 +41,9 @@ class Notification(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        recipient_names = ', '.join(self.recipients.values_list('username', flat=True))
+        recipient_names = ", ".join(self.recipients.values_list("username", flat=True))
         return f"Notification pour {recipient_names} - {self.get_notification_type_display()}"
+
 
 class UserNotification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

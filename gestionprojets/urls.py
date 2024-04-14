@@ -104,7 +104,7 @@ urlpatterns = [
     ),
     path(
         "projet/<int:projet_id>/rejetter_achat/<int:achat_id>/",
-        views.approuver,
+        views.rejeter,
         name="rejetter_achat",
     ),
 ]

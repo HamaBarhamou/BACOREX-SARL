@@ -5,6 +5,8 @@ from django.utils import timezone
 from userprofile.models import User
 from gestiondesstock.models import Materiels
 from django.db.models import Q
+from django_notifly.utils import send_notification, PURCHASE_REQUEST
+from django.urls import reverse
 
 
 # Create your models here.
@@ -352,29 +354,140 @@ class Achat(models.Model):
         """
         Met à jour le statut d'approbation en fonction du rôle de l'utilisateur.
         """
+        notification_url = reverse(
+            "projectmanagement:liste_achats", kwargs={"projet_id": self.projet.id}
+        )
+        message_approuve = (
+            f"La demande d'achat #{self.id} a été approuvée par {user.username}"
+        )
+        message_demande = (
+            f"La demande d'achat #{self.id} est en attente de votre approbation."
+        )
+        recipients_approuve = []
+        recipients_demande = []
+
         if user.is_chefDeProjet():
             self.status = "envoyer"
+            recipients_demande = [
+                self.projet.coordinateur,
+                self.projet.directeur_energie,
+            ]
         elif user.is_coordinateur_or_directeur_energie():
             self.approbation_dg_coordinateur = "approuve"
+            recipients_approuve = [self.projet.chef_project]
+            recipients_demande = [self.projet.daf]
         elif user.is_daf():
             self.approbation_daf = "approuve"
+            recipients_approuve = [
+                self.projet.coordinateur,
+                self.projet.directeur_energie,
+                self.projet.chef_project,
+            ]
+            recipients_demande = [self.projet.pdg]
         elif user.is_pdg():
             self.approbation_pdg = "approuve"
+            recipients_approuve = [
+                self.projet.daf,
+                self.projet.coordinateur,
+                self.projet.directeur_energie,
+                self.projet.chef_project,
+            ]
+        else:
+            return
+
         self.save()
+
+        # Envoyer les notifications d'approbation
+        if recipients_approuve:
+            send_notification(
+                notification_type=PURCHASE_REQUEST,
+                message=message_approuve,
+                url=notification_url,
+                recipients=recipients_approuve,
+            )
+
+        # Envoyer les notifications de demande d'approbation
+        if recipients_demande:
+            send_notification(
+                notification_type=PURCHASE_REQUEST,
+                message=message_demande,
+                url=notification_url,
+                recipients=recipients_demande,
+            )
 
     def rejeter(self, user):
         """
-        Met à jour le statut de rejet en fonction du rôle de l'utilisateur.
+        Révoque une approbation si les conditions pour la révocation sont remplies.
         """
-        if user.is_chefDeProjet:
+        if not self.peut_rejeter(user):
+            return False  # Ajoutez une gestion appropriée pour informer l'utilisateur que la révocation n'est pas possible
+
+        if user.is_chefDeProjet():
             self.status = "non_envoyer"
-        elif user.is_coordinateur_or_directeur_energie:
+        elif user.is_coordinateur_or_directeur_energie():
             self.approbation_dg_coordinateur = "rejete"
-        elif user.is_daf:
+        elif user.is_daf():
             self.approbation_daf = "rejete"
-        elif user.is_pdg:
+        elif user.is_pdg():
             self.approbation_pdg = "rejete"
+
         self.save()
+        # Envoyer la notification de révocation
+        self.envoyer_notification_de_rejet(user)
+
+        return True
+
+    def peut_rejeter(self, user):
+        """
+        Détermine si une approbation peut être révoquée par l'utilisateur en fonction de l'état actuel des approbations.
+        """
+        if user.is_daf() and self.approbation_pdg == "en_attente":
+            return True
+        if (
+            user.is_coordinateur_or_directeur_energie()
+            and self.approbation_daf == "en_attente"
+        ):
+            return True
+        if (
+            user.is_chefDeProjet()
+            and self.approbation_dg_coordinateur == "en_attente"
+            and self.status == "envoyer"
+        ):
+            return True
+        return False
+
+    def envoyer_notification_de_rejet(self, user):
+        """
+        Envoie une notification indiquant que la demande a été révoquée.
+        """
+        notification_url = reverse(
+            "projectmanagement:liste_achats", kwargs={"projet_id": self.projet.id}
+        )
+        message = f"La demande d'achat #{self.id} a été révoquée par {user.username}."
+        recipients = []
+
+        if user.is_coordinateur_or_directeur_energie():
+            recipients = [self.projet.chef_project]
+        elif user.is_daf():
+            recipients = [
+                self.projet.chef_project,
+                self.projet.coordinateur,
+                self.projet.directeur_energie,
+            ]
+        elif user.is_pdg():
+            recipients = [
+                self.projet.chef_project,
+                self.projet.coordinateur,
+                self.projet.directeur_energie,
+                self.projet.daf,
+            ]
+
+        send_notification(
+            notification_type="PURCHASE_REQUEST_REJECTED",  # Modifier pour refléter le type d'action
+            message=message,
+            url=notification_url,
+            recipients=recipients,
+        )
 
 
 class ArticleAchat(models.Model):

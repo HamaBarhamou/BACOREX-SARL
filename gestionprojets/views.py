@@ -748,6 +748,7 @@ def liste_achats(request, projet_id):
             budget_demande=Sum(F("prix") * F("quantite"))
         )["budget_demande"]
         achat.total_budget = total_budget if total_budget is not None else 0
+        achat.can_reject = achat.peut_rejeter(request.user)
     context = contexte_projet_detail(projet)
     context["pk"] = projet_id
     context["achats"] = achats

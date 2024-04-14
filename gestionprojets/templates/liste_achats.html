@@ -31,9 +31,25 @@
                     <td class="text-center">{{ achat.approbation_daf }}</td>
                     <td class="text-center">{{ achat.approbation_pdg }}</td>
                     <td class="text-center">{{ achat.date_creation|date:"d/m/Y" }}</td>
+                    
                     <td>
                         <a href="{% url 'projectmanagement:detail_achat' pk achat.id %}" class="btn btn-sm btn-primary">Détails</a>
-                        <a href="{% url 'projectmanagement:approuver_achat' pk achat.id %}" class="btn btn-sm btn-danger">{% if request.user.is_chefDeProjet %} Envoyer {% else %} Approuver {% endif %}</a>
+                        <a href="{% url 'projectmanagement:approuver_achat' pk achat.id %}" class="btn btn-sm btn-warning">
+                            {% if request.user.is_chefDeProjet %} 
+                                Envoyer 
+                            {% else %} 
+                                Approuver 
+                            {% endif %}
+                        </a>
+                        {% if achat.can_reject %}
+                            <a href="{% url 'projectmanagement:rejetter_achat' pk achat.id %}" class="btn btn-sm btn-danger">
+                                {% if request.user.is_chefDeProjet %} 
+                                    Anuler 
+                                {% else %} 
+                                    Rejeter 
+                                {% endif %}
+                            </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
