@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .models import UserNotification
 
 
@@ -9,6 +9,15 @@ def notification_click(request, user_notification_id):
     )
     user_notification.mark_as_read()
     return redirect(user_notification.notification.url)
+
+
+def read_notification(request, user_notification_id):
+    print("notifoaction lue")
+    user_notification = UserNotification.objects.get(
+        id=user_notification_id, user=request.user
+    )
+    user_notification.mark_as_read()
+    return HttpResponse("")
 
 
 def unread_count(request):

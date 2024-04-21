@@ -1,8 +1,17 @@
-<!-- _all_notifications.html -->
-<div hx-get="{% url 'notifly:all_notifications' %}" hx-trigger="load, every 60s" hx-swap="outerHTML">
+<!-- <div hx-get="{% url 'notifly:all_notifications' %}" hx-trigger="load, every 70s" hx-swap="outerHTML"> -->
+ <div hx-get="{% url 'notifly:all_notifications' %}" hx-trigger="every 60s" hx-swap="outerHTML">
   <ul class="list-group">
-    {% for notification in notifications %}
-        <li class="list-group-item">{{ notification.notification.message }}</li>
+    {% for user_notification in notifications %}
+        <li class="list-group-item {% if user_notification.is_read %}list-group-item-secondary{% endif %}">
+            {{ user_notification.notification.message }}
+            {% if not user_notification.is_read %}
+            <button class="btn btn-sm btn-success"
+                hx-post="{% url 'notifly:read_notification' user_notification.id %}"
+                hx-headers='{ "X-CSRFToken": "{{ csrf_token }}" }'
+                hx-swap="outerHTML"
+                hx-remove>Marquer comme lu</button>
+            {% endif %}
+        </li>
     {% empty %}
         <li class="list-group-item">Aucune notification.</li>
     {% endfor %}
