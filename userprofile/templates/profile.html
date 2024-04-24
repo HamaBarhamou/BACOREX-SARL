@@ -1,23 +1,5 @@
-<!-- <div class="dropdown" >
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        {% load static %}
-        {% if user.avatar == "" %}
-            <img src="{% static 'images/avatar.jpg' %}" alt="Avatar" class="rounded-circle" style="width:30px;height:30px;">
-        {% else %}
-            <img src="/static/images/{{ user.avatar }}" alt="Avatar" class="rounded-circle" style="width:30px;height:30px;">
-        {% endif %}
-        <span class="ml-2">{{ user.username }}</span>
-    </button>
 
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill me-2"></i>Votre Profile</a></li>
-      <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill me-2"></i>Paramettre</a></li>
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item" href="/user/logout"><i class="bi bi-box-arrow-right me-2"></i>Se deconnecté</a></li>
-    </ul>
-</div>
- -->
-
+ {% load static %}
  {% load django_notifly_tags %}
 
  <div class="dropdown text-center">
@@ -32,7 +14,7 @@
                 <span class="me-2">{{ user.username }}</span>
                 <span class="position-relative">
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {% unread_notifications_count %} <!-- Dynamiquement, afficher ici le nombre de notifications non lues -->
+                        {% unread_notifications_count %} 
                         <span class="visually-hidden">notifications non lues</span>
                     </span>
                 </span>

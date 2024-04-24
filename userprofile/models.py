@@ -118,3 +118,48 @@ class User(AbstractUser):
                 DIRECTEUR_ADMINISTRATIF_FINANCIER,
             ]
         )
+
+    def administraion_role(self):
+        return self.has_role([ADMIN])
+
+    def gestiondao_role(self):
+        return self.has_role(
+            [ASSISTANT_DAO, CHEF_SERVICE_ETUDE, CHEF_DEPARTEMENT_ETUDE]
+        )
+
+    def gestiondesstock_role(self):
+        return self.has_role([MAGASINIER])
+
+    def gestionprojet_role(self):
+        return self.has_role(
+            [
+                CHEF_PROJET,
+                CONDUCTEUR_TRAVAUX,
+                INTERVENANT,
+                COORDINATEUR_OPERATIONS,
+                DIRECTEUR_ENERGIE,
+                PRESIDENT_DIRECTEUR_GENERALE,
+                DIRECTEUR_ADMINISTRATIF_FINANCIER,
+            ]
+        )
+
+    def newclients_role(self):
+        return self.has_role([ADMIN, COORDINATEUR_OPERATIONS])
+
+    def newprojet_role(self):
+        return self.has_role([ADMIN, COORDINATEUR_OPERATIONS])
+
+    def taskliste_redirection(self):
+        return self.has_role(
+            [CHEF_PROJET, CONDUCTEUR_TRAVAUX, INTERVENANT, COORDINATEUR_OPERATIONS]
+        )
+
+    def demande_achats_all(self):
+        return self.has_role(
+            [
+                COORDINATEUR_OPERATIONS,
+                DIRECTEUR_ADMINISTRATIF_FINANCIER,
+                PRESIDENT_DIRECTEUR_GENERALE,
+                DIRECTEUR_ENERGIE
+            ]
+        )

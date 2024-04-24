@@ -6,7 +6,8 @@ from django.shortcuts import redirect
 
 @login_required(login_url="/user/")
 def home(request):
-    if request.user.groups.filter(name="PROJET_TEAM").exists():
+    # if request.user.groups.filter(name="PROJET_TEAM").exists():
+    if request.user.taskliste_redirection():
         return redirect("projectmanagement:taskliste")
     template = loader.get_template("home.html")
     context = {}
