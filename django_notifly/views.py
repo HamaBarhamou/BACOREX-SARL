@@ -23,9 +23,11 @@ def unread_count(request):
     count = count = UserNotification.objects.filter(
         user=request.user, is_read=False
     ).count()
-    count = count if count != 0 else ''
+    count = count if count != 0 else ""
     return render(
-        request, "django_Notifly/unread_notifications_count.html", {"unread_count": count}
+        request,
+        "django_Notifly/unread_notifications_count.html",
+        {"unread_count": count},
     )
 
 

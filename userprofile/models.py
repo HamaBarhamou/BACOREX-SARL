@@ -14,6 +14,7 @@ MAGASINIER = 10
 INTERVENANT = 11
 PRESIDENT_DIRECTEUR_GENERALE = 12
 DIRECTEUR_ADMINISTRATIF_FINANCIER = 13
+CAISSIER = 14
 
 
 # Create your models here.
@@ -32,6 +33,7 @@ class User(AbstractUser):
         (INTERVENANT, "Intervenant"),
         (PRESIDENT_DIRECTEUR_GENERALE, "PDG"),
         (DIRECTEUR_ADMINISTRATIF_FINANCIER, "DAF"),
+        (CAISSIER, "CAISSIER"),
     )
 
     fonction = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
@@ -110,6 +112,9 @@ class User(AbstractUser):
     def is_pdg(self):
         return self.has_role([PRESIDENT_DIRECTEUR_GENERALE])
 
+    def is_caissier(self):
+        return self.has_role([CAISSIER])
+
     def is_directeur_energie_or_pdg_or_daf(self):
         return self.has_role(
             [
@@ -160,6 +165,6 @@ class User(AbstractUser):
                 COORDINATEUR_OPERATIONS,
                 DIRECTEUR_ADMINISTRATIF_FINANCIER,
                 PRESIDENT_DIRECTEUR_GENERALE,
-                DIRECTEUR_ENERGIE
+                DIRECTEUR_ENERGIE,
             ]
         )

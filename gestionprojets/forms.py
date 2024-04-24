@@ -8,6 +8,16 @@ from userprofile.models import User
 from gestiondesstock.models import Materiels
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import ValidationError
+from userprofile.models import (
+    CONDUCTEUR_TRAVAUX,
+    COORDINATEUR_OPERATIONS,
+    CHEF_PROJET,
+    INTERVENANT,
+    DIRECTEUR_ADMINISTRATIF_FINANCIER,
+    PRESIDENT_DIRECTEUR_GENERALE,
+    DIRECTEUR_ENERGIE,
+    CAISSIER,
+)
 
 
 class ClientForm(ModelForm):
@@ -37,37 +47,42 @@ class ProjetForm(ModelForm):
         }
 
     coordinateur = forms.ModelChoiceField(
-        queryset=User.objects.filter(fonction=6),
+        queryset=User.objects.filter(fonction=COORDINATEUR_OPERATIONS),
         label="Coordinateur Operation",
         empty_label="Faite un choix",
     )
     chef_project = forms.ModelChoiceField(
-        queryset=User.objects.filter(fonction=8),
+        queryset=User.objects.filter(fonction=CHEF_PROJET),
         label="Chef de Projet",
         empty_label="Faite un choix",
     )
     conducteur_travaux = forms.ModelChoiceField(
-        queryset=User.objects.filter(fonction=7),
+        queryset=User.objects.filter(fonction=CONDUCTEUR_TRAVAUX),
         label="Conducteur des Travaux",
         empty_label="Faite un choix",
     )
     directeur_energie = forms.ModelChoiceField(
-        queryset=User.objects.filter(fonction=4),
+        queryset=User.objects.filter(fonction=DIRECTEUR_ENERGIE),
         label="Directeur Energie",
         empty_label="Faite un choix",
     )
     daf = forms.ModelChoiceField(
-        queryset=User.objects.filter(fonction=13),
+        queryset=User.objects.filter(fonction=DIRECTEUR_ADMINISTRATIF_FINANCIER),
         label="Directeur Administratif et Finacier (DAF)",
         empty_label="Faite un choix",
     )
     pdg = forms.ModelChoiceField(
-        queryset=User.objects.filter(fonction=12),
+        queryset=User.objects.filter(fonction=PRESIDENT_DIRECTEUR_GENERALE),
         label="President Directeur Général (PDG)",
         empty_label="Faite un choix",
     )
+    caissier = forms.ModelChoiceField(
+        queryset=User.objects.filter(fonction=CAISSIER),
+        label="Caissier ou Trésorier",
+        empty_label="Faite un choix",
+    )
     list_intervenant = forms.ModelMultipleChoiceField(
-        queryset=User.objects.filter(fonction=11),
+        queryset=User.objects.filter(fonction=INTERVENANT),
         label="Liste des Intdervenants",
         required=False,
         widget=forms.CheckboxSelectMultiple,

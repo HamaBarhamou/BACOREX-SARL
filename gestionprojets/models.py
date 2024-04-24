@@ -52,6 +52,9 @@ class Projet(models.Model):
     pdg = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="pdg", default=None, null=True
     )
+    caissier = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="caissier", default=None, null=True
+    )
     list_intervenant = models.ManyToManyField(User, related_name="intervenant")
     list_materiels = models.ManyToManyField(Materiels)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, default=None)
@@ -333,6 +336,10 @@ class Achat(models.Model):
         ("envoyer", "Envoyer"),
         ("archiver", "Archiver"),
     ]
+    STATUT_CHOICES_3 = [
+        ("oui", "OUI"),
+        ("non", "NON"),
+    ]
     projet = models.ForeignKey(Projet, on_delete=models.CASCADE)
     description = models.TextField()
     status = models.CharField(
@@ -346,6 +353,9 @@ class Achat(models.Model):
     )
     approbation_pdg = models.CharField(
         max_length=20, choices=STATUT_CHOICES, default="en_attente"
+    )
+    decaisser_budjet = models.CharField(
+        max_length=3, choices=STATUT_CHOICES_3, default="non"
     )
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)

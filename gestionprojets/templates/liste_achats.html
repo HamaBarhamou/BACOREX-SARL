@@ -11,12 +11,14 @@
         <table class="table table-bordered table-hover">
             <thead class="thead-dark">
                 <tr>
+                    <th>ID</th>
                     <th>Description</th>
                     <th>Budget Demandé</th>
                     <th>Status</th>
                     <th>Appobation du DG/Coordinateur</th>
                     <th>Appobation du DAF</th>
                     <th>Appobation du PDG</th>
+                    <th>Encaissement du budget ?</th>
                     <th>Date Création</th>
                     <th>Actions</th>
                 </tr>
@@ -24,12 +26,14 @@
             <tbody>
                 {% for achat in achats %}
                 <tr>
+                    <td>#{{ achat.id }}</td>
                     <td>{{ achat.description }}</td>
                     <td class="text-center">{{ achat.total_budget }} FCFA</td>
                     <td class="text-center">{{ achat.status }}</td>
                     <td class="text-center">{{ achat.approbation_dg_coordinateur }}</td>
                     <td class="text-center">{{ achat.approbation_daf }}</td>
                     <td class="text-center">{{ achat.approbation_pdg }}</td>
+                    <td class="text-center">{{ achat.decaisser_budjet}}</td>
                     <td class="text-center">{{ achat.date_creation|date:"d/m/Y" }}</td>
                     
                     <td>

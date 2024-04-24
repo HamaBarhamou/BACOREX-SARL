@@ -32,8 +32,8 @@ def unread_notifications_count(context):
     if request.user.is_authenticated:
         unread_count = UserNotification.objects.filter(
             user=request.user, is_read=False
-        ).count() 
-        unread_count = unread_count if unread_count !=0 else ''
+        ).count()
+        unread_count = unread_count if unread_count != 0 else ""
         # Rendre le template avec le contexte nécessaire
         return render_to_string(
             "django_Notifly/unread_notifications_count.html",
