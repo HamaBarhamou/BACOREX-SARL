@@ -1,4 +1,8 @@
-{% extends "detailProjet.html" %}
+
+
+{% extends parent_template %}
+
+
 {% load custom_filters %}
 
 {% block content %}
@@ -12,9 +16,11 @@
                 <div class="col-md-6">
                     <h5 class="card-title">
                         Description 
-                        <a href="{% url 'projectmanagement:modifier_achat' pk achat.id %}" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </a>
+                        {% if request.user.is_chefDeProjet %}
+                            <a href="{% url 'projectmanagement:modifier_achat' pk achat.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        {%endif%}
                     </h5>
                     <p class="card-text">{{ achat.description }}</p>
                     
@@ -41,7 +47,9 @@
                         <th>Quantité</th>
                         <th>Prix Unitaire</th>
                         <th>Sous Total</th>
-                        <th>Actions</th>
+                        {% if request.user.is_chefDeProjet %}
+                            <th>Actions</th>
+                        {%endif%}
                     </tr>
                 </thead>
                 <tbody>
@@ -51,15 +59,17 @@
                         <td class="text-center">{{ article.quantite }}</td>
                         <td class="text-center">{{ article.prix }}</td>
                         <td class="text-center">{{ article.quantite|multiply:article.prix }} FCFA</td>
-                        <td class="text-center">
-                            <a href="{% url 'projectmanagement:modifier_article' pk achat.id article.id %}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{% url 'projectmanagement:supprimer_article' pk achat.id article.id %}" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                            <!-- <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button> -->
-                        </td>
+                        {% if request.user.is_chefDeProjet %}
+                            <td class="text-center">
+                                <a href="{% url 'projectmanagement:modifier_article' pk achat.id article.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'projectmanagement:supprimer_article' pk achat.id article.id %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                <!-- <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button> -->
+                            </td>
+                        {%endif%}
                     </tr>
                     {% empty %}
                     <tr>
@@ -76,36 +86,43 @@
         </div>
     </div>
     
-    <div class="card mb-4">
-        <div class="card-header bg-info text-white text-center">
-            <h4 class="mb-0">Ajouter un Article</h4>
+    {% if request.user.is_chefDeProjet %}
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white text-center">
+                <h4 class="mb-0">Ajouter un Article</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            {{ form.article.label_tag }}
+                            {{ form.article }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.quantite.label_tag }}
+                            {{ form.quantite }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.prix.label_tag }}
+                            {{ form.prix }}
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-info">Ajouter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        {{ form.article.label_tag }}
-                        {{ form.article }}
-                    </div>
-                    <div class="col-md-3">
-                        {{ form.quantite.label_tag }}
-                        {{ form.quantite }}
-                    </div>
-                    <div class="col-md-3">
-                        {{ form.prix.label_tag }}
-                        {{ form.prix }}
-                    </div>
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button type="submit" class="btn btn-info">Ajouter</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+    {% endif %}
     
     <div class="text-center mt-4">
-        <a href="{% url 'projectmanagement:liste_achats' pk %}" class="btn btn-secondary">Retour à la liste des achats</a>
+        {% if request.user.is_caissier %}
+            <a href="{% url 'projectmanagement:all_demande_achats_a_decaisser' %}" class="btn btn-secondary">Retour à la liste des achats</a>
+        {% else %}
+            <a href="{% url 'projectmanagement:liste_achats' pk %}" class="btn btn-secondary">Retour à la liste des achats</a>
+        {% endif%}
+        
     </div>
 </div>
 {% endblock %}

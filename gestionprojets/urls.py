@@ -107,4 +107,9 @@ urlpatterns = [
         views.rejeter,
         name="rejetter_achat",
     ),
+    path(
+        "all_demande_achats_a_decaisser/",
+        views.all_demande_achats_a_decaisser,
+        name="all_demande_achats_a_decaisser",
+    ),
 ]

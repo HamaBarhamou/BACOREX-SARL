@@ -795,6 +795,11 @@ def detail_achat(request, projet_id, achat_id):
         budget_demande=Sum(F("prix") * F("quantite"))
     )["budget_demande"]
     context["budget_demander"] = total_budget if total_budget is not None else 0
+
+    if request.user.is_caissier():
+        context['parent_template'] = "home.html"
+    else:
+        context['parent_template'] = "detailProjet.html"
     return render(request, "detail_achat.html", context)
 
 
@@ -879,3 +884,22 @@ def rejeter(request, projet_id, achat_id):
     achats = get_object_or_404(Achat, pk=achat_id)
     achats.rejeter(request.user)
     return redirect("projectmanagement:liste_achats", projet_id=projet_id)
+
+
+def all_demande_achats_a_decaisser(request):
+    achats = Achat.objects.filter(
+        status="envoyer",
+        approbation_dg_coordinateur="approuve",
+        approbation_daf="approuve",
+        approbation_pdg="approuve",
+    )
+    for achat in achats:
+        total_budget = ArticleAchat.objects.filter(achat=achat).aggregate(
+            budget_demande=Sum(F("prix") * F("quantite"))
+        )["budget_demande"]
+        achat.total_budget = total_budget if total_budget is not None else 0
+        achat.can_reject = achat.peut_rejeter(request.user)
+        achat.projet_id = achat.projet.pk
+    context = {}
+    context["achats"] = achats
+    return render(request, "all_demande_achats_a_decaisser.html", context)

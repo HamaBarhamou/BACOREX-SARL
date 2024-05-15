@@ -1,0 +1,56 @@
+{% extends "home.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <!-- Tableau pour afficher la liste des achats -->
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Description de la demande</th>
+                    <th>Projet</th>
+                    <th>Chef de projet</th>
+                    <th>Budget Demandé</th>
+                    <th>Appobation de la hierachie DG-DAF-PDG</th>
+                    <th>Encaissement du budget ?</th>
+                    <th>Date Création</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for achat in achats %}
+                <tr>
+                    <td>#{{ achat.id }}</td>
+                    <td>{{ achat.description }}</td>
+                    <td>{{ achat.projet.name }}</td>
+                    <td>{{ achat.projet.chef_project }}</td>
+                    <td class="text-center">{{ achat.total_budget }} FCFA</td>
+                    
+                    <td class="text-center">Approuver</td>
+                    
+                    <td class="text-center">{{ achat.decaisser_budjet}}</td>
+                    <td class="text-center">{{ achat.date_creation|date:"d/m/Y" }}</td>
+                    
+                    <td>
+                        <a href="{% url 'projectmanagement:detail_achat' achat.projet_id achat.id %}" class="btn btn-sm btn-primary">Détails</a>
+                        <a href="#" class="btn btn-sm btn-warning">Decaisser</a>
+                        {% if achat.can_reject %}
+                            <a href="#" class="btn btn-sm btn-danger">
+                                {% if request.user.is_chefDeProjet %} 
+                                    Anuler 
+                                {% else %} 
+                                    Rejeter 
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Aucun achat trouvé pour ce projet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
