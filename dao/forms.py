@@ -1,5 +1,5 @@
 from django import forms
-from .models import DAO, ExperienceSimilaire
+from .models import ExperienceSimilaire
 
 
 class DaoForm(forms.Form):
@@ -28,3 +28,22 @@ class ExperienceSimilaireForm(forms.ModelForm):
             "date_fin_travaux",
             "document",
         ]
+        widgets = {
+            "dao": forms.Select(attrs={"class": "form-control"}),
+            "reference_marche": forms.TextInput(attrs={"class": "form-control"}),
+            "objet": forms.TextInput(attrs={"class": "form-control"}),
+            "description_travaux": forms.Textarea(attrs={"class": "form-control"}),
+            "delai_execution_jours": forms.NumberInput(attrs={"class": "form-control"}),
+            "delai_execution_mois": forms.NumberInput(attrs={"class": "form-control"}),
+            "nom_client": forms.TextInput(attrs={"class": "form-control"}),
+            "financement": forms.TextInput(attrs={"class": "form-control"}),
+            "maitre_ouvrage": forms.TextInput(attrs={"class": "form-control"}),
+            "montant_contrat": forms.NumberInput(attrs={"class": "form-control"}),
+            "date_demarrage_travaux": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
+            "date_fin_travaux": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
+            "document": forms.FileInput(attrs={"class": "form-control"}),
+        }

@@ -18,7 +18,11 @@ class DAO(models.Model):
 
 class ExperienceSimilaire(models.Model):
     dao = models.ForeignKey(
-        DAO, related_name="experiences_similaires", on_delete=models.CASCADE
+        DAO,
+        related_name="experiences_similaires",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     reference_marche = models.CharField(max_length=200)
     objet = models.CharField(max_length=600)
