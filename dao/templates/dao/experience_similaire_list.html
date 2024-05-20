@@ -4,25 +4,66 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-primary">Expériences Similaires</h2>
-        <a href="{% url 'dao:create_experience_similaire' %}" class="btn btn-success">Créer Nouveau</a>
+    <div class="card shadow-lg border-0 rounded-lg my-5 overflow-hidden">
+        <div class="card-header bg-primary text-white">
+            <h3 class="text-center font-weight-light">Expériences Similaires</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-outline-success float-right" onclick="location.href='{% url 'dao:create_experience_similaire' %}'">Créer Nouveau</button>
+                </div>
+            </div>
+            <hr>
+            {% if experiences %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Référence Marché</th>
+                                <th>Objet</th>
+                                <th>Description des Travaux</th>
+                                <th>Délai d'Exécution (jours)</th>
+                                <th>Client</th>
+                                <th>Financement</th>
+                                <th>Maître d'Ouvrage</th>
+                                <th>Montant du Contrat</th>
+                                <th>Date de Démarrage</th>
+                                <th>Date de Fin</th>
+                                <th>Document</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for experience in experiences %}
+                                <tr>
+                                    <td><a href="{% url 'dao:experience_similaire_detail' experience.pk %}">{{ experience.reference_marche }}</a></td>
+                                    <td>{{ experience.objet }}</td>
+                                    <td>{{ experience.description_travaux }}</td>
+                                    <td>{{ experience.delai_execution_jours }}</td>
+                                    <td>{{ experience.nom_client }}</td>
+                                    <td>{{ experience.financement }}</td>
+                                    <td>{{ experience.maitre_ouvrage }}</td>
+                                    <td>{{ experience.montant_contrat }}</td>
+                                    <td>{{ experience.date_demarrage_travaux|date:"d/m/Y" }}</td>
+                                    <td>{{ experience.date_fin_travaux|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if experience.document %}
+                                            <a href="{{ experience.document.url }}" class="btn btn-sm btn-primary">Voir</a>
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    Aucune expérience similaire n'a été trouvée.
+                </div>
+            {% endif %}
+        </div>
     </div>
-
-    {% if experiences %}
-        <div class="list-group">
-            {% for experience in experiences %}
-                <a href="{% url 'dao:experience_similaire_detail' experience.pk %}" class="list-group-item list-group-item-action">
-                    <h5 class="mb-1">{{ experience.reference_marche }}</h5>
-                    <p class="mb-1">{{ experience.description_travaux }}</p>
-                    <small>Client: {{ experience.nom_client }}</small>
-                </a>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert alert-info" role="alert">
-            Aucune expérience similaire n'a été trouvée.
-        </div>
-    {% endif %}
 </div>
 {% endblock %}
