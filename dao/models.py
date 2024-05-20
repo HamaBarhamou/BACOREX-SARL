@@ -28,7 +28,6 @@ class ExperienceSimilaire(models.Model):
     objet = models.CharField(max_length=600)
     description_travaux = models.TextField()
     delai_execution_jours = models.PositiveIntegerField()
-    delai_execution_mois = models.PositiveIntegerField()
     nom_client = models.CharField(max_length=200)
     financement = models.CharField(max_length=200)
     maitre_ouvrage = models.CharField(max_length=200)
