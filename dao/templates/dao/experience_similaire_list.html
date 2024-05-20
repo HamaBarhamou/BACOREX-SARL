@@ -1,0 +1,28 @@
+{% extends "home.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary">Expériences Similaires</h2>
+        <a href="{% url 'dao:create_experience_similaire' %}" class="btn btn-success">Créer Nouveau</a>
+    </div>
+
+    {% if experiences %}
+        <div class="list-group">
+            {% for experience in experiences %}
+                <a href="{% url 'dao:experience_similaire_detail' experience.pk %}" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ experience.reference_marche }}</h5>
+                    <p class="mb-1">{{ experience.description_travaux }}</p>
+                    <small>Client: {{ experience.nom_client }}</small>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Aucune expérience similaire n'a été trouvée.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

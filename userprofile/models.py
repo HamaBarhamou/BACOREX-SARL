@@ -129,7 +129,12 @@ class User(AbstractUser):
 
     def gestiondao_role(self):
         return self.has_role(
-            [ASSISTANT_DAO, CHEF_SERVICE_ETUDE, CHEF_DEPARTEMENT_ETUDE]
+            [
+                ASSISTANT_DAO,
+                CHEF_SERVICE_ETUDE,
+                CHEF_DEPARTEMENT_ETUDE,
+                DIRECTEUR_ENERGIE,
+            ]
         )
 
     def gestiondesstock_role(self):

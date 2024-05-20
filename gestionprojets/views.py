@@ -797,9 +797,9 @@ def detail_achat(request, projet_id, achat_id):
     context["budget_demander"] = total_budget if total_budget is not None else 0
 
     if request.user.is_caissier():
-        context['parent_template'] = "home.html"
+        context["parent_template"] = "home.html"
     else:
-        context['parent_template'] = "detailProjet.html"
+        context["parent_template"] = "detailProjet.html"
     return render(request, "detail_achat.html", context)
 
 

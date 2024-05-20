@@ -1,0 +1,24 @@
+{% extends "home.html" %}
+
+{% load static %}
+
+{% block content %}
+    <h2>Experience Similaire Detail</h2>
+    <p>Reference du Marché: {{ experience.reference_marche }}</p>
+    <p>Description des Travaux: {{ experience.description_travaux }}</p>
+    <p>Délai d'exécution (jours): {{ experience.delai_execution_jours }}</p>
+    <p>Délai d'exécution (mois): {{ experience.delai_execution_mois }}</p>
+    <p>Nom du Client: {{ experience.nom_client }}</p>
+    <p>Financement: {{ experience.financement }}</p>
+    <p>Maître d'ouvrage: {{ experience.maitre_ouvrage }}</p>
+    <p>Montant du Contrat: {{ experience.montant_contrat }}</p>
+    <p>Date de Démarrage des Travaux: {{ experience.date_demarrage_travaux }}</p>
+    <p>Date de Fin des Travaux: {{ experience.date_fin_travaux }}</p>
+    <p>Objet: {{ experience.objet }}</p>
+    <p>Document: <a href="{{ experience.document.url }}">Download</a></p>
+    <a href="{% url 'dao:update_experience_similaire' experience.pk %}">Edit</a>
+    <form method="post" action="{% url 'dao:delete_experience_similaire' experience.pk %}">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+{% endblock %}

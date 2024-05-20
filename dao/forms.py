@@ -1,5 +1,5 @@
 from django import forms
-from .models import DAO
+from .models import DAO, ExperienceSimilaire
 
 
 class DaoForm(forms.Form):
@@ -8,3 +8,23 @@ class DaoForm(forms.Form):
     date_publication = forms.DateTimeField()
     date_soumission = forms.DateTimeField()
     document_link = forms.URLField()
+
+
+class ExperienceSimilaireForm(forms.ModelForm):
+    class Meta:
+        model = ExperienceSimilaire
+        fields = [
+            "dao",
+            "reference_marche",
+            "objet",
+            "description_travaux",
+            "delai_execution_jours",
+            "delai_execution_mois",
+            "nom_client",
+            "financement",
+            "maitre_ouvrage",
+            "montant_contrat",
+            "date_demarrage_travaux",
+            "date_fin_travaux",
+            "document",
+        ]
