@@ -3,22 +3,42 @@
 {% load static %}
 
 {% block content %}
-    <h2>Experience Similaire Detail</h2>
-    <p>Reference du Marché: {{ experience.reference_marche }}</p>
-    <p>Description des Travaux: {{ experience.description_travaux }}</p>
-    <p>Délai d'exécution (jours): {{ experience.delai_execution_jours }}</p>
-    <p>Délai d'exécution (mois): {{ experience.delai_execution_mois }}</p>
-    <p>Nom du Client: {{ experience.nom_client }}</p>
-    <p>Financement: {{ experience.financement }}</p>
-    <p>Maître d'ouvrage: {{ experience.maitre_ouvrage }}</p>
-    <p>Montant du Contrat: {{ experience.montant_contrat }}</p>
-    <p>Date de Démarrage des Travaux: {{ experience.date_demarrage_travaux }}</p>
-    <p>Date de Fin des Travaux: {{ experience.date_fin_travaux }}</p>
-    <p>Objet: {{ experience.objet }}</p>
-    <p>Document: <a href="{{ experience.document.url }}">Download</a></p>
-    <a href="{% url 'dao:update_experience_similaire' experience.pk %}">Edit</a>
-    <form method="post" action="{% url 'dao:delete_experience_similaire' experience.pk %}">
-        {% csrf_token %}
-        <button type="submit">Delete</button>
-    </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-4" style="color: #333;">Détails de l'Expérience Similaire</h2>
+            <div class="card shadow-lg border-0 rounded-lg mt-4 overflow-hidden">
+                <div class="card-body">
+                    <h3 class="card-title text-center"><strong>Informations de l'Expérience</strong></h3>
+                    <hr>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Référence du Marché:</strong> {{ experience.reference_marche }}</li>
+                        <li class="list-group-item"><strong>Description des Travaux:</strong> {{ experience.description_travaux }}</li>
+                        <li class="list-group-item"><strong>Délai d'exécution (jours):</strong> {{ experience.delai_execution_jours }}</li>
+                        <li class="list-group-item"><strong>Délai d'exécution (mois):</strong> {{ experience.delai_execution_mois }}</li>
+                        <li class="list-group-item"><strong>Nom du Client:</strong> {{ experience.nom_client }}</li>
+                        <li class="list-group-item"><strong>Financement:</strong> {{ experience.financement }}</li>
+                        <li class="list-group-item"><strong>Maître d'Ouvrage:</strong> {{ experience.maitre_ouvrage }}</li>
+                        <li class="list-group-item"><strong>Montant du Contrat:</strong> {{ experience.montant_contrat }}</li>
+                        <li class="list-group-item"><strong>Date de Démarrage des Travaux:</strong> {{ experience.date_demarrage_travaux }}</li>
+                        <li class="list-group-item"><strong>Date de Fin des Travaux:</strong> {{ experience.date_fin_travaux }}</li>
+                        <li class="list-group-item"><strong>Objet:</strong> {{ experience.objet }}</li>
+                        <li class="list-group-item"><strong>Document:</strong> <a href="{{ experience.document.url }}" class="btn btn-primary">Télécharger</a></li>
+                    </ul>
+                    <div class="card-footer text-center">
+                        <div class="small"><i class="fas fa-user mr-2"></i>Auteur: Nom de l'Auteur</div>
+                        <div class="small"><i class="fas fa-calendar-alt mr-2"></i>Date: 20 Mai 2024</div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <div class="small"><a href="{% url 'dao:update_experience_similaire' experience.pk %}" class="btn btn-warning">Modifier</a></div>
+                    <div class="small"><form method="post" action="{% url 'dao:delete_experience_similaire' experience.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </form></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
