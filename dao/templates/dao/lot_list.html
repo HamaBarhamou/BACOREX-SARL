@@ -1,0 +1,18 @@
+<!-- dao/templates/dao/lot_list.html -->
+{% extends "home.html" %}
+
+{% load static %}
+
+{% block content %}
+<h1>Liste des Lots</h1>
+<a href="{% url 'lot_create' %}">Créer un Lot</a>
+<ul>
+    {% for lot in lots %}
+    <li>
+        {{ lot.nom_lot }} - {{ lot.dao.dao_number }}
+        <a href="{% url 'lot_update' lot.pk %}">Modifier</a>
+        <a href="{% url 'lot_delete' lot.pk %}">Supprimer</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

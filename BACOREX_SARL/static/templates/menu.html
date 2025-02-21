@@ -8,17 +8,20 @@
     {% if request.user.gestiondao_role %}
         <h5 class="text-primary font-weight-bold">Gestion des DAO</h5>
         <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action">
-                <i class="fas fa-plus text-primary"></i> Nouveau DAO
+            <a href="{% url 'dao:dao_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-list text-primary"></i> Voir tous les DAO
             </a>
-            <a href="#" class="list-group-item list-group-item-action">
-                <i class="fas fa-edit text-primary"></i> Travailler sur un DAO
+        </div>
+
+        <div class="list-group">
+            <a href="{% url 'dao:reponse_dao_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-list text-primary"></i> Liste des Réponses DAO
             </a>
-            <a href="#" class="list-group-item list-group-item-action">
-                <i class="fas fa-paper-plane text-primary"></i> Envoyer DAO
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">
-                <i class="fas fa-list text-primary"></i> Liste des DAO en Cours
+        </div>
+
+        <div class="list-group">
+            <a href="{% url 'dao:rapport_depouillement_list' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-list text-primary"></i> Liste des Rapports
             </a>
         </div>
 

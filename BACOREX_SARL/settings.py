@@ -197,9 +197,8 @@ if not DEBUG:
 
 STATIC_ROOT = "static/"
 
-MEDIA_URL = "/BACOREX_SARL/static/images/"
-
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'BACOREX_SA#RL/static/images')
+# MEDIA_URL = "/BACOREX_SARL/static/images/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "/static/images")
 MEDIA_ROOT = "static/images"
 
 
@@ -225,3 +224,7 @@ print(
         EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
     )
 )
+
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
+XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]

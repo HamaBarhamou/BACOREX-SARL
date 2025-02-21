@@ -1,0 +1,18 @@
+<!-- dao/templates/dao/offre_lot_list.html -->
+{% extends "home.html" %}
+
+{% load static %}
+
+{% block content %}
+<h1>Liste des Offres par Lot</h1>
+<a href="{% url 'offre_lot_create' %}">Créer une Offre</a>
+<ul>
+    {% for offre in offres %}
+    <li>
+        {{ offre.lot.nom_lot }} - {{ offre.ligne_rapport.nom_soumissionnaire }} - {{ offre.offre_financiere }}
+        <a href="{% url 'offre_lot_update' offre.pk %}">Modifier</a>
+        <a href="{% url 'offre_lot_delete' offre.pk %}">Supprimer</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

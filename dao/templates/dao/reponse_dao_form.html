@@ -1,0 +1,111 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Offre - DAO {{ dao.dao_number }}</h2>
+            <p class="text-muted">{{ dao.dao_title }}</p>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            {% if reponse %}
+                <div class="alert alert-info mb-4">
+                    <h5>Offre existante</h5>
+                    <p>Cette offre a été créée le {{ reponse.created_at|date:"d/m/Y H:i" }}</p>
+                </div>
+
+                {% if reponse.type_reponse == "URL" %}
+                    <div class="mb-4">
+                        <h5>Lien URL</h5>
+                        <a href="{{ reponse.url }}" target="_blank" class="btn btn-info">
+                            <i class="fas fa-external-link-alt"></i> Consulter l'URL
+                        </a>
+                    </div>
+                {% elif reponse.type_reponse == "SCAN" or reponse.type_reponse == "ZIP" %}
+                    <div class="mb-4">
+                        <h5>Document</h5>
+                        {% if reponse.fichier %}
+                            {% if reponse.type_reponse == "SCAN" and reponse.fichier.name|lower|slice:"-4:" == ".pdf" %}
+                                <iframe src="{{ reponse.fichier.url }}" width="100%" height="600px" style="border: none;"></iframe>
+                            {% elif reponse.type_reponse == "ZIP" %}
+                                <p>Fichier compressé : <a href="{{ reponse.fichier.url }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-download"></i> Télécharger le fichier
+                                </a></p>
+                            {% else %}
+                                <p>Fichier non visualisable : <a href="{{ reponse.fichier.url }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-download"></i> Télécharger le fichier
+                                </a></p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+
+                <div class="form-group mb-3">
+                    <label for="{{ form.type_reponse.id_for_label }}" class="form-label">Type de réponse</label>
+                    {{ form.type_reponse }}
+                    {% if form.type_reponse.help_text %}
+                    <small class="form-text text-muted">{{ form.type_reponse.help_text }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="{{ form.fichier.id_for_label }}" class="form-label">Fichier</label>
+                    {{ form.fichier }}
+                    {% if reponse and reponse.fichier %}
+                        <div class="mt-2">
+                            <a href="{{ reponse.fichier.url }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-download"></i> Télécharger le fichier actuel
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="{{ form.url.id_for_label }}" class="form-label">URL</label>
+                    {{ form.url }}
+                    {% if form.url.help_text %}
+                    <small class="form-text text-muted">{{ form.url.help_text }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        {% if reponse %}
+                            <i class="fas fa-save"></i> Mettre à jour l'offre
+                        {% else %}
+                            <i class="fas fa-plus"></i> Créer l'offre
+                        {% endif %}
+                    </button>
+                    <a href="{% url 'dao:dao_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

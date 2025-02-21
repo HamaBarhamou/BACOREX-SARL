@@ -1,0 +1,108 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Liste des DAO</h2>
+    <a href="{% url 'dao:dao_create' %}" class="btn btn-primary mb-3">
+        <i class="fas fa-plus"></i> Créer un DAO
+    </a>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Numéro DAO</th>
+                    <th>Titre</th>
+                    <th>Date Publication</th>
+                    <th>Date Soumission</th>
+                    <th>Statut</th>
+                    <th>Document</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dao in daos %}
+                <tr>
+                    <td>{{ dao.dao_number }}</td>
+                    <td>{{ dao.dao_title }}</td>
+                    <td>{{ dao.date_publication|date:"d/m/Y H:i" }}</td>
+                    <td>{{ dao.date_soumission|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if dao.is_closed %}
+                            <span class="badge badge-danger">Clôturé</span>
+                        {% else %}
+                            <span class="badge badge-success">En cours</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if dao.fichier %}
+                            <a href="{{ dao.fichier.url }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-download"></i> Télécharger
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'dao:dao_update' dao.pk %}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            
+                            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal{{ dao.pk }}">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+
+                            <a href="{% url 'dao:lot_list' %}?dao={{ dao.pk }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-list"></i> Lots
+                            </a>
+
+                            <a href="{% url 'dao:reponse_dao_manage' dao.pk %}" class="btn btn-sm btn-success">
+                                <i class="fas fa-file-alt"></i> Offre
+                            </a>
+
+                            <a href="{% url 'dao:rapport_depouillement_list' %}?dao={{ dao.pk }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-file-alt"></i> Rapport
+                            </a>
+                        </div>
+
+                        <!-- Modal de confirmation de suppression -->
+                        <div class="modal fade" id="deleteModal{{ dao.pk }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Confirmer la suppression</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Êtes-vous sûr de vouloir supprimer le DAO {{ dao.dao_number }} ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                        <form action="{% url 'dao:dao_delete' dao.pk %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,13 +1,66 @@
 from django import forms
-from .models import ExperienceSimilaire
+from .models import (
+    ExperienceSimilaire,
+    DAO,
+    Lot,
+    ReponseDAO,
+    RapportDepouillement,
+    LigneRapport,
+    OffreLot,
+)
 
 
-class DaoForm(forms.Form):
-    dao_number = forms.CharField(max_length=200)
-    dao_title = forms.CharField(max_length=200)
-    date_publication = forms.DateTimeField()
-    date_soumission = forms.DateTimeField()
-    document_link = forms.URLField()
+class DAOForm(forms.ModelForm):
+    class Meta:
+        model = DAO
+        fields = [
+            "dao_number",
+            "dao_title",
+            "date_publication",
+            "date_soumission",
+            "is_closed",
+            "fichier",
+        ]
+        widgets = {
+            "date_publication": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_soumission": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "fichier": forms.FileInput(attrs={"class": "form-control"}),
+        }
+
+
+class LotForm(forms.ModelForm):
+    class Meta:
+        model = Lot
+        fields = ["dao", "nom_lot", "description"]
+
+
+class ReponseDAOForm(forms.ModelForm):
+    class Meta:
+        model = ReponseDAO
+        fields = ["type_reponse", "fichier", "url"]  # Retiré 'dao' des fields
+        widgets = {
+            "type_reponse": forms.Select(attrs={"class": "form-control"}),
+            "fichier": forms.FileInput(attrs={"class": "form-control"}),
+            "url": forms.URLInput(attrs={"class": "form-control"}),
+        }
+
+
+class RapportDepouillementForm(forms.ModelForm):
+    class Meta:
+        model = RapportDepouillement
+        fields = ["dao"]
+
+
+class LigneRapportForm(forms.ModelForm):
+    class Meta:
+        model = LigneRapport
+        fields = ["rapport", "nom_soumissionnaire", "observations"]
+
+
+class OffreLotForm(forms.ModelForm):
+    class Meta:
+        model = OffreLot
+        fields = ["ligne_rapport", "lot", "offre_financiere"]
 
 
 class ExperienceSimilaireForm(forms.ModelForm):
