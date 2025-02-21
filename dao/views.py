@@ -3,11 +3,11 @@ from django.http import HttpResponse
 from .forms import (
     DAOForm,
     ExperienceSimilaireForm,
-    LotForm,
     ReponseDAOForm,
     RapportDepouillementForm,
     LigneRapportForm,
     OffreLotForm,
+    LotFormSet,
 )
 from django.template import loader
 from .models import (
@@ -21,6 +21,7 @@ from .models import (
 )
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 
 
 @login_required(login_url="/user/")
@@ -107,24 +108,51 @@ def dao_list(request):
 def dao_create(request):
     if request.method == "POST":
         form = DAOForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect("dao:dao_list")
+        formset = LotFormSet(request.POST, instance=DAO())
+
+        if form.is_valid() and formset.is_valid():
+            try:
+                with transaction.atomic():
+                    dao = form.save()
+                    formset.instance = dao
+                    formset.save()
+                messages.success(request, "DAO et lots créés avec succès.")
+                return redirect("dao:dao_list")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la création: {str(e)}")
     else:
         form = DAOForm()
-    return render(request, "dao/dao_create_form.html", {"form": form})
+        formset = LotFormSet(instance=DAO())
+
+    return render(
+        request, "dao/dao_create_form.html", {"form": form, "formset": formset}
+    )
 
 
 def dao_update(request, pk):
     dao = get_object_or_404(DAO, pk=pk)
     if request.method == "POST":
         form = DAOForm(request.POST, request.FILES, instance=dao)
-        if form.is_valid():
-            form.save()
-            return redirect("dao:dao_list")
+        formset = LotFormSet(request.POST, instance=dao)
+
+        if form.is_valid() and formset.is_valid():
+            try:
+                with transaction.atomic():
+                    dao = form.save()
+                    formset.save()
+                messages.success(request, "DAO et lots mis à jour avec succès.")
+                return redirect("dao:dao_list")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la mise à jour: {str(e)}")
     else:
         form = DAOForm(instance=dao)
-    return render(request, "dao/dao_create_form.html", {"form": form})
+        formset = LotFormSet(instance=dao)
+
+    return render(
+        request,
+        "dao/dao_create_form.html",
+        {"form": form, "formset": formset, "is_update": True},
+    )
 
 
 def dao_delete(request, pk):

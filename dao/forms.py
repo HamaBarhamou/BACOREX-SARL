@@ -8,6 +8,7 @@ from .models import (
     LigneRapport,
     OffreLot,
 )
+from django.forms import inlineformset_factory
 
 
 class DAOForm(forms.ModelForm):
@@ -22,16 +23,31 @@ class DAOForm(forms.ModelForm):
             "fichier",
         ]
         widgets = {
-            "date_publication": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "date_soumission": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "dao_number": forms.TextInput(attrs={"class": "form-control"}),
+            "dao_title": forms.TextInput(attrs={"class": "form-control"}),
+            "date_publication": forms.DateTimeInput(
+                attrs={"type": "datetime-local", "class": "form-control"}
+            ),
+            "date_soumission": forms.DateTimeInput(
+                attrs={"type": "datetime-local", "class": "form-control"}
+            ),
             "fichier": forms.FileInput(attrs={"class": "form-control"}),
+            "is_closed": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
 
-class LotForm(forms.ModelForm):
-    class Meta:
-        model = Lot
-        fields = ["dao", "nom_lot", "description"]
+# Création du formset pour les lots
+LotFormSet = inlineformset_factory(
+    DAO,
+    Lot,
+    fields=("nom_lot", "description"),
+    extra=1,  # Nombre de formulaires vides à afficher
+    can_delete=True,  # Permet la suppression des lots
+    widgets={
+        "nom_lot": forms.TextInput(attrs={"class": "form-control"}),
+        "description": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+    },
+)
 
 
 class ReponseDAOForm(forms.ModelForm):
