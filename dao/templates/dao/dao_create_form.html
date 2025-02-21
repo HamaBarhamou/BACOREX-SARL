@@ -37,30 +37,71 @@
                             Numéro du DAO
                         </label>
                         {{ form.dao_number }}
+                        {% if form.dao_number.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.dao_number.errors|join:", " }}
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-md-6">
                         <label for="{{ form.dao_title.id_for_label }}" class="form-label fw-bold">
                             Titre du DAO
                         </label>
                         {{ form.dao_title }}
+                        {% if form.dao_title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.dao_title.errors|join:", " }}
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-md-6">
                         <label for="{{ form.date_publication.id_for_label }}" class="form-label fw-bold">
                             Date de publication
                         </label>
-                        {{ form.date_publication }}
+                        <input type="datetime-local" 
+                               name="date_publication" 
+                               class="form-control" 
+                               id="{{ form.date_publication.id_for_label }}"
+                               value="{% if form.date_publication.value %}{{ form.date_publication.value|date:'Y-m-d\TH:i' }}{% endif %}">
+                        {% if form.date_publication.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.date_publication.errors|join:", " }}
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-md-6">
                         <label for="{{ form.date_soumission.id_for_label }}" class="form-label fw-bold">
                             Date de soumission
                         </label>
-                        {{ form.date_soumission }}
+                        <input type="datetime-local" 
+                               name="date_soumission" 
+                               class="form-control" 
+                               id="{{ form.date_soumission.id_for_label }}"
+                               value="{% if form.date_soumission.value %}{{ form.date_soumission.value|date:'Y-m-d\TH:i' }}{% endif %}">
+                        {% if form.date_soumission.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.date_soumission.errors|join:", " }}
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-12">
                         <label for="{{ form.fichier.id_for_label }}" class="form-label fw-bold">
                             Fichier
                         </label>
                         {{ form.fichier }}
+                        {% if form.instance.fichier %}
+                            <div class="mt-2">
+                                <p class="mb-1">Fichier actuel : {{ form.instance.fichier.name }}</p>
+                                <a href="{{ form.instance.fichier.url }}" class="btn btn-sm btn-info" target="_blank">
+                                    <i class="fas fa-download me-2"></i>Télécharger
+                                </a>
+                            </div>
+                        {% endif %}
+                        {% if form.fichier.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.fichier.errors|join:", " }}
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-12">
                         <div class="form-check">
@@ -68,6 +109,11 @@
                             <label class="form-check-label" for="{{ form.is_closed.id_for_label }}">
                                 DAO clôturé
                             </label>
+                            {% if form.is_closed.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.is_closed.errors|join:", " }}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -79,21 +125,45 @@
                     {% for lot_form in formset %}
                         <div class="lot-form card mb-3 bg-light border-0">
                             <div class="card-body">
-                                {% if lot_form.instance.pk %}{{ lot_form.DELETE }}{% endif %}
+                                {% if lot_form.instance.pk %}
+                                    <div class="form-check mb-3">
+                                        {{ lot_form.DELETE }}
+                                        <label class="form-check-label text-danger" for="{{ lot_form.DELETE.id_for_label }}">
+                                            Supprimer ce lot
+                                        </label>
+                                    </div>
+                                {% endif %}
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Nom du lot</label>
                                         {{ lot_form.nom_lot }}
+                                        {% if lot_form.nom_lot.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ lot_form.nom_lot.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-bold">Description</label>
                                         {{ lot_form.description }}
+                                        {% if lot_form.description.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ lot_form.description.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
+                                {{ lot_form.id }}
                             </div>
                         </div>
                     {% endfor %}
                 </div>
+
+                {% if formset.non_form_errors %}
+                    <div class="alert alert-danger mb-3">
+                        {{ formset.non_form_errors|join:", " }}
+                    </div>
+                {% endif %}
 
                 <button type="button" id="add-lot" class="btn btn-outline-primary mb-4">
                     <i class="fas fa-plus me-2"></i>Ajouter un lot
@@ -136,6 +206,12 @@ document.getElementById('add-lot').addEventListener('click', function() {
     formCopy.querySelectorAll('input[type="text"], textarea').forEach(input => {
         input.value = '';
     });
+    
+    // Remove DELETE checkbox if present
+    const deleteCheckbox = formCopy.querySelector('.form-check');
+    if (deleteCheckbox) {
+        deleteCheckbox.remove();
+    }
     
     formsetDiv.appendChild(formCopy);
     totalForms.value = currentForms + 1;
