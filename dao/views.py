@@ -20,6 +20,7 @@ from .models import (
     RapportDepouillement,
     LigneRapport,
     OffreLot,
+    Soumissionnaire,
 )
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -271,18 +272,33 @@ def rapport_depouillement_create(request, dao_pk):
     dao = get_object_or_404(DAO, pk=dao_pk)
     lots = dao.lots.all()
 
-    # Préparer les données des offres
-    offres_data = {}
-
     if request.method == "POST":
         form = RapportDepouillementForm(request.POST)
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    rapport = form.save()
+                    rapport = form.save(commit=False)
+                    rapport.dao = dao
+                    rapport.save()
+
                     formset = LigneRapportFormSet(request.POST, instance=rapport)
                     if formset.is_valid():
-                        lignes = formset.save()
+                        lignes = formset.save(commit=False)
+                        for ligne in lignes:
+                            # Gérer le soumissionnaire
+                            nouveau_soumissionnaire = request.POST.get(
+                                f"lignes-{ligne.prefix}-nouveau_soumissionnaire"
+                            )
+                            if nouveau_soumissionnaire:
+                                (
+                                    soumissionnaire,
+                                    created,
+                                ) = Soumissionnaire.objects.get_or_create(
+                                    nom=nouveau_soumissionnaire
+                                )
+                                ligne.soumissionnaire = soumissionnaire
+                            ligne.save()
+
                         # Gérer les offres pour chaque ligne
                         for ligne in lignes:
                             offre_formset = OffreLotFormSet(
@@ -305,18 +321,11 @@ def rapport_depouillement_create(request, dao_pk):
         form = RapportDepouillementForm(initial={"dao": dao})
         formset = LigneRapportFormSet()
 
-    # Pour chaque lot et chaque ligne, préparer les données d'offre
-    for ligne_form in formset:
-        for lot in lots:
-            key = f"offres_{ligne_form.instance.pk}_{lot.pk}"
-            offres_data[key] = {"lot": lot, "offre_financiere": None}
-
     context = {
         "form": form,
         "formset": formset,
         "dao": dao,
         "lots": lots,
-        "offres_data": offres_data,
     }
     return render(request, "dao/rapport_depouillement_form.html", context)
 
@@ -324,9 +333,6 @@ def rapport_depouillement_create(request, dao_pk):
 def rapport_depouillement_update(request, pk):
     rapport = get_object_or_404(RapportDepouillement, pk=pk)
     lots = rapport.dao.lots.all()
-
-    # Préparer les données des offres existantes
-    offres_data = {}
 
     if request.method == "POST":
         form = RapportDepouillementForm(request.POST, instance=rapport)
@@ -336,7 +342,23 @@ def rapport_depouillement_update(request, pk):
                     rapport = form.save()
                     formset = LigneRapportFormSet(request.POST, instance=rapport)
                     if formset.is_valid():
-                        lignes = formset.save()
+                        lignes = formset.save(commit=False)
+                        for ligne in lignes:
+                            # Gérer le soumissionnaire
+                            nouveau_soumissionnaire = request.POST.get(
+                                f"lignes-{ligne.prefix}-nouveau_soumissionnaire"
+                            )
+                            if nouveau_soumissionnaire:
+                                (
+                                    soumissionnaire,
+                                    created,
+                                ) = Soumissionnaire.objects.get_or_create(
+                                    nom=nouveau_soumissionnaire
+                                )
+                                ligne.soumissionnaire = soumissionnaire
+                            ligne.save()
+
+                        # Gérer les offres pour chaque ligne
                         for ligne in lignes:
                             offre_formset = OffreLotFormSet(
                                 request.POST,
@@ -358,23 +380,12 @@ def rapport_depouillement_update(request, pk):
         form = RapportDepouillementForm(instance=rapport)
         formset = LigneRapportFormSet(instance=rapport)
 
-        # Récupérer les offres existantes
-        for ligne_form in formset:
-            for lot in lots:
-                offre = lot.offres.filter(ligne_rapport=ligne_form.instance).first()
-                key = f"offres_{ligne_form.instance.pk}_{lot.pk}"
-                offres_data[key] = {
-                    "lot": lot,
-                    "offre_financiere": offre.offre_financiere if offre else None,
-                }
-
     context = {
         "form": form,
         "formset": formset,
         "rapport": rapport,
         "dao": rapport.dao,
         "lots": lots,
-        "offres_data": offres_data,
     }
     return render(request, "dao/rapport_depouillement_form.html", context)
 

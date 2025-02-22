@@ -7,6 +7,7 @@ from .models import (
     RapportDepouillement,
     LigneRapport,
     OffreLot,
+    Soumissionnaire,
 )
 from django.forms import inlineformset_factory
 
@@ -69,13 +70,45 @@ class RapportDepouillementForm(forms.ModelForm):
 
 
 class LigneRapportForm(forms.ModelForm):
+    nouveau_soumissionnaire = forms.CharField(
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+        label="Nouveau soumissionnaire (si non existant)",
+    )
+
     class Meta:
         model = LigneRapport
-        fields = ["nom_soumissionnaire", "observations"]
+        fields = ["soumissionnaire", "observations"]
         widgets = {
-            "nom_soumissionnaire": forms.TextInput(attrs={"class": "form-control"}),
+            "soumissionnaire": forms.Select(attrs={"class": "form-control"}),
             "observations": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrer les soumissionnaires existants
+        self.fields["soumissionnaire"].queryset = Soumissionnaire.objects.all()
+        self.fields["soumissionnaire"].required = False  # Rendre le champ optionnel
+
+    def clean(self):
+        cleaned_data = super().clean()
+        soumissionnaire = cleaned_data.get("soumissionnaire")
+        nouveau_soumissionnaire = cleaned_data.get("nouveau_soumissionnaire")
+
+        if not soumissionnaire and not nouveau_soumissionnaire:
+            raise forms.ValidationError(
+                "Vous devez sélectionner un soumissionnaire existant ou en créer un nouveau."
+            )
+
+        if nouveau_soumissionnaire:
+            # Créer un nouveau soumissionnaire
+            soumissionnaire, created = Soumissionnaire.objects.get_or_create(
+                nom=nouveau_soumissionnaire
+            )
+            cleaned_data["soumissionnaire"] = soumissionnaire
+
+        return cleaned_data
 
 
 class OffreLotForm(forms.ModelForm):
@@ -90,7 +123,11 @@ class OffreLotForm(forms.ModelForm):
 
 # Création des formsets
 LigneRapportFormSet = inlineformset_factory(
-    RapportDepouillement, LigneRapport, form=LigneRapportForm, extra=1, can_delete=True
+    RapportDepouillement,
+    LigneRapport,
+    form=LigneRapportForm,
+    extra=1,
+    can_delete=True,
 )
 
 OffreLotFormSet = inlineformset_factory(

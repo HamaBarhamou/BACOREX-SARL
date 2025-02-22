@@ -50,13 +50,20 @@
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold">Nom du soumissionnaire</label>
-                                        {{ ligne_form.nom_soumissionnaire }}
-                                        {% if ligne_form.nom_soumissionnaire.errors %}
+                                        <label class="form-label fw-bold">Soumissionnaire existant</label>
+                                        {{ ligne_form.soumissionnaire }}
+                                        {% if ligne_form.soumissionnaire.errors %}
                                             <div class="invalid-feedback d-block">
-                                                {{ ligne_form.nom_soumissionnaire.errors|join:", " }}
+                                                {{ ligne_form.soumissionnaire.errors|join:", " }}
                                             </div>
                                         {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Nouveau soumissionnaire</label>
+                                        <input type="text"
+                                               name="lignes-{{ forloop.counter0 }}-nouveau_soumissionnaire"
+                                               class="form-control"
+                                               placeholder="Entrez un nouveau soumissionnaire">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-bold">Observations</label>

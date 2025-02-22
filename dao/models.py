@@ -83,6 +83,17 @@ class RapportDepouillement(models.Model):
         return "Rapport de dépouillement pour DAO {}".format(self.dao.dao_number)
 
 
+class Soumissionnaire(models.Model):
+    nom = models.CharField(max_length=200)  # Nom du soumissionnaire
+    adresse = models.CharField(max_length=200, blank=True, null=True)  # Adresse
+    telephone = models.CharField(max_length=20, blank=True, null=True)  # Téléphone
+    email = models.EmailField(blank=True, null=True)  # Email
+    # Ajoutez d'autres champs si nécessaire
+
+    def __str__(self):
+        return self.nom
+
+
 # Modèle LigneRapport
 class LigneRapport(models.Model):
     rapport = models.ForeignKey(
@@ -90,7 +101,11 @@ class LigneRapport(models.Model):
         related_name="lignes",
         on_delete=models.CASCADE,
     )
-    nom_soumissionnaire = models.CharField(max_length=200)  # Nom du soumissionnaire
+    soumissionnaire = models.ForeignKey(
+        Soumissionnaire,
+        related_name="lignes_rapport",
+        on_delete=models.CASCADE,
+    )
     observations = models.TextField(blank=True, null=True)  # Observations générales
 
     def __str__(self):
