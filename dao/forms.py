@@ -65,18 +65,37 @@ class RapportDepouillementForm(forms.ModelForm):
     class Meta:
         model = RapportDepouillement
         fields = ["dao"]
+        widgets = {"dao": forms.HiddenInput()}
 
 
 class LigneRapportForm(forms.ModelForm):
     class Meta:
         model = LigneRapport
-        fields = ["rapport", "nom_soumissionnaire", "observations"]
+        fields = ["nom_soumissionnaire", "observations"]
+        widgets = {
+            "nom_soumissionnaire": forms.TextInput(attrs={"class": "form-control"}),
+            "observations": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }
 
 
 class OffreLotForm(forms.ModelForm):
     class Meta:
         model = OffreLot
-        fields = ["ligne_rapport", "lot", "offre_financiere"]
+        fields = ["lot", "offre_financiere"]
+        widgets = {
+            "lot": forms.Select(attrs={"class": "form-control"}),
+            "offre_financiere": forms.NumberInput(attrs={"class": "form-control"}),
+        }
+
+
+# Création des formsets
+LigneRapportFormSet = inlineformset_factory(
+    RapportDepouillement, LigneRapport, form=LigneRapportForm, extra=1, can_delete=True
+)
+
+OffreLotFormSet = inlineformset_factory(
+    LigneRapport, OffreLot, form=OffreLotForm, extra=1, can_delete=True
+)
 
 
 class ExperienceSimilaireForm(forms.ModelForm):

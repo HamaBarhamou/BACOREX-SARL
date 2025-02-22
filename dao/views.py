@@ -8,6 +8,8 @@ from .forms import (
     LigneRapportForm,
     OffreLotForm,
     LotFormSet,
+    LigneRapportFormSet,
+    OffreLotFormSet,
 )
 from django.template import loader
 from .models import (
@@ -185,29 +187,6 @@ def lot_list(request):
     return render(request, "dao/lot_list.html", {"lots": lots})
 
 
-def lot_create(request):
-    if request.method == "POST":
-        form = LotForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("lot_list")
-    else:
-        form = LotForm()
-    return render(request, "dao/lot_form.html", {"form": form})
-
-
-def lot_update(request, pk):
-    lot = get_object_or_404(Lot, pk=pk)
-    if request.method == "POST":
-        form = LotForm(request.POST, instance=lot)
-        if form.is_valid():
-            form.save()
-            return redirect("lot_list")
-    else:
-        form = LotForm(instance=lot)
-    return render(request, "dao/lot_form.html", {"form": form})
-
-
 def lot_delete(request, pk):
     lot = get_object_or_404(Lot, pk=pk)
     if request.method == "POST":
@@ -278,34 +257,133 @@ def reponse_dao_delete(request, pk):
     return render(request, "dao/reponse_dao_confirm_delete.html", {"reponse": reponse})
 
 
+def rapport_depouillement_manage(request, dao_pk):
+    dao = get_object_or_404(DAO, pk=dao_pk)
+    rapport = RapportDepouillement.objects.filter(dao=dao).first()
+
+    if rapport:
+        return redirect("dao:rapport_depouillement_update", pk=rapport.pk)
+    else:
+        return redirect("dao:rapport_depouillement_create", dao_pk=dao_pk)
+
+
+def rapport_depouillement_create(request, dao_pk):
+    dao = get_object_or_404(DAO, pk=dao_pk)
+    lots = dao.lots.all()
+
+    # Préparer les données des offres
+    offres_data = {}
+
+    if request.method == "POST":
+        form = RapportDepouillementForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    rapport = form.save()
+                    formset = LigneRapportFormSet(request.POST, instance=rapport)
+                    if formset.is_valid():
+                        lignes = formset.save()
+                        # Gérer les offres pour chaque ligne
+                        for ligne in lignes:
+                            offre_formset = OffreLotFormSet(
+                                request.POST,
+                                instance=ligne,
+                                prefix=f"offres_{ligne.id}",
+                            )
+                            if offre_formset.is_valid():
+                                offre_formset.save()
+                            else:
+                                raise ValueError("Erreur dans les offres")
+
+                        messages.success(
+                            request, "Rapport de dépouillement créé avec succès."
+                        )
+                        return redirect("dao:dao_list")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la création: {str(e)}")
+    else:
+        form = RapportDepouillementForm(initial={"dao": dao})
+        formset = LigneRapportFormSet()
+
+    # Pour chaque lot et chaque ligne, préparer les données d'offre
+    for ligne_form in formset:
+        for lot in lots:
+            key = f"offres_{ligne_form.instance.pk}_{lot.pk}"
+            offres_data[key] = {"lot": lot, "offre_financiere": None}
+
+    context = {
+        "form": form,
+        "formset": formset,
+        "dao": dao,
+        "lots": lots,
+        "offres_data": offres_data,
+    }
+    return render(request, "dao/rapport_depouillement_form.html", context)
+
+
+def rapport_depouillement_update(request, pk):
+    rapport = get_object_or_404(RapportDepouillement, pk=pk)
+    lots = rapport.dao.lots.all()
+
+    # Préparer les données des offres existantes
+    offres_data = {}
+
+    if request.method == "POST":
+        form = RapportDepouillementForm(request.POST, instance=rapport)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    rapport = form.save()
+                    formset = LigneRapportFormSet(request.POST, instance=rapport)
+                    if formset.is_valid():
+                        lignes = formset.save()
+                        for ligne in lignes:
+                            offre_formset = OffreLotFormSet(
+                                request.POST,
+                                instance=ligne,
+                                prefix=f"offres_{ligne.id}",
+                            )
+                            if offre_formset.is_valid():
+                                offre_formset.save()
+                            else:
+                                raise ValueError("Erreur dans les offres")
+
+                        messages.success(
+                            request, "Rapport de dépouillement mis à jour avec succès."
+                        )
+                        return redirect("dao:dao_list")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la mise à jour: {str(e)}")
+    else:
+        form = RapportDepouillementForm(instance=rapport)
+        formset = LigneRapportFormSet(instance=rapport)
+
+        # Récupérer les offres existantes
+        for ligne_form in formset:
+            for lot in lots:
+                offre = lot.offres.filter(ligne_rapport=ligne_form.instance).first()
+                key = f"offres_{ligne_form.instance.pk}_{lot.pk}"
+                offres_data[key] = {
+                    "lot": lot,
+                    "offre_financiere": offre.offre_financiere if offre else None,
+                }
+
+    context = {
+        "form": form,
+        "formset": formset,
+        "rapport": rapport,
+        "dao": rapport.dao,
+        "lots": lots,
+        "offres_data": offres_data,
+    }
+    return render(request, "dao/rapport_depouillement_form.html", context)
+
+
 def rapport_depouillement_list(request):
     rapports = RapportDepouillement.objects.all()
     return render(
         request, "dao/rapport_depouillement_list.html", {"rapports": rapports}
     )
-
-
-def rapport_depouillement_create(request):
-    if request.method == "POST":
-        form = RapportDepouillementForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("rapport_depouillement_list")
-    else:
-        form = RapportDepouillementForm()
-    return render(request, "dao/rapport_depouillement_form.html", {"form": form})
-
-
-def rapport_depouillement_update(request, pk):
-    rapport = get_object_or_404(RapportDepouillement, pk=pk)
-    if request.method == "POST":
-        form = RapportDepouillementForm(request.POST, instance=rapport)
-        if form.is_valid():
-            form.save()
-            return redirect("rapport_depouillement_list")
-    else:
-        form = RapportDepouillementForm(instance=rapport)
-    return render(request, "dao/rapport_depouillement_form.html", {"form": form})
 
 
 def rapport_depouillement_delete(request, pk):

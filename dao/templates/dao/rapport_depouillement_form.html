@@ -1,0 +1,159 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                {% if rapport %}
+                    Modifier le rapport de dépouillement
+                {% else %}
+                    Créer un rapport de dépouillement
+                {% endif %}
+            </h1>
+            <p class="text-muted">DAO: {{ dao.dao_number }} - {{ dao.dao_title }}</p>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} shadow-sm border-0">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {{ form }}
+
+                <!-- Soumissionnaires -->
+                <h4 class="mb-3">Soumissionnaires</h4>
+                {{ formset.management_form }}
+                <div id="soumissionnaires-formset">
+                    {% for ligne_form in formset %}
+                        <div class="soumissionnaire-form card mb-4 bg-light border-0">
+                            <div class="card-body">
+                                {% if ligne_form.instance.pk %}
+                                    <div class="form-check mb-3">
+                                        {{ ligne_form.DELETE }}
+                                        <label class="form-check-label text-danger" for="{{ ligne_form.DELETE.id_for_label }}">
+                                            Supprimer ce soumissionnaire
+                                        </label>
+                                    </div>
+                                {% endif %}
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Nom du soumissionnaire</label>
+                                        {{ ligne_form.nom_soumissionnaire }}
+                                        {% if ligne_form.nom_soumissionnaire.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ ligne_form.nom_soumissionnaire.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Observations</label>
+                                        {{ ligne_form.observations }}
+                                        {% if ligne_form.observations.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ ligne_form.observations.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Offres par lot -->
+                                <h5 class="mt-4 mb-3">Offres par lot</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Lot</th>
+                                                <th>Offre financière</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for lot in lots %}
+                                            <tr>
+                                                <td>{{ lot.nom_lot }}</td>
+                                                <td>
+                                                    <input type="number" 
+                                                           name="offres_{{ ligne_form.instance.pk }}-{{ forloop.counter0 }}-offre_financiere"
+                                                           class="form-control form-control-sm"
+                                                           value="{{ offres_data.offres_ligne_form.instance.pk_lot.pk.offre_financiere|default:'' }}"
+                                                    >
+                                                    <input type="hidden" 
+                                                           name="offres_{{ ligne_form.instance.pk }}-{{ forloop.counter0 }}-lot"
+                                                           value="{{ lot.pk }}">
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" id="add-soumissionnaire" class="btn btn-outline-primary mb-4">
+                    <i class="fas fa-plus me-2"></i>Ajouter un soumissionnaire
+                </button>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-2"></i>
+                        {% if rapport %}
+                            Mettre à jour
+                        {% else %}
+                            Enregistrer
+                        {% endif %}
+                    </button>
+                    <a href="{% url 'dao:dao_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('add-soumissionnaire').addEventListener('click', function() {
+    const formsetDiv = document.getElementById('soumissionnaires-formset');
+    const formCopy = formsetDiv.querySelector('.soumissionnaire-form').cloneNode(true);
+    
+    // Update form indices
+    const totalForms = document.querySelector('#id_lignes-TOTAL_FORMS');
+    const currentForms = formsetDiv.querySelectorAll('.soumissionnaire-form').length;
+    
+    formCopy.innerHTML = formCopy.innerHTML.replaceAll(
+        new RegExp('lignes-\\d+', 'g'),
+        `lignes-${currentForms}`
+    );
+    
+    // Clear input values
+    formCopy.querySelectorAll('input[type="text"], textarea, input[type="number"]').forEach(input => {
+        input.value = '';
+    });
+    
+    // Remove DELETE checkbox if present
+    const deleteCheckbox = formCopy.querySelector('.form-check');
+    if (deleteCheckbox) {
+        deleteCheckbox.remove();
+    }
+    
+    formsetDiv.appendChild(formCopy);
+    totalForms.value = currentForms + 1;
+});
+</script>
+{% endblock %}
+{% endblock %}
