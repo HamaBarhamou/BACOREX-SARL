@@ -109,7 +109,11 @@ class LigneRapport(models.Model):
     observations = models.TextField(blank=True, null=True)  # Observations générales
 
     def __str__(self):
-        return "Ligne pour {}".format(self.nom_soumissionnaire)
+        return (
+            f"Ligne pour {self.soumissionnaire.nom}"
+            if self.soumissionnaire
+            else "Nouvelle ligne"
+        )
 
 
 # Modèle OffreLot

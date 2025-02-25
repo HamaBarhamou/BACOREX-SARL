@@ -1,5 +1,6 @@
 {% extends "home.html" %}
 {% load static %}
+{% load dao_filters %}
 
 {% block content %}
 <div class="container py-5">
@@ -39,6 +40,10 @@
                     {% for ligne_form in formset %}
                         <div class="soumissionnaire-form card mb-4 bg-light border-0">
                             <div class="card-body">
+                                {% for hidden in ligne_form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                                
                                 {% if ligne_form.instance.pk %}
                                     <div class="form-check mb-3">
                                         {{ ligne_form.DELETE }}
@@ -61,9 +66,9 @@
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Nouveau soumissionnaire</label>
                                         <input type="text"
-                                               name="lignes-{{ forloop.counter0 }}-nouveau_soumissionnaire"
-                                               class="form-control"
-                                               placeholder="Entrez un nouveau soumissionnaire">
+                                            name="lignes-{{ forloop.counter0 }}-nouveau_soumissionnaire"
+                                            class="form-control"
+                                            placeholder="Entrez un nouveau soumissionnaire">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-bold">Observations</label>
@@ -91,14 +96,24 @@
                                             <tr>
                                                 <td>{{ lot.nom_lot }}</td>
                                                 <td>
-                                                    <input type="number" 
-                                                           name="offres_{{ ligne_form.instance.pk }}-{{ forloop.counter0 }}-offre_financiere"
-                                                           class="form-control form-control-sm"
-                                                           value="{{ offres_data.offres_ligne_form.instance.pk_lot.pk.offre_financiere|default:'' }}"
+                                                    <input type="text"
+                                                        name="offres_{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}-offre_financiere"
+                                                        class="form-control form-control-sm"
+                                                        step="0.01"
+                                                        {% with ligne_offres_for_line=ligne_offres|get:ligne_form.instance.pk %}
+                                                            {% if ligne_offres_for_line %}
+                                                                {% with offre_value=ligne_offres_for_line|get:lot.pk %}
+                                                                    {% if offre_value %}
+                                                                        value="{{ offre_value }}"
+                                                                    {% endif %}
+                                                                {% endwith %}
+                                                            {% endif %}
+                                                        {% endwith %}
                                                     >
-                                                    <input type="hidden" 
-                                                           name="offres_{{ ligne_form.instance.pk }}-{{ forloop.counter0 }}-lot"
-                                                           value="{{ lot.pk }}">
+
+                                                    <input type="hidden"
+                                                        name="offres_{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}-lot"
+                                                        value="{{ lot.pk }}">
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -134,32 +149,48 @@
 
 {% block extra_js %}
 <script>
-document.getElementById('add-soumissionnaire').addEventListener('click', function() {
-    const formsetDiv = document.getElementById('soumissionnaires-formset');
-    const formCopy = formsetDiv.querySelector('.soumissionnaire-form').cloneNode(true);
-    
-    // Update form indices
-    const totalForms = document.querySelector('#id_lignes-TOTAL_FORMS');
-    const currentForms = formsetDiv.querySelectorAll('.soumissionnaire-form').length;
-    
-    formCopy.innerHTML = formCopy.innerHTML.replaceAll(
-        new RegExp('lignes-\\d+', 'g'),
-        `lignes-${currentForms}`
-    );
-    
-    // Clear input values
-    formCopy.querySelectorAll('input[type="text"], textarea, input[type="number"]').forEach(input => {
-        input.value = '';
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('add-soumissionnaire').addEventListener('click', function() {
+        const formsetDiv = document.getElementById('soumissionnaires-formset');
+        const formCopy = formsetDiv.querySelector('.soumissionnaire-form').cloneNode(true);
+        
+        // Update form indices
+        const totalForms = document.querySelector('#id_lignes-TOTAL_FORMS');
+        const currentFormCount = parseInt(totalForms.value);
+        
+        // Mettre à jour tous les attributs name avec l'index correct
+        formCopy.innerHTML = formCopy.innerHTML.replace(
+            /lignes-(\d+)/g,
+            function(match, p1) {
+                return `lignes-${currentFormCount}`;
+            }
+        );
+        
+        // Mettre à jour les préfixes pour les offres
+        formCopy.innerHTML = formCopy.innerHTML.replace(
+            /offres_(\d+)-/g,
+            function(match, p1) {
+                return `offres_${currentFormCount}-`;
+            }
+        );
+        
+        // Clear input values
+        formCopy.querySelectorAll('input[type="text"], textarea, input[type="number"]').forEach(input => {
+            // Ne pas effacer les champs hidden pour les IDs de lot
+            if (!input.name.includes('lot')) {
+                input.value = '';
+            }
+        });
+        
+        // Remove DELETE checkbox if present
+        const deleteCheckbox = formCopy.querySelector('.form-check');
+        if (deleteCheckbox) {
+            deleteCheckbox.remove();
+        }
+        
+        formsetDiv.appendChild(formCopy);
+        totalForms.value = currentFormCount + 1;
     });
-    
-    // Remove DELETE checkbox if present
-    const deleteCheckbox = formCopy.querySelector('.form-check');
-    if (deleteCheckbox) {
-        deleteCheckbox.remove();
-    }
-    
-    formsetDiv.appendChild(formCopy);
-    totalForms.value = currentForms + 1;
 });
 </script>
 {% endblock %}

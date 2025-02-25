@@ -87,9 +87,8 @@ class LigneRapportForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filtrer les soumissionnaires existants
         self.fields["soumissionnaire"].queryset = Soumissionnaire.objects.all()
-        self.fields["soumissionnaire"].required = False  # Rendre le champ optionnel
+        self.fields["soumissionnaire"].required = False
 
     def clean(self):
         cleaned_data = super().clean()
@@ -102,7 +101,6 @@ class LigneRapportForm(forms.ModelForm):
             )
 
         if nouveau_soumissionnaire:
-            # Créer un nouveau soumissionnaire
             soumissionnaire, created = Soumissionnaire.objects.get_or_create(
                 nom=nouveau_soumissionnaire
             )

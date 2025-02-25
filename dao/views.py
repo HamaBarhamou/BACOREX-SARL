@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
+from decimal import Decimal, InvalidOperation
 from .forms import (
     DAOForm,
     ExperienceSimilaireForm,
@@ -283,11 +284,20 @@ def rapport_depouillement_create(request, dao_pk):
 
                     formset = LigneRapportFormSet(request.POST, instance=rapport)
                     if formset.is_valid():
-                        lignes = formset.save(commit=False)
-                        for ligne in lignes:
+                        # Supprimer les lignes marquées pour suppression
+                        formset.save(commit=False)
+                        for obj in formset.deleted_objects:
+                            obj.delete()
+
+                        for i, ligne_form in enumerate(formset.forms):
+                            if ligne_form.cleaned_data.get("DELETE"):
+                                continue
+
+                            ligne = ligne_form.save(commit=False)
+
                             # Gérer le soumissionnaire
                             nouveau_soumissionnaire = request.POST.get(
-                                f"lignes-{ligne.prefix}-nouveau_soumissionnaire"
+                                f"lignes-{i}-nouveau_soumissionnaire"
                             )
                             if nouveau_soumissionnaire:
                                 (
@@ -299,17 +309,26 @@ def rapport_depouillement_create(request, dao_pk):
                                 ligne.soumissionnaire = soumissionnaire
                             ligne.save()
 
-                        # Gérer les offres pour chaque ligne
-                        for ligne in lignes:
-                            offre_formset = OffreLotFormSet(
-                                request.POST,
-                                instance=ligne,
-                                prefix=f"offres_{ligne.id}",
-                            )
-                            if offre_formset.is_valid():
-                                offre_formset.save()
-                            else:
-                                raise ValueError("Erreur dans les offres")
+                            # Maintenant nous allons collecter manuellement les données des offres
+                            for j, lot in enumerate(lots):
+                                offre_financiere = request.POST.get(
+                                    f"offres_{i}-{j}-offre_financiere"
+                                )
+                                if offre_financiere and offre_financiere.strip():
+                                    try:
+                                        offre_financiere = Decimal(
+                                            offre_financiere.replace(",", ".")
+                                        )
+                                        OffreLot.objects.update_or_create(
+                                            ligne_rapport=ligne,
+                                            lot=lot,
+                                            defaults={
+                                                "offre_financiere": offre_financiere
+                                            },
+                                        )
+                                    except (ValueError, InvalidOperation):
+                                        # Si la conversion en Decimal échoue, ignorez cette entrée
+                                        pass
 
                         messages.success(
                             request, "Rapport de dépouillement créé avec succès."
@@ -321,18 +340,33 @@ def rapport_depouillement_create(request, dao_pk):
         form = RapportDepouillementForm(initial={"dao": dao})
         formset = LigneRapportFormSet()
 
+    # Préparer les données pour le template
+    lignes_existantes = []
+    if hasattr(formset, "instance") and formset.instance.pk:
+        lignes_existantes = formset.instance.lignes.all()
+
     context = {
         "form": form,
         "formset": formset,
         "dao": dao,
         "lots": lots,
+        "lignes_existantes": lignes_existantes,
+        "rapport": None,
     }
     return render(request, "dao/rapport_depouillement_form.html", context)
 
 
 def rapport_depouillement_update(request, pk):
     rapport = get_object_or_404(RapportDepouillement, pk=pk)
-    lots = rapport.dao.lots.all()
+    dao = rapport.dao
+    lots = dao.lots.all()
+
+    # Préparer les offres existantes sous forme de dictionnaire pour un accès facile
+    ligne_offres = {}
+    for ligne in rapport.lignes.all():
+        ligne_offres[ligne.id] = {}
+        for offre in ligne.offres_lots.all():
+            ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere
 
     if request.method == "POST":
         form = RapportDepouillementForm(request.POST, instance=rapport)
@@ -342,13 +376,27 @@ def rapport_depouillement_update(request, pk):
                     rapport = form.save()
                     formset = LigneRapportFormSet(request.POST, instance=rapport)
                     if formset.is_valid():
-                        lignes = formset.save(commit=False)
-                        for ligne in lignes:
+                        # Supprimer les lignes marquées pour suppression
+                        formset.save(commit=False)
+                        for obj in formset.deleted_objects:
+                            obj.delete()
+
+                        for i, ligne_form in enumerate(formset.forms):
+                            if ligne_form.cleaned_data.get("DELETE"):
+                                continue
+
+                            ligne = ligne_form.save(commit=False)
+
                             # Gérer le soumissionnaire
                             nouveau_soumissionnaire = request.POST.get(
-                                f"lignes-{ligne.prefix}-nouveau_soumissionnaire"
+                                f"lignes-{i}-nouveau_soumissionnaire", ""
+                            ).strip()
+                            soumissionnaire_id = ligne_form.cleaned_data.get(
+                                "soumissionnaire"
                             )
+
                             if nouveau_soumissionnaire:
+                                # Utiliser un nouveau soumissionnaire
                                 (
                                     soumissionnaire,
                                     created,
@@ -356,19 +404,39 @@ def rapport_depouillement_update(request, pk):
                                     nom=nouveau_soumissionnaire
                                 )
                                 ligne.soumissionnaire = soumissionnaire
+                            elif soumissionnaire_id:
+                                # Le soumissionnaire existant est déjà défini par le formulaire
+                                pass
+                            else:
+                                # Aucun soumissionnaire n'est spécifié
+                                messages.warning(
+                                    request,
+                                    f"Une ligne sans soumissionnaire a été ignorée.",
+                                )
+                                continue
+
                             ligne.save()
 
-                        # Gérer les offres pour chaque ligne
-                        for ligne in lignes:
-                            offre_formset = OffreLotFormSet(
-                                request.POST,
-                                instance=ligne,
-                                prefix=f"offres_{ligne.id}",
-                            )
-                            if offre_formset.is_valid():
-                                offre_formset.save()
-                            else:
-                                raise ValueError("Erreur dans les offres")
+                            # Maintenant nous allons collecter manuellement les données des offres
+                            for j, lot in enumerate(lots):
+                                offre_financiere = request.POST.get(
+                                    f"offres_{i}-{j}-offre_financiere"
+                                )
+                                if offre_financiere and offre_financiere.strip():
+                                    try:
+                                        offre_financiere = Decimal(
+                                            offre_financiere.replace(",", ".")
+                                        )
+                                        OffreLot.objects.update_or_create(
+                                            ligne_rapport=ligne,
+                                            lot=lot,
+                                            defaults={
+                                                "offre_financiere": offre_financiere
+                                            },
+                                        )
+                                    except (ValueError, InvalidOperation):
+                                        # Si la conversion en Decimal échoue, ignorez cette entrée
+                                        pass
 
                         messages.success(
                             request, "Rapport de dépouillement mis à jour avec succès."
@@ -380,12 +448,17 @@ def rapport_depouillement_update(request, pk):
         form = RapportDepouillementForm(instance=rapport)
         formset = LigneRapportFormSet(instance=rapport)
 
+    # Préparer les données pour le template
+    lignes_existantes = rapport.lignes.all()
+
     context = {
         "form": form,
         "formset": formset,
         "rapport": rapport,
-        "dao": rapport.dao,
+        "dao": dao,
         "lots": lots,
+        "lignes_existantes": lignes_existantes,
+        "ligne_offres": ligne_offres,
     }
     return render(request, "dao/rapport_depouillement_form.html", context)
 
