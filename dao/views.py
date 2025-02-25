@@ -264,7 +264,7 @@ def rapport_depouillement_manage(request, dao_pk):
     rapport = RapportDepouillement.objects.filter(dao=dao).first()
 
     if rapport:
-        return redirect("dao:rapport_depouillement_update", pk=rapport.pk)
+        return redirect("dao:rapport_depouillement_view", pk=rapport.pk)
     else:
         return redirect("dao:rapport_depouillement_create", dao_pk=dao_pk)
 
@@ -461,6 +461,28 @@ def rapport_depouillement_update(request, pk):
         "ligne_offres": ligne_offres,
     }
     return render(request, "dao/rapport_depouillement_form.html", context)
+
+
+def rapport_depouillement_view(request, pk):
+    rapport = get_object_or_404(RapportDepouillement, pk=pk)
+    dao = rapport.dao
+    lots = dao.lots.all()
+
+    # Préparer les offres existantes sous forme de dictionnaire pour un accès facile
+    ligne_offres = {}
+    for ligne in rapport.lignes.all():
+        ligne_offres[ligne.id] = {}
+        for offre in ligne.offres_lots.all():
+            ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere
+
+    context = {
+        "rapport": rapport,
+        "dao": dao,
+        "lots": lots,
+        "lignes": rapport.lignes.all(),
+        "ligne_offres": ligne_offres,
+    }
+    return render(request, "dao/rapport_depouillement_view.html", context)
 
 
 def rapport_depouillement_list(request):

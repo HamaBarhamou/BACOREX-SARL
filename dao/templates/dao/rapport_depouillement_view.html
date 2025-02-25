@@ -1,0 +1,90 @@
+{% extends "home.html" %}
+{% load static %}
+{% load dao_filters %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">Rapport de dépouillement</h1>
+            <p class="text-muted">DAO: {{ dao.dao_number }} - {{ dao.dao_title }}</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'dao:rapport_depouillement_update' rapport.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>Modifier
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Date du rapport:</strong> {{ rapport.date_rapport|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Référence:</strong> {{ rapport.reference }}</p>
+                </div>
+                <div class="col-12">
+                    <p><strong>Commentaires:</strong> {{ rapport.commentaires|default:"Aucun" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Soumissionnaires</h4>
+    
+    {% for ligne in lignes %}
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">{{ ligne.soumissionnaire.nom }}</h5>
+        </div>
+        <div class="card-body p-4">
+            <p><strong>Observations:</strong> {{ ligne.observations|default:"Aucune" }}</p>
+            
+            <h6 class="mt-4 mb-3">Offres par lot</h6>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Lot</th>
+                            <th>Offre financière</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot in lots %}
+                        <tr>
+                            <td>{{ lot.nom_lot }}</td>
+                            <td>
+                                {% with ligne_offres_for_line=ligne_offres|get:ligne.pk %}
+                                    {% if ligne_offres_for_line %}
+                                        {% with offre_value=ligne_offres_for_line|get:lot.pk %}
+                                            {% if offre_value %}
+                                                {{ offre_value }}
+                                            {% else %}
+                                                Non soumissionné
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                        Non soumissionné
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">Aucun soumissionnaire n'a été enregistré.</div>
+    {% endfor %}
+
+    <div class="d-flex gap-3">
+        <a href="{% url 'dao:dao_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour
+        </a>
+    </div>
+</div>
+{% endblock %}

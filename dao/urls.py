@@ -83,6 +83,11 @@ urlpatterns = [
         name="rapport_depouillement_update",
     ),
     path(
+        "rapport/<int:pk>/view/",
+        views.rapport_depouillement_view,
+        name="rapport_depouillement_view",
+    ),
+    path(
         "rapport-depouillement/delete/<int:pk>/",
         views.rapport_depouillement_delete,
         name="rapport_depouillement_delete",
