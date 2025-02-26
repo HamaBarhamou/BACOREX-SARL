@@ -352,6 +352,7 @@ def rapport_depouillement_create(request, dao_pk):
         "lots": lots,
         "lignes_existantes": lignes_existantes,
         "rapport": None,
+        "ligne_offres": None,
     }
     return render(request, "dao/rapport_depouillement_form.html", context)
 
