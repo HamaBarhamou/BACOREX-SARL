@@ -31,24 +31,12 @@ urlpatterns = [
         views.delete_experience_similaire,
         name="delete_experience_similaire",
     ),
-    path("dao/", views.dao_list, name="dao_list"),  # URL pour la liste des DAO
+    path("dao/", views.dao_list, name="dao_list"),
     path("dao_create/", views.dao_create, name="dao_create"),
     path("dao_update/<int:pk>", views.dao_update, name="dao_update"),
     path(
         "dao/<int:pk>/delete/", views.dao_delete, name="dao_delete"
     ),  # format plus cohérent
-    path("reponse-dao/", views.reponse_dao_list, name="reponse_dao_list"),
-    path(
-        "rapport-depouillement/",
-        views.rapport_depouillement_list,
-        name="rapport_depouillement_list",
-    ),
-    path("lot/", views.lot_list, name="lot_list"),
-    # path("lot/create/", views.lot_create, name="lot_create"),
-    # path("lot/update/<int:pk>/", views.lot_update, name="lot_update"),
-    path("lot/delete/<int:pk>/", views.lot_delete, name="lot_delete"),
-    path("reponse-dao/", views.reponse_dao_list, name="reponse_dao_list"),
-    path("reponse-dao/create/", views.reponse_dao_create, name="reponse_dao_create"),
     path(
         "reponse-dao/update/<int:pk>/",
         views.reponse_dao_update,
@@ -68,11 +56,6 @@ urlpatterns = [
         name="rapport_depouillement_manage",
     ),
     path(
-        "rapport-depouillement/",
-        views.rapport_depouillement_list,
-        name="rapport_depouillement_list",
-    ),
-    path(
         "rapport-depouillement/create/<int:dao_pk>/",
         views.rapport_depouillement_create,
         name="rapport_depouillement_create",
@@ -87,27 +70,4 @@ urlpatterns = [
         views.rapport_depouillement_view,
         name="rapport_depouillement_view",
     ),
-    path(
-        "rapport-depouillement/delete/<int:pk>/",
-        views.rapport_depouillement_delete,
-        name="rapport_depouillement_delete",
-    ),
-    path("ligne-rapport/", views.ligne_rapport_list, name="ligne_rapport_list"),
-    path(
-        "ligne-rapport/create/", views.ligne_rapport_create, name="ligne_rapport_create"
-    ),
-    path(
-        "ligne-rapport/update/<int:pk>/",
-        views.ligne_rapport_update,
-        name="ligne_rapport_update",
-    ),
-    path(
-        "ligne-rapport/delete/<int:pk>/",
-        views.ligne_rapport_delete,
-        name="ligne_rapport_delete",
-    ),
-    path("offre-lot/", views.offre_lot_list, name="offre_lot_list"),
-    path("offre-lot/create/", views.offre_lot_create, name="offre_lot_create"),
-    path("offre-lot/update/<int:pk>/", views.offre_lot_update, name="offre_lot_update"),
-    path("offre-lot/delete/<int:pk>/", views.offre_lot_delete, name="offre_lot_delete"),
 ]
