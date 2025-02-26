@@ -160,6 +160,7 @@ def dao_update(request, pk):
 
 
 def dao_delete(request, pk):
+    print("hello dao_delete")
     dao = get_object_or_404(DAO, pk=pk)
     if request.method == "POST":
         try:
