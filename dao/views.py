@@ -401,7 +401,8 @@ def rapport_depouillement_update(request, pk):
                         messages.success(
                             request, "Rapport de dépouillement mis à jour avec succès."
                         )
-                        return redirect("dao:dao_list")
+                        return redirect("dao:rapport_depouillement_view", pk=rapport.pk)
+                        # return redirect("dao:dao_list")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la mise à jour: {str(e)}")
     else:
