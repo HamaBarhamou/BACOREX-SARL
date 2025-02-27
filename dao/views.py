@@ -1,25 +1,23 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from decimal import Decimal, InvalidOperation
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
+from datetime import datetime
 from .forms import (
     DAOForm,
     ExperienceSimilaireForm,
     ReponseDAOForm,
     RapportDepouillementForm,
-    LigneRapportForm,
-    OffreLotForm,
     LotFormSet,
     LigneRapportFormSet,
-    OffreLotFormSet,
 )
 from django.template import loader
 from .models import (
     DAO,
     ExperienceSimilaire,
-    Lot,
     ReponseDAO,
     RapportDepouillement,
-    LigneRapport,
     OffreLot,
     Soumissionnaire,
 )
@@ -104,52 +102,58 @@ def delete_experience_similaire(request, pk):
     )
 
 
-from django.shortcuts import render
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
-from datetime import datetime
-
 def dao_list(request):
     # Récupération des paramètres de filtrage
-    search_query = request.GET.get('search', '')
-    status_filter = request.GET.get('status', '')
-    date_filter = request.GET.get('date', '')
-    
+    search_query = request.GET.get("search", "")
+    status_filter = request.GET.get("status", "")
+    date_debut = request.GET.get("date_debut", "")
+    date_fin = request.GET.get("date_fin", "")
+
     # Base de la requête
-    daos = DAO.objects.all().order_by('-date_publication')
-    
+    daos = DAO.objects.all().order_by("-date_publication")
+
     # Appliquer les filtres
     if search_query:
         daos = daos.filter(
-            Q(dao_number__icontains=search_query) | 
-            Q(dao_title__icontains=search_query)
+            Q(dao_number__icontains=search_query) | Q(dao_title__icontains=search_query)
         )
-    
+
     if status_filter:
-        if status_filter == 'open':
+        if status_filter == "open":
             daos = daos.filter(is_closed=False)
-        elif status_filter == 'closed':
+        elif status_filter == "closed":
             daos = daos.filter(is_closed=True)
-    
-    if date_filter:
-        date_obj = datetime.strptime(date_filter, '%Y-%m-%d').date()
+
+    # Filtrage par plage de dates
+    if date_debut:
+        date_debut_obj = datetime.strptime(date_debut, "%Y-%m-%d").date()
         daos = daos.filter(
-            Q(date_publication__date=date_obj) | 
-            Q(date_soumission__date=date_obj)
+            Q(date_publication__date__gte=date_debut_obj)
+            | Q(date_soumission__date__gte=date_debut_obj)
         )
-    
+
+    if date_fin:
+        date_fin_obj = datetime.strptime(date_fin, "%Y-%m-%d").date()
+        daos = daos.filter(
+            Q(date_publication__date__lte=date_fin_obj)
+            | Q(date_soumission__date__lte=date_fin_obj)
+        )
+
     # Pagination
-    page = request.GET.get('page', 1)
+    page = request.GET.get("page", 1)
     paginator = Paginator(daos, 10)  # 10 éléments par page
-    
+
     try:
         daos = paginator.page(page)
     except PageNotAnInteger:
         daos = paginator.page(1)
     except EmptyPage:
         daos = paginator.page(paginator.num_pages)
-    
-    return render(request, "dao/dao_list.html", {"daos": daos})
+
+    # Contexte avec la date actuelle
+    context = {"daos": daos, "now": datetime.now()}
+
+    return render(request, "dao/dao_list.html", context)
 
 
 def dao_create(request):
