@@ -106,3 +106,12 @@ def get_rang_for_lot(ligne, lignes, ligne_offres, lot_id):
         if item["soumissionnaire"].id == ligne.soumissionnaire.id:
             return i + 1
     return None
+
+
+@register.filter
+def avg_offre_value(offres_pour_lot):
+    """Calcule la moyenne des offres pour un lot"""
+    if not offres_pour_lot:
+        return 0
+    total = sum(offre["value"] for offre in offres_pour_lot)
+    return total / len(offres_pour_lot)
