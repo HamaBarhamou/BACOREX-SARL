@@ -40,80 +40,88 @@
     </div>
 
     <!-- Résumé par lot -->
-    <!-- Résumé par lot -->
-<div class="card shadow-sm border-0 rounded-3 mb-4">
-    <div class="card-header bg-light py-3">
-        <h4 class="mb-0">Résumé par lot</h4>
-    </div>
-    <div class="card-body p-4">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Lot</th>
-                        <th class="text-center">Nombre d'offres</th>
-                        <th class="text-end">Offre la moins disante</th>
-                        <th>Soumissionnaire moins disant</th>
-                        <th class="text-end">Offre la plus disante</th>
-                        <th class="text-end">Moyenne des offres</th>
-                        <th class="text-end">Écart (%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for lot in lots %}
-                        {% with offres_pour_lot=ligne_offres.values|get_offres_for_lot:lot.pk %}
-                            {% if offres_pour_lot %}
-                                <tr>
-                                    <td><strong>{{ lot.nom_lot }}</strong></td>
-                                    <td class="text-center">{{ offres_pour_lot|length }}</td>
-                                    
-                                    <!-- Offre la moins disante -->
-                                    {% with moins_disant=offres_pour_lot|min_offre %}
-                                        <td class="text-end fw-bold">{{ moins_disant.value|floatformat:2 }}</td>
-                                        <td class="fw-bold">
-                                            {% for ligne in lignes %}
-                                                {% if ligne.pk == moins_disant.ligne_id %}
-                                                    {{ ligne.soumissionnaire.nom }}
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                    {% endwith %}
-                                    
-                                    <!-- Offre la plus disante -->
-                                    {% with plus_disant=offres_pour_lot|max_offre %}
-                                        <td class="text-end">{{ plus_disant.value|floatformat:2 }}</td>
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-header bg-light py-3">
+            <h4 class="mb-0">Résumé par lot</h4>
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Lot</th>
+                            <th class="text-center">Nombre d'offres</th>
+                            <th class="text-center">Offre la moins disante</th>
+                            <th>Soumissionnaire moins disant</th>
+                            <th class="text-center">Offre la plus disante</th>
+                            <th>Soumissionnaire plus disant</th>
+                            <th class="text-center">Moyenne des offres</th>
+                            <th class="text-center">Écart (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot in lots %}
+                            {% with offres_pour_lot=ligne_offres.values|get_offres_for_lot:lot.pk %}
+                                {% if offres_pour_lot %}
+                                    <tr>
+                                        <td><strong>{{ lot.nom_lot }}</strong></td>
+                                        <td class="text-center">{{ offres_pour_lot|length }}</td>
                                         
-                                        <!-- Moyenne des offres -->
-                                        <td class="text-end">{{ offres_pour_lot|avg_offre_value|floatformat:2 }}</td>
-                                        
-                                        <!-- Écart en pourcentage -->
-                                        {% with min_value=offres_pour_lot|min_offre_value max_value=offres_pour_lot|max_offre_value %}
-                                            {% if min_value > 0 %}
-                                                <td class="text-end">{{ max_value|subtract:min_value|divide:min_value|multiply:100|floatformat:2 }}%</td>
-                                            {% else %}
-                                                <td class="text-end">N/A</td>
-                                            {% endif %}
+                                        <!-- Offre la moins disante -->
+                                        {% with moins_disant=offres_pour_lot|min_offre %}
+                                            <td class="text-center fw-bold">{{ moins_disant.value|floatformat:2 }}</td>
+                                            <td class="fw-bold">
+                                                {% for ligne in lignes %}
+                                                    {% if ligne.pk == moins_disant.ligne_id %}
+                                                        {{ ligne.soumissionnaire.nom }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
                                         {% endwith %}
-                                    {% endwith %}
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <td><strong>{{ lot.nom_lot }}</strong></td>
-                                    <td class="text-center">0</td>
-                                    <td class="text-end">-</td>
-                                    <td>-</td>
-                                    <td class="text-end">-</td>
-                                    <td class="text-end">-</td>
-                                    <td class="text-end">-</td>
-                                </tr>
-                            {% endif %}
-                        {% endwith %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                                        
+                                        <!-- Offre la plus disante -->
+                                        {% with plus_disant=offres_pour_lot|max_offre %}
+                                            <td class="text-center">{{ plus_disant.value|floatformat:2 }}</td>
+                                            <td>
+                                                {% for ligne in lignes %}
+                                                    {% if ligne.pk == plus_disant.ligne_id %}
+                                                        {{ ligne.soumissionnaire.nom }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            
+                                            <!-- Moyenne des offres -->
+                                            <td class="text-center">{{ offres_pour_lot|avg_offre_value|floatformat:2 }}</td>
+                                            
+                                            <!-- Écart en pourcentage -->
+                                            {% with min_value=offres_pour_lot|min_offre_value max_value=offres_pour_lot|max_offre_value %}
+                                                {% if min_value > 0 %}
+                                                    <td class="text-center">{{ max_value|subtract:min_value|divide:min_value|multiply:100|floatformat:2 }}%</td>
+                                                {% else %}
+                                                    <td class="text-center">N/A</td>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endwith %}
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td><strong>{{ lot.nom_lot }}</strong></td>
+                                        <td class="text-center">0</td>
+                                        <td class="text-center">-</td>
+                                        <td>-</td>
+                                        <td class="text-center">-</td>
+                                        <td>-</td>
+                                        <td class="text-center">-</td>
+                                        <td class="text-center">-</td>
+                                    </tr>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- Tableau comparatif détaillé par lot -->
     {% for lot in lots %}
@@ -128,10 +136,11 @@
                     <table class="table table-striped table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>Rang</th>
+                                <th class="text-center">Rang</th>
                                 <th>Soumissionnaire</th>
-                                <th class="text-end">Offre financière</th>
-                                <th class="text-end">Écart avec le moins disant</th>
+                                <th class="text-center">Offre financière</th>
+                                <th class="text-center">Écart en valeur</th>
+                                <th class="text-center">Écart en %</th>
                                 <th>Observations</th>
                             </tr>
                         </thead>
@@ -139,17 +148,23 @@
                             {% with moins_disant_value=soumissionnaires_tries.0.offre_value %}
                                 {% for item in soumissionnaires_tries %}
                                     <tr {% if forloop.first %}class="table-success"{% endif %}>
-                                        <td>{{ forloop.counter }}</td>
+                                        <td class="text-center">{{ forloop.counter }}</td>
                                         <td>
                                             <strong>{{ item.soumissionnaire.nom }}</strong>
                                         </td>
-                                        <td class="text-end">{{ item.offre_value|floatformat:2 }}</td>
-                                        <td class="text-end">
+                                        <td class="text-center">{{ item.offre_value|floatformat:2 }}</td>
+                                        <td class="text-center">
                                             {% if forloop.first %}
                                                 -
                                             {% else %}
                                                 +{{ item.offre_value|subtract:moins_disant_value|floatformat:2 }}
-                                                ({{ item.offre_value|subtract:moins_disant_value|divide:moins_disant_value|multiply:100|floatformat:2 }}%)
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if forloop.first %}
+                                                -
+                                            {% else %}
+                                                {{ item.offre_value|subtract:moins_disant_value|divide:moins_disant_value|multiply:100|floatformat:2 }}%
                                             {% endif %}
                                         </td>
                                         <td>{{ item.observations|default:"-" }}</td>
@@ -195,15 +210,15 @@
                                     <thead>
                                         <tr>
                                             <th>Lot</th>
-                                            <th class="text-end">Offre financière</th>
-                                            <th>Rang</th>
+                                            <th class="text-center">Offre financière</th>
+                                            <th class="text-center">Rang</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for lot in lots %}
                                         <tr>
                                             <td>{{ lot.nom_lot }}</td>
-                                            <td class="text-end">
+                                            <td class="text-center">
                                                 {% with ligne_offres_for_line=ligne_offres|get:ligne.pk %}
                                                     {% if ligne_offres_for_line %}
                                                         {% with offre_value=ligne_offres_for_line|get:lot.pk %}
@@ -218,7 +233,7 @@
                                                     {% endif %}
                                                 {% endwith %}
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 {% get_rang_for_lot ligne lignes ligne_offres lot.pk as rang %}
                                                 {% if rang %}
                                                     {{ rang }}
