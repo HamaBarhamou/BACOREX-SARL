@@ -475,11 +475,14 @@ def rapport_depouillement_view(request, pk):
     rapport = get_object_or_404(RapportDepouillement, pk=pk)
     dao = rapport.dao
     lots = dao.lots.all()
+    lignes = rapport.lignes.all()
 
-    # Préparer les offres existantes sous forme de dictionnaire pour un accès facile
+    # Restructurer les données pour faciliter l'accès dans le template
     ligne_offres = {}
-    for ligne in rapport.lignes.all():
-        ligne_offres[ligne.id] = {}
+    for ligne in lignes:
+        ligne_offres[ligne.id] = {
+            "ligne_id": ligne.id
+        }  # Inclure l'ID de ligne directement
         for offre in ligne.offres_lots.all():
             ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere
 
@@ -487,7 +490,7 @@ def rapport_depouillement_view(request, pk):
         "rapport": rapport,
         "dao": dao,
         "lots": lots,
-        "lignes": rapport.lignes.all(),
+        "lignes": lignes,
         "ligne_offres": ligne_offres,
     }
     return render(request, "dao/rapport_depouillement_view.html", context)

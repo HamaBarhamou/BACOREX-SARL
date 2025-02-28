@@ -13,15 +13,14 @@ def get(dictionary, key):
 
 
 @register.filter
-def get_offres_for_lot(list_dicts, lot_id):
+def get_offres_for_lot(ligne_offres_values, lot_id):
     """Récupère toutes les offres pour un lot spécifique"""
     offres = []
-    for dict_ligne in list_dicts:
-        if lot_id in dict_ligne:
-            offre = dict_ligne[lot_id]
+    for ligne_dict in ligne_offres_values:
+        if lot_id in ligne_dict and lot_id != "ligne_id":
+            offre = ligne_dict[lot_id]
             if offre:  # Vérifier que la valeur n'est pas None ou vide
-                ligne_id = next(iter(offre.keys())) if isinstance(offre, dict) else None
-                offres.append({"ligne_id": ligne_id, "value": offre})
+                offres.append({"ligne_id": ligne_dict["ligne_id"], "value": offre})
     return offres
 
 
