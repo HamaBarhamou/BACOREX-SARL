@@ -102,6 +102,7 @@ def delete_experience_similaire(request, pk):
     )
 
 
+@login_required(login_url="/user/")
 def dao_list(request):
     # Récupération des paramètres de filtrage
     search_query = request.GET.get("search", "")
@@ -156,6 +157,7 @@ def dao_list(request):
     return render(request, "dao/dao_list.html", context)
 
 
+@login_required(login_url="/user/")
 def dao_create(request):
     if request.method == "POST":
         form = DAOForm(request.POST, request.FILES)
@@ -180,6 +182,7 @@ def dao_create(request):
     )
 
 
+@login_required(login_url="/user/")
 def dao_update(request, pk):
     dao = get_object_or_404(DAO, pk=pk)
     if request.method == "POST":
@@ -206,6 +209,7 @@ def dao_update(request, pk):
     )
 
 
+@login_required(login_url="/user/")
 def dao_delete(request, pk):
     dao = get_object_or_404(DAO, pk=pk)
     if request.method == "POST":
@@ -219,6 +223,7 @@ def dao_delete(request, pk):
     return redirect("dao:dao_list")
 
 
+@login_required(login_url="/user/")
 def reponse_dao_manage(request, dao_id):
     dao = get_object_or_404(DAO, pk=dao_id)
     reponse = ReponseDAO.objects.filter(dao=dao).first()
@@ -245,6 +250,7 @@ def reponse_dao_manage(request, dao_id):
     )
 
 
+@login_required(login_url="/user/")
 def reponse_dao_update(request, pk):
     reponse = get_object_or_404(ReponseDAO, pk=pk)
     if request.method == "POST":
@@ -257,6 +263,7 @@ def reponse_dao_update(request, pk):
     return render(request, "dao/reponse_dao_form.html", {"form": form})
 
 
+@login_required(login_url="/user/")
 def reponse_dao_delete(request, pk):
     reponse = get_object_or_404(ReponseDAO, pk=pk)
     if request.method == "POST":
@@ -265,6 +272,7 @@ def reponse_dao_delete(request, pk):
     return render(request, "dao/reponse_dao_confirm_delete.html", {"reponse": reponse})
 
 
+@login_required(login_url="/user/")
 def rapport_depouillement_manage(request, dao_pk):
     dao = get_object_or_404(DAO, pk=dao_pk)
     rapport = RapportDepouillement.objects.filter(dao=dao).first()
@@ -275,6 +283,7 @@ def rapport_depouillement_manage(request, dao_pk):
         return redirect("dao:rapport_depouillement_create", dao_pk=dao_pk)
 
 
+@login_required(login_url="/user/")
 def rapport_depouillement_create(request, dao_pk):
     dao = get_object_or_404(DAO, pk=dao_pk)
     lots = dao.lots.all()
@@ -363,6 +372,7 @@ def rapport_depouillement_create(request, dao_pk):
     return render(request, "dao/rapport_depouillement_form.html", context)
 
 
+@login_required(login_url="/user/")
 def rapport_depouillement_update(request, pk):
     rapport = get_object_or_404(RapportDepouillement, pk=pk)
     dao = rapport.dao
@@ -471,6 +481,7 @@ def rapport_depouillement_update(request, pk):
     return render(request, "dao/rapport_depouillement_form.html", context)
 
 
+@login_required(login_url="/user/")
 def rapport_depouillement_view(request, pk):
     rapport = get_object_or_404(RapportDepouillement, pk=pk)
     dao = rapport.dao
