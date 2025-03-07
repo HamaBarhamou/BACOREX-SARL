@@ -1,5 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+import logging
+
+# Configuration du logger
+logger = logging.getLogger(__name__)
 
 
 # Modèle DAO
@@ -78,9 +82,21 @@ class RapportDepouillement(models.Model):
     date_creation = models.DateTimeField(
         auto_now_add=True
     )  # Date de création du rapport
+    taux_dollar_fcfa = models.DecimalField(max_digits=10, decimal_places=2, default=630)
+    taux_euro_fcfa = models.DecimalField(max_digits=10, decimal_places=2, default=656)
 
     def __str__(self):
         return "Rapport de dépouillement pour DAO {}".format(self.dao.dao_number)
+
+    def convertir_en_fcfa(self, montant, devise):
+        """Convertit un montant en FCFA en fonction de la devise"""
+
+        if devise == "USD":
+            return montant * self.taux_dollar_fcfa
+        elif devise == "EUR":
+            return montant * self.taux_euro_fcfa
+        else:
+            return montant
 
 
 class Soumissionnaire(models.Model):
@@ -128,14 +144,70 @@ class OffreLot(models.Model):
         related_name="offres",
         on_delete=models.CASCADE,
     )
-    offre_financiere = models.DecimalField(
-        max_digits=10, decimal_places=2
-    )  # Offre financière pour ce lot
+    offre_financiere = models.DecimalField(max_digits=10, decimal_places=2)
+    devise = models.CharField(
+        max_length=10,
+        choices=[("FCFA", "FCFA"), ("USD", "USD"), ("EUR", "EUR")],
+        default="FCFA",
+    )
+    offre_financiere_fcfa = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
 
     def __str__(self):
         return "Offre pour {} par {}".format(
-            self.lot.nom_lot, self.ligne_rapport.nom_soumissionnaire
+            self.lot.nom_lot,
+            self.ligne_rapport.soumissionnaire.nom
+            if self.ligne_rapport.soumissionnaire
+            else "Inconnu",
         )
+
+    def get_offre_fcfa(self):
+        """Retourne l'offre financière en FCFA"""
+        rapport = self.ligne_rapport.rapport
+        return rapport.convertir_en_fcfa(self.offre_financiere, self.devise)
+
+    def save(self, *args, **kwargs):
+        try:
+            rapport = self.ligne_rapport.rapport
+            self.offre_financiere_fcfa = rapport.convertir_en_fcfa(
+                self.offre_financiere, self.devise
+            )
+            # Logging en cas d'erreur
+            logger.info(
+                f"Conversion: {self.offre_financiere} {self.devise} -> {self.offre_financiere_fcfa} FCFA"
+            )
+        except Exception as e:
+            logger.error(f"Erreur de conversion: {e}")
+            raise ValidationError(f"Impossible de convertir l'offre: {e}")
+
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def mettre_a_jour_offres_fcfa(cls, rapport):
+        """
+        Méthode de classe pour mettre à jour toutes les offres en FCFA
+        pour un rapport donné
+        """
+        # Débogage
+        all_offres = cls.objects.filter(ligne_rapport__rapport=rapport)
+        print(f"Total des offres pour ce rapport: {all_offres.count()}")
+
+        # Récupérez toutes les offres
+        offres_lots = cls.objects.filter(ligne_rapport__rapport=rapport)
+        print(f"Offres à mettre à jour: {offres_lots.count()}")
+
+        for offre in offres_lots:
+            try:
+                offre.offre_financiere_fcfa = rapport.convertir_en_fcfa(
+                    offre.offre_financiere, offre.devise
+                )
+                offre.save()
+                print(
+                    f"Offre mise à jour: {offre.id}, {offre.offre_financiere} {offre.devise} -> {offre.offre_financiere_fcfa} FCFA"
+                )
+            except Exception as e:
+                print(f"Erreur lors de la mise à jour de l'offre {offre.id}: {e}")
 
 
 class ExperienceSimilaire(models.Model):

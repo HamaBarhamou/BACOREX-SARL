@@ -89,6 +89,7 @@
                                             <tr>
                                                 <th>Lot</th>
                                                 <th>Offre financière</th>
+                                                <th>Devise</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -102,18 +103,38 @@
                                                         step="0.01"
                                                         {% with ligne_offres_for_line=ligne_offres|get:ligne_form.instance.pk %}
                                                             {% if ligne_offres_for_line %}
-                                                                {% with offre_value=ligne_offres_for_line|get:lot.pk %}
-                                                                    {% if offre_value %}
-                                                                        value="{{ offre_value }}"
+                                                                {% with offre_info=ligne_offres_for_line|get:lot.pk %}
+                                                                    {% if offre_info %}
+                                                                        value="{{ offre_info.montant }}"
                                                                     {% endif %}
                                                                 {% endwith %}
                                                             {% endif %}
                                                         {% endwith %}
                                                     >
-
+                                                
                                                     <input type="hidden"
                                                         name="offres_{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}-lot"
                                                         value="{{ lot.pk }}">
+                                                </td>
+                                                <td>
+                                                    <select 
+                                                        name="offres_{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}-devise" 
+                                                        class="form-control form-control-sm"
+                                                    >
+                                                        {% with ligne_offres_for_line=ligne_offres|get:ligne_form.instance.pk %}
+                                                            {% if ligne_offres_for_line %}
+                                                                {% with offre_info=ligne_offres_for_line|get:lot.pk %}
+                                                                    <option value="FCFA" {% if not offre_info or offre_info.devise == "FCFA" %}selected{% endif %}>FCFA</option>
+                                                                    <option value="USD" {% if offre_info and offre_info.devise == "USD" %}selected{% endif %}>USD</option>
+                                                                    <option value="EUR" {% if offre_info and offre_info.devise == "EUR" %}selected{% endif %}>EUR</option>
+                                                                {% endwith %}
+                                                            {% else %}
+                                                                <option value="FCFA" selected>FCFA</option>
+                                                                <option value="USD">USD</option>
+                                                                <option value="EUR">EUR</option>
+                                                            {% endif %}
+                                                        {% endwith %}
+                                                    </select>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -179,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Ne pas effacer les champs hidden pour les IDs de lot
             if (!input.name.includes('lot')) {
                 input.value = '';
+                input.value = input.name.includes('devise') ? 'FCFA' : '';
             }
         });
         

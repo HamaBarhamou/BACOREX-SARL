@@ -338,12 +338,18 @@ def rapport_depouillement_create(request, dao_pk):
                                             ligne_rapport=ligne,
                                             lot=lot,
                                             defaults={
-                                                "offre_financiere": offre_financiere
+                                                "offre_financiere": offre_financiere,
+                                                "devise": request.POST.get(
+                                                    f"offres_{i}-{j}-devise", "FCFA"
+                                                ),
                                             },
                                         )
                                     except (ValueError, InvalidOperation):
                                         # Si la conversion en Decimal échoue, ignorez cette entrée
                                         pass
+
+                        # Mise à jour des offres en FCFA
+                        OffreLot.mettre_a_jour_offres_fcfa(rapport)
 
                         messages.success(
                             request, "Rapport de dépouillement créé avec succès."
@@ -383,7 +389,10 @@ def rapport_depouillement_update(request, pk):
     for ligne in rapport.lignes.all():
         ligne_offres[ligne.id] = {}
         for offre in ligne.offres_lots.all():
-            ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere
+            ligne_offres[ligne.id][offre.lot.id] = {
+                "montant": offre.offre_financiere,
+                "devise": offre.devise,
+            }
 
     if request.method == "POST":
         form = RapportDepouillementForm(request.POST, instance=rapport)
@@ -448,18 +457,23 @@ def rapport_depouillement_update(request, pk):
                                             ligne_rapport=ligne,
                                             lot=lot,
                                             defaults={
-                                                "offre_financiere": offre_financiere
+                                                "offre_financiere": offre_financiere,
+                                                "devise": request.POST.get(
+                                                    f"offres_{i}-{j}-devise", "FCFA"
+                                                ),
                                             },
                                         )
                                     except (ValueError, InvalidOperation):
                                         # Si la conversion en Decimal échoue, ignorez cette entrée
                                         pass
 
+                        # Mise à jour des offres en FCFA
+                        OffreLot.mettre_a_jour_offres_fcfa(rapport)
+
                         messages.success(
                             request, "Rapport de dépouillement mis à jour avec succès."
                         )
                         return redirect("dao:rapport_depouillement_view", pk=rapport.pk)
-                        # return redirect("dao:dao_list")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la mise à jour: {str(e)}")
     else:
@@ -495,7 +509,7 @@ def rapport_depouillement_view(request, pk):
             "ligne_id": ligne.id
         }  # Inclure l'ID de ligne directement
         for offre in ligne.offres_lots.all():
-            ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere
+            ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere_fcfa
 
     context = {
         "rapport": rapport,

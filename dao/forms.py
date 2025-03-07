@@ -112,10 +112,11 @@ class LigneRapportForm(forms.ModelForm):
 class OffreLotForm(forms.ModelForm):
     class Meta:
         model = OffreLot
-        fields = ["lot", "offre_financiere"]
+        fields = ["lot", "offre_financiere", "devise"]
         widgets = {
             "lot": forms.Select(attrs={"class": "form-control"}),
             "offre_financiere": forms.NumberInput(attrs={"class": "form-control"}),
+            "devise": forms.Select(attrs={"class": "form-control"}),
         }
 
 

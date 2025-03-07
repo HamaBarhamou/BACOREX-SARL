@@ -14,7 +14,7 @@ def get(dictionary, key):
 
 @register.filter
 def get_offres_for_lot(ligne_offres_values, lot_id):
-    """Récupère toutes les offres pour un lot spécifique"""
+    # Récupère toutes les offres pour un lot spécifique
     offres = []
     for ligne_dict in ligne_offres_values:
         if lot_id in ligne_dict and lot_id != "ligne_id":
@@ -86,10 +86,21 @@ def sort_by_offre_for_lot(lignes, ligne_offres, lot_id):
         if (
             offre_value is not None
         ):  # Inclure seulement les soumissionnaires qui ont fait une offre
+            # Récupérer l'offre d'origine et sa devise
+            original_offre = None
+            original_devise = None
+            for offre in ligne.offres_lots.all():
+                if offre.lot.id == lot_id:
+                    original_offre = offre.offre_financiere
+                    original_devise = offre.devise
+                    break
+
             result.append(
                 {
                     "soumissionnaire": ligne.soumissionnaire,
                     "offre_value": offre_value,
+                    "original_offre": original_offre,
+                    "original_devise": original_devise,
                     "observations": ligne.observations,
                 }
             )
@@ -115,3 +126,12 @@ def avg_offre_value(offres_pour_lot):
         return 0
     total = sum(offre["value"] for offre in offres_pour_lot)
     return total / len(offres_pour_lot)
+
+
+@register.filter
+def get_devise(ligne_id, lot_id, offres_lots):
+    """Récupère la devise d'une offre"""
+    for offre in offres_lots:
+        if offre.ligne_rapport.id == ligne_id and offre.lot.id == lot_id:
+            return offre.devise
+    return "FCFA"  # Par défaut
