@@ -8,6 +8,7 @@ from .models import (
     LigneRapport,
     OffreLot,
     Soumissionnaire,
+    AttributionLot,
 )
 from django.forms import inlineformset_factory
 
@@ -112,11 +113,12 @@ class LigneRapportForm(forms.ModelForm):
 class OffreLotForm(forms.ModelForm):
     class Meta:
         model = OffreLot
-        fields = ["lot", "offre_financiere", "devise"]
+        fields = ["lot", "offre_financiere", "devise", "est_htva"]
         widgets = {
             "lot": forms.Select(attrs={"class": "form-control"}),
             "offre_financiere": forms.NumberInput(attrs={"class": "form-control"}),
             "devise": forms.Select(attrs={"class": "form-control"}),
+            "est_htva": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
 
@@ -132,6 +134,38 @@ LigneRapportFormSet = inlineformset_factory(
 OffreLotFormSet = inlineformset_factory(
     LigneRapport, OffreLot, form=OffreLotForm, extra=1, can_delete=True
 )
+
+
+class AttributionLotForm(forms.ModelForm):
+    class Meta:
+        model = AttributionLot
+        fields = [
+            "soumissionnaire",
+            "statut",
+            "motif_rejet",
+            "document_attribution",
+            "date_attribution",
+            "observations",
+        ]
+        widgets = {
+            "date_attribution": forms.DateInput(attrs={"type": "date"}),
+            "motif_rejet": forms.Textarea(attrs={"rows": 3}),
+            "observations": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def __init__(self, *args, lot=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if lot:
+            # Filtrer les soumissionnaires qui ont fait une offre pour ce lot
+            offres = OffreLot.objects.filter(lot=lot)
+            soumissionnaires_ids = offres.values_list(
+                "ligne_rapport__soumissionnaire", flat=True
+            )
+            self.fields["soumissionnaire"].queryset = Soumissionnaire.objects.filter(
+                id__in=soumissionnaires_ids
+            )
+            # Initialiser le lot (qui n'est pas dans le formulaire)
+            self.instance.lot = lot
 
 
 class ExperienceSimilaireForm(forms.ModelForm):

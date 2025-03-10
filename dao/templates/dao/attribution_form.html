@@ -1,0 +1,99 @@
+<!-- templates/dao/attribution_form.html -->
+{% extends 'home.html' %}
+
+{% block title %}
+    {% if attribution %}Modifier l'attribution{% else %}Nouvelle attribution{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                {% if attribution %}
+                    Modification de l'attribution pour {{ lot.nom_lot }}
+                {% else %}
+                    Nouvelle attribution pour {{ lot.nom_lot }}
+                {% endif %}
+            </h5>
+            <a href="{% url 'dao:gestion_attributions' dao.pk %}" class="btn btn-sm btn-outline-light">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.soumissionnaire.id_for_label }}" class="form-label">Soumissionnaire</label>
+                        <select name="{{ form.soumissionnaire.name }}" id="{{ form.soumissionnaire.id_for_label }}" class="form-select">
+                            {{ form.soumissionnaire.html_output }}
+                        </select>
+                        {% if form.soumissionnaire.errors %}
+                            <div class="text-danger">{{ form.soumissionnaire.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.statut.id_for_label }}" class="form-label">Statut</label>
+                        <select name="{{ form.statut.name }}" id="{{ form.statut.id_for_label }}" class="form-select">
+                            {{ form.statut.html_output }}
+                        </select>
+                        {% if form.statut.errors %}
+                            <div class="text-danger">{{ form.statut.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.date_attribution.id_for_label }}" class="form-label">Date d'attribution</label>
+                        <input type="date" name="{{ form.date_attribution.name }}" id="{{ form.date_attribution.id_for_label }}" class="form-control" {% if form.date_attribution.value %}value="{{ form.date_attribution.value|date:'Y-m-d' }}"{% endif %}>
+                        {% if form.date_attribution.errors %}
+                            <div class="text-danger">{{ form.date_attribution.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.document_attribution.id_for_label }}" class="form-label">Document d'attribution</label>
+                        {% if attribution and attribution.document_attribution %}
+                            <div class="d-flex align-items-center">
+                                <a href="{{ attribution.document_attribution.url }}" target="_blank" class="me-2">
+                                    <i class="fas fa-file-pdf"></i> Document actuel
+                                </a>
+                                <input type="file" name="{{ form.document_attribution.name }}" id="{{ form.document_attribution.id_for_label }}" class="form-control">
+                            </div>
+                        {% else %}
+                            <input type="file" name="{{ form.document_attribution.name }}" id="{{ form.document_attribution.id_for_label }}" class="form-control">
+                        {% endif %}
+                        {% if form.document_attribution.errors %}
+                            <div class="text-danger">{{ form.document_attribution.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.document_attribution.help_text }}</div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.motif_rejet.id_for_label }}" class="form-label">Motif de rejet (si rejeté)</label>
+                    <textarea name="{{ form.motif_rejet.name }}" id="{{ form.motif_rejet.id_for_label }}" rows="3" class="form-control">{% if form.motif_rejet.value %}{{ form.motif_rejet.value }}{% endif %}</textarea>
+                    {% if form.motif_rejet.errors %}
+                        <div class="text-danger">{{ form.motif_rejet.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">{{ form.motif_rejet.help_text }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.observations.id_for_label }}" class="form-label">Observations</label>
+                    <textarea name="{{ form.observations.name }}" id="{{ form.observations.id_for_label }}" rows="3" class="form-control">{% if form.observations.value %}{{ form.observations.value }}{% endif %}</textarea>
+                    {% if form.observations.errors %}
+                        <div class="text-danger">{{ form.observations.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'dao:gestion_attributions' dao.pk %}" class="btn btn-outline-secondary me-md-2">Annuler</a>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

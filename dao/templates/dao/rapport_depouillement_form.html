@@ -90,6 +90,7 @@
                                                 <th>Lot</th>
                                                 <th>Offre financière</th>
                                                 <th>Devise</th>
+                                                <th>HTVA</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -135,6 +136,24 @@
                                                             {% endif %}
                                                         {% endwith %}
                                                     </select>
+                                                </td>
+                                                <td>
+                                                    <div class="form-check mt-1">
+                                                        <input 
+                                                            type="checkbox"
+                                                            class="form-check-input"
+                                                            name="offres_{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}-est_htva"
+                                                            {% with ligne_offres_for_line=ligne_offres|get:ligne_form.instance.pk %}
+                                                                {% if ligne_offres_for_line %}
+                                                                    {% with offre_info=ligne_offres_for_line|get:lot.pk %}
+                                                                        {% if offre_info and offre_info.est_htva %}checked{% endif %}
+                                                                    {% endwith %}
+                                                                {% else %}
+                                                                    checked
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                        >
+                                                    </div>
                                                 </td>
                                             </tr>
                                             {% endfor %}

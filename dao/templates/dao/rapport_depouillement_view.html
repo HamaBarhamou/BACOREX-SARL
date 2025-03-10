@@ -12,10 +12,10 @@
         </div>
         <div class="col-auto">
             <div class="d-flex gap-2">
-                <a href="{% url 'dao:rapport_depouillement_update' rapport.pk %}" class="btn btn-primary">
+                <a href="{% url 'dao:rapport_depouillement_update' rapport.pk %}" class="btn btn-success">
                     <i class="fas fa-edit me-2"></i>Modifier
                 </a>
-                <a href="#" class="btn btn-outline-secondary">
+                <a href="#" class="btn btn-outline-primary">
                     <i class="fas fa-file-pdf me-2"></i>Télécharger PDF
                 </a>
             </div>
@@ -23,11 +23,11 @@
     </div>
 
     <!-- Informations générales du rapport -->
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-header bg-light py-3">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
             <h4 class="mb-0">Informations générales</h4>
         </div>
-        <div class="card-body p-4">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
                     <p><strong>Date du rapport:</strong> {{ rapport.date_creation|date:"d/m/Y" }}</p>
@@ -41,83 +41,27 @@
                 <div class="col-md-3">
                     <p><strong>Taux EUR/FCFA:</strong> {{ rapport.taux_euro_fcfa }}</p>
                 </div>
+                <div class="col-md-3">
+                    <p><strong>TVA:</strong> {{ tva }} %</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Style CSS pour les tableaux avec bordures visibles et modales -->
-    <style>
-        .table-bordered-visible {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        .table-bordered-visible th,
-        .table-bordered-visible td {
-            border: 1px solid #dee2e6;
-        }
-        .table-bordered-visible thead th {
-            border-bottom: 2px solid #dee2e6;
-            background-color: #f8f9fa;
-        }
-        .table-bordered-visible .table-success {
-            background-color: rgba(25, 135, 84, 0.15);
-        }
-        
-        /* Styles pour tronquer et afficher le texte long */
-        .truncate-text {
-            max-width: 150px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer;
-            color: #0d6efd;
-            text-decoration: underline;
-        }
-        
-        .modal-observation {
-            display: none;
-            position: fixed;
-            z-index: 1050;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-        
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 700px;
-            border-radius: 5px;
-        }
-        
-        .close-modal {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .close-modal:hover {
-            color: black;
-        }
-    </style>
+    <!-- Message d'information sur les comparaisons TTC -->
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i><strong>Note importante:</strong> Pour faciliter la comparaison, tous les montants en FCFA sont exprimés en TTC. Pour les offres originalement exprimées en HTVA, une TVA a été appliquée à titre indicatif. Veuillez noter que cette conversion peut ne pas refléter tous les éléments fiscaux applicables à chaque soumissionnaire.
+    </div>
 
     <!-- Résumé par lot (toutes les offres en FCFA) -->
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-header bg-light py-3">
-            <h4 class="mb-0">Résumé par lot (Montants en FCFA)</h4>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Résumé par lot (Montants en FCFA TTC)</h4>
         </div>
-        <div class="card-body p-4">
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered-visible">
-                    <thead>
+                <table class="table table-bordered">
+                    <thead class="table-light">
                         <tr>
                             <th rowspan="2" class="align-middle text-center">Lot</th>
                             <th rowspan="2" class="text-center align-middle">Nombre d'offres</th>
@@ -127,9 +71,9 @@
                             <th rowspan="2" class="text-center align-middle">Écart (%)</th>
                         </tr>
                         <tr>
-                            <th class="text-center">Montant (FCFA)</th>
+                            <th class="text-center">Montant (FCFA TTC)</th>
                             <th class="text-center">Soumissionnaire</th>
-                            <th class="text-center">Montant (FCFA)</th>
+                            <th class="text-center">Montant (FCFA TTC)</th>
                             <th class="text-center">Soumissionnaire</th>
                         </tr>
                     </thead>
@@ -199,20 +143,20 @@
 
     <!-- Tableau comparatif détaillé par lot -->
     {% for lot in lots %}
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-header bg-primary text-white py-3">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark">
             <h4 class="mb-0">Lot: {{ lot.nom_lot }}</h4>
         </div>
-        <div class="card-body p-4">
+        <div class="card-body">
             {% sort_by_offre_for_lot lignes ligne_offres lot.pk as soumissionnaires_tries %}
             {% if soumissionnaires_tries %}
                 <div class="table-responsive">
-                    <table class="table table-bordered-visible">
-                        <thead>
+                    <table class="table table-bordered">
+                        <thead class="table-light">
                             <tr>
-                                <th class="text-center" rowspan="2" class="align-middle">Rang</th>
+                                <th rowspan="2" class="align-middle text-center">Rang</th>
                                 <th rowspan="2" class="align-middle text-center">Soumissionnaire</th>
-                                <th class="text-center" rowspan="2" class="align-middle">Offre financière (FCFA)</th>
+                                <th rowspan="2" class="align-middle text-center">Offre financière (FCFA TTC)</th>
                                 <th colspan="2" class="text-center">Offre originale</th>
                                 <th colspan="2" class="text-center">Écart / moins disant</th>
                                 <th rowspan="2" class="align-middle text-center">Observations</th>
@@ -233,15 +177,21 @@
                                             <strong>{{ item.soumissionnaire.nom }}</strong>
                                         </td>
                                         <td class="text-center">{{ item.offre_value|floatformat:2 }}</td>
-                                        <!-- Montant avant devise comme demandé -->
+                                        <!-- Montant original avec indication HTVA/TTC -->
                                         <td class="text-center">
                                             {% for offre in item.soumissionnaire.lignes_rapport.all.0.offres_lots.all %}
                                                 {% if offre.lot.id == lot.pk %}
                                                     {{ offre.offre_financiere|floatformat:2 }}
+                                                    {% if offre.est_htva %}
+                                                        <span class="badge bg-secondary">HTVA</span>
+                                                    {% else %}
+                                                        <span class="badge bg-primary">TTC</span>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
                                         <td class="text-center">
+                                            <!-- a debuger -->
                                             {% for offre in item.soumissionnaire.lignes_rapport.all.0.offres_lots.all %}
                                                 {% if offre.lot.id == lot.pk %}
                                                     {{ offre.devise }}
@@ -264,16 +214,9 @@
                                         </td>
                                         <td class="text-center">
                                             {% if item.observations %}
-                                                <span class="truncate-text" data-observation-id="lot-{{ lot.pk }}-item-{{ item.pk }}">
+                                                <span class="text-truncate d-inline-block" style="max-width: 150px;" data-bs-toggle="tooltip" title="{{ item.observations }}">
                                                     {{ item.observations|truncatechars:10 }}
                                                 </span>
-                                                <div id="modal-lot-{{ lot.pk }}-item-{{ item.pk }}" class="modal-observation">
-                                                    <div class="modal-content">
-                                                        <span class="close-modal">&times;</span>
-                                                        <h5>Observations</h5>
-                                                        <p>{{ item.observations }}</p>
-                                                    </div>
-                                                </div>
                                             {% else %}
                                                 -
                                             {% endif %}
@@ -285,7 +228,7 @@
                     </table>
                 </div>
             {% else %}
-                <div class="alert alert-info">
+                <div class="alert alert-warning">
                     <i class="fas fa-info-circle me-2"></i>Aucune offre n'a été soumise pour ce lot.
                 </div>
             {% endif %}
@@ -294,11 +237,11 @@
     {% endfor %}
 
     <!-- Liste détaillée de tous les soumissionnaires -->
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-header bg-light py-3">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
             <h4 class="mb-0">Détails des soumissionnaires</h4>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body">
             <div class="accordion" id="accordionSoumissionnaires">
                 {% for ligne in lignes %}
                 <div class="accordion-item">
@@ -314,16 +257,9 @@
                         <div class="accordion-body">
                             <p><strong>Observations:</strong> 
                                 {% if ligne.observations %}
-                                    <span class="truncate-text" data-observation-id="ligne-{{ ligne.pk }}">
-                                        {{ ligne.observations|truncatechars:100 }}
+                                    <span class="text-truncate d-inline-block" style="max-width: 150px;" data-bs-toggle="tooltip" title="{{ ligne.observations }}">
+                                        {{ ligne.observations|truncatechars:10 }}
                                     </span>
-                                    <div id="modal-ligne-{{ ligne.pk }}" class="modal-observation">
-                                        <div class="modal-content">
-                                            <span class="close-modal">&times;</span>
-                                            <h5>Observations pour {{ ligne.soumissionnaire.nom }}</h5>
-                                            <p>{{ ligne.observations }}</p>
-                                        </div>
-                                    </div>
                                 {% else %}
                                     Aucune
                                 {% endif %}
@@ -331,13 +267,13 @@
                             
                             <h6 class="mt-4 mb-3">Offres par lot</h6>
                             <div class="table-responsive">
-                                <table class="table table-bordered-visible">
-                                    <thead>
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
                                         <tr>
                                             <th class="text-center">Lot</th>
                                             <th class="text-center">Montant original</th>
                                             <th class="text-center">Devise originale</th>
-                                            <th class="text-center">Offre en FCFA</th>
+                                            <th class="text-center">Offre en FCFA TTC</th>
                                             <th class="text-center">Rang</th>
                                         </tr>
                                     </thead>
@@ -345,11 +281,16 @@
                                         {% for lot in lots %}
                                         <tr>
                                             <td class="text-center">{{ lot.nom_lot }}</td>
-                                            <!-- Montant avant devise comme demandé -->
+                                            <!-- Montant avec indication HTVA/TTC -->
                                             <td class="text-center">
                                                 {% for offre in ligne.offres_lots.all %}
                                                     {% if offre.lot.id == lot.id %}
                                                         {{ offre.offre_financiere|floatformat:2 }}
+                                                        {% if offre.est_htva %}
+                                                            <span class="badge bg-secondary">HTVA</span>
+                                                        {% else %}
+                                                            <span class="badge bg-primary">TTC</span>
+                                                        {% endif %}
                                                     {% endif %}
                                                 {% endfor %}
                                             </td>
@@ -392,7 +333,7 @@
                     </div>
                 </div>
                 {% empty %}
-                <div class="alert alert-info m-3">
+                <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>Aucun soumissionnaire n'a été enregistré.
                 </div>
                 {% endfor %}
@@ -401,7 +342,7 @@
     </div>
 
     <div class="d-flex gap-3">
-        <a href="{% url 'dao:dao_list' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'dao:dao_list' %}" class="btn btn-outline-primary">
             <i class="fas fa-arrow-left me-2"></i>Retour
         </a>
     </div>
@@ -414,33 +355,6 @@
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-        
-        // Gestion des observations tronquées
-        const truncatedElements = document.querySelectorAll('.truncate-text');
-        truncatedElements.forEach(function(element) {
-            const observationId = element.getAttribute('data-observation-id');
-            const modal = document.getElementById('modal-' + observationId);
-            
-            // Ouvrir la modal au clic
-            element.addEventListener('click', function() {
-                modal.style.display = 'block';
-            });
-            
-            // Fermer la modal au clic sur le X
-            if (modal) {
-                const closeBtn = modal.querySelector('.close-modal');
-                closeBtn.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-                
-                // Fermer la modal au clic en dehors
-                window.addEventListener('click', function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = 'none';
-                    }
-                });
-            }
         });
     });
 </script>

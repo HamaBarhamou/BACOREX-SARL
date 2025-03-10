@@ -11,6 +11,7 @@ from .forms import (
     RapportDepouillementForm,
     LotFormSet,
     LigneRapportFormSet,
+    AttributionLotForm,
 )
 from django.template import loader
 from .models import (
@@ -20,6 +21,9 @@ from .models import (
     RapportDepouillement,
     OffreLot,
     Soumissionnaire,
+    Configuration,
+    AttributionLot,
+    Lot,
 )
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -334,6 +338,10 @@ def rapport_depouillement_create(request, dao_pk):
                                         offre_financiere = Decimal(
                                             offre_financiere.replace(",", ".")
                                         )
+                                        est_htva = (
+                                            request.POST.get(f"offres_{i}-{j}-est_htva")
+                                            == "on"
+                                        )
                                         OffreLot.objects.update_or_create(
                                             ligne_rapport=ligne,
                                             lot=lot,
@@ -342,6 +350,7 @@ def rapport_depouillement_create(request, dao_pk):
                                                 "devise": request.POST.get(
                                                     f"offres_{i}-{j}-devise", "FCFA"
                                                 ),
+                                                "est_htva": est_htva,
                                             },
                                         )
                                     except (ValueError, InvalidOperation):
@@ -392,6 +401,7 @@ def rapport_depouillement_update(request, pk):
             ligne_offres[ligne.id][offre.lot.id] = {
                 "montant": offre.offre_financiere,
                 "devise": offre.devise,
+                "est_htva": offre.est_htva,
             }
 
     if request.method == "POST":
@@ -453,6 +463,10 @@ def rapport_depouillement_update(request, pk):
                                         offre_financiere = Decimal(
                                             offre_financiere.replace(",", ".")
                                         )
+                                        est_htva = (
+                                            request.POST.get(f"offres_{i}-{j}-est_htva")
+                                            == "on"
+                                        )
                                         OffreLot.objects.update_or_create(
                                             ligne_rapport=ligne,
                                             lot=lot,
@@ -461,6 +475,7 @@ def rapport_depouillement_update(request, pk):
                                                 "devise": request.POST.get(
                                                     f"offres_{i}-{j}-devise", "FCFA"
                                                 ),
+                                                "est_htva": est_htva,
                                             },
                                         )
                                     except (ValueError, InvalidOperation):
@@ -509,7 +524,8 @@ def rapport_depouillement_view(request, pk):
             "ligne_id": ligne.id
         }  # Inclure l'ID de ligne directement
         for offre in ligne.offres_lots.all():
-            ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere_fcfa
+            # ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere_fcfa
+            ligne_offres[ligne.id][offre.lot.id] = offre.offre_financiere_fcfa_ttc
 
     context = {
         "rapport": rapport,
@@ -517,5 +533,93 @@ def rapport_depouillement_view(request, pk):
         "lots": lots,
         "lignes": lignes,
         "ligne_offres": ligne_offres,
+        "tva": int(Configuration.get_tva()),
     }
     return render(request, "dao/rapport_depouillement_view.html", context)
+
+
+@login_required
+def gestion_attributions(request, dao_id):
+    dao = get_object_or_404(DAO, pk=dao_id)
+    lots = Lot.objects.filter(dao=dao)
+
+    # Récupérer les attributions existantes pour ce DAO
+    attributions = {}
+    for lot in lots:
+        attributions[lot.id] = AttributionLot.objects.filter(lot=lot)
+
+    context = {
+        "dao": dao,
+        "lots": lots,
+        "attributions": attributions,
+    }
+    return render(request, "dao/attributions_manage.html", context)
+
+
+@login_required
+def ajouter_attribution(request, lot_id):
+    lot = get_object_or_404(Lot, pk=lot_id)
+
+    if request.method == "POST":
+        form = AttributionLotForm(request.POST, request.FILES, lot=lot)
+        if form.is_valid():
+            attribution = form.save()
+            messages.success(
+                request, f"Attribution pour {lot.nom_lot} ajoutée avec succès"
+            )
+            return redirect("dao:gestion_attributions", dao_id=lot.dao.id)
+    else:
+        form = AttributionLotForm(lot=lot)
+
+    context = {
+        "form": form,
+        "lot": lot,
+        "dao": lot.dao,
+    }
+    return render(request, "dao/attribution_form.html", context)
+
+
+@login_required
+def modifier_attribution(request, attribution_id):
+    attribution = get_object_or_404(AttributionLot, pk=attribution_id)
+    lot = attribution.lot
+
+    if request.method == "POST":
+        form = AttributionLotForm(
+            request.POST, request.FILES, instance=attribution, lot=lot
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, f"Attribution pour {lot.nom_lot} modifiée avec succès"
+            )
+            return redirect("dao:gestion_attributions", dao_id=lot.dao.id)
+    else:
+        form = AttributionLotForm(instance=attribution, lot=lot)
+
+    context = {
+        "form": form,
+        "lot": lot,
+        "dao": lot.dao,
+        "attribution": attribution,
+    }
+    return render(request, "dao/attribution_form.html", context)
+
+
+@login_required
+def supprimer_attribution(request, attribution_id):
+    attribution = get_object_or_404(AttributionLot, pk=attribution_id)
+    lot = attribution.lot
+    dao = lot.dao
+
+    if request.method == "POST":
+        attribution.delete()
+        messages.success(request, "Attribution supprimée avec succès")
+        return redirect("dao:gestion_attributions", dao_id=dao.id)
+
+    context = {
+        "attribution": attribution,
+        "lot": lot,
+        "dao": dao,
+    }
+    return render(request, "dao/attribution_confirm_delete.html", context)

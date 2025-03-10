@@ -70,4 +70,24 @@ urlpatterns = [
         views.rapport_depouillement_view,
         name="rapport_depouillement_view",
     ),
+    path(
+        "dao/<int:dao_id>/attributions/",
+        views.gestion_attributions,
+        name="gestion_attributions",
+    ),
+    path(
+        "lot/<int:lot_id>/attribution/ajouter/",
+        views.ajouter_attribution,
+        name="ajouter_attribution",
+    ),
+    path(
+        "attribution/<int:attribution_id>/modifier/",
+        views.modifier_attribution,
+        name="modifier_attribution",
+    ),
+    path(
+        "attribution/<int:attribution_id>/supprimer/",
+        views.supprimer_attribution,
+        name="supprimer_attribution",
+    ),
 ]

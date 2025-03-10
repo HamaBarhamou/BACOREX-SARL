@@ -1,0 +1,103 @@
+<!-- templates/dao/attributions_manage.html -->
+{% extends 'home.html' %}
+{% load dao_filters %}
+
+{% block title %}Gestion des attributions - {{ dao }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Attributions des lots pour {{ dao }}</h5>
+            <a href="{% url 'dao:dao_list' %}" class="btn btn-sm btn-outline-light">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+        <div class="card-body">
+            {% if lots %}
+                {% for lot in lots %}
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">{{ lot.nom_lot }}</h6>
+                        <a href="{% url 'dao:ajouter_attribution' lot.pk %}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus"></i> Ajouter une attribution
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if attributions|get:lot.id %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Soumissionnaire</th>
+                                            <th>Statut</th>
+                                            <th>Date d'attribution</th>
+                                            <th>Document</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for attribution in attributions|get:lot.id %}
+                                        <tr>
+                                            <td>{{ attribution.soumissionnaire.nom }}</td>
+                                            <td>
+                                                {% if attribution.statut == 'ATTRIBUE' %}
+                                                <span class="badge bg-success">{{ attribution.get_statut_display }}</span>
+                                                {% elif attribution.statut == 'REJETE' %}
+                                                <span class="badge bg-danger">{{ attribution.get_statut_display }}</span>
+                                                {% else %}
+                                                <span class="badge bg-warning">{{ attribution.get_statut_display }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ attribution.date_attribution|default_if_none:"-" }}</td>
+                                            <td>
+                                                {% if attribution.document_attribution %}
+                                                <a href="{{ attribution.document_attribution.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-file-pdf"></i> Voir
+                                                </a>
+                                                {% else %}
+                                                -
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                        <li>
+                                                            <a href="{% url 'dao:modifier_attribution' attribution.pk %}" class="dropdown-item">
+                                                                <i class="fas fa-edit text-warning me-2"></i>Modifier
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{% url 'dao:supprimer_attribution' attribution.pk %}" class="dropdown-item text-danger">
+                                                                <i class="fas fa-trash me-2"></i>Supprimer
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                Aucune attribution définie pour ce lot. 
+                                <a href="{% url 'dao:ajouter_attribution' lot.pk %}" class="alert-link">Ajouter une attribution</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-warning">
+                    Ce DAO ne contient aucun lot. Veuillez d'abord créer des lots.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

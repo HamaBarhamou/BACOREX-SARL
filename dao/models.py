@@ -1,9 +1,34 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import logging
+from decimal import Decimal
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
+
+
+class Configuration(models.Model):
+    tva_pourcentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=19.00,
+        help_text="Taux de TVA en pourcentage (ex: 19.00 pour 19%)",
+    )
+
+    class Meta:
+        verbose_name = "Configuration"
+        verbose_name_plural = "Configurations"
+
+    def __str__(self):
+        return f"Configuration (TVA: {self.tva_pourcentage}%)"
+
+    @classmethod
+    def get_tva(cls):
+        """Retourne le taux de TVA actuel"""
+        config = cls.objects.first()
+        if not config:
+            config = cls.objects.create()
+        return config.tva_pourcentage
 
 
 # Modèle DAO
@@ -89,8 +114,7 @@ class RapportDepouillement(models.Model):
         return "Rapport de dépouillement pour DAO {}".format(self.dao.dao_number)
 
     def convertir_en_fcfa(self, montant, devise):
-        """Convertit un montant en FCFA en fonction de la devise"""
-
+        """Convertit un montant en FCFA en fonction de la devise (sans TVA)"""
         if devise == "USD":
             return montant * self.taux_dollar_fcfa
         elif devise == "EUR":
@@ -150,8 +174,20 @@ class OffreLot(models.Model):
         choices=[("FCFA", "FCFA"), ("USD", "USD"), ("EUR", "EUR")],
         default="FCFA",
     )
+    est_htva = models.BooleanField(
+        default=True,
+        verbose_name="HTVA",
+        help_text="Cochez si le montant est Hors TVA (HTVA)",
+    )
     offre_financiere_fcfa = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    offre_financiere_fcfa_ttc = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Montant TTC (FCFA)",
     )
 
     def __str__(self):
@@ -163,19 +199,40 @@ class OffreLot(models.Model):
         )
 
     def get_offre_fcfa(self):
-        """Retourne l'offre financière en FCFA"""
+        """Retourne l'offre financière en FCFA TTC"""
         rapport = self.ligne_rapport.rapport
-        return rapport.convertir_en_fcfa(self.offre_financiere, self.devise)
+        montant_fcfa = rapport.convertir_en_fcfa(self.offre_financiere, self.devise)
+
+        # Si c'est déjà TTC, on retourne simplement
+        if not self.est_htva:
+            return montant_fcfa
+
+        # Sinon on ajoute la TVA
+        tva = Configuration.get_tva() / Decimal("100")
+        return montant_fcfa * (Decimal("1") + tva)
 
     def save(self, *args, **kwargs):
         try:
             rapport = self.ligne_rapport.rapport
+            # Conversion en FCFA (sans TVA)
             self.offre_financiere_fcfa = rapport.convertir_en_fcfa(
                 self.offre_financiere, self.devise
             )
-            # Logging en cas d'erreur
+            # Calcul du montant TTC
+            # print('Configuration.get_tva()=',Configuration.get_tva())
+            tva = Configuration.get_tva() / Decimal("100")
+            if self.est_htva:
+                self.offre_financiere_fcfa_ttc = self.offre_financiere_fcfa * (
+                    Decimal("1") + tva
+                )
+            else:
+                self.offre_financiere_fcfa_ttc = self.offre_financiere_fcfa
+            # Logging
             logger.info(
-                f"Conversion: {self.offre_financiere} {self.devise} -> {self.offre_financiere_fcfa} FCFA"
+                f"Conversion: {self.offre_financiere} {self.devise} -> "
+                f"{self.offre_financiere_fcfa} FCFA "
+                f"({'HTVA' if self.est_htva else 'TTC'}) -> "
+                f"{self.offre_financiere_fcfa_ttc} FCFA TTC"
             )
         except Exception as e:
             logger.error(f"Erreur de conversion: {e}")
@@ -189,25 +246,96 @@ class OffreLot(models.Model):
         Méthode de classe pour mettre à jour toutes les offres en FCFA
         pour un rapport donné
         """
-        # Débogage
-        all_offres = cls.objects.filter(ligne_rapport__rapport=rapport)
-        print(f"Total des offres pour ce rapport: {all_offres.count()}")
-
         # Récupérez toutes les offres
         offres_lots = cls.objects.filter(ligne_rapport__rapport=rapport)
         print(f"Offres à mettre à jour: {offres_lots.count()}")
 
         for offre in offres_lots:
             try:
+                # Conversion en FCFA
                 offre.offre_financiere_fcfa = rapport.convertir_en_fcfa(
                     offre.offre_financiere, offre.devise
                 )
-                offre.save()
+
+                # Calcul du montant TTC
+                tva = Configuration.get_tva() / Decimal("100")
+                if offre.est_htva:
+                    offre.offre_financiere_fcfa_ttc = offre.offre_financiere_fcfa * (
+                        Decimal("1") + tva
+                    )
+                else:
+                    offre.offre_financiere_fcfa_ttc = offre.offre_financiere_fcfa
+
+                offre.save(
+                    update_fields=["offre_financiere_fcfa", "offre_financiere_fcfa_ttc"]
+                )
                 print(
-                    f"Offre mise à jour: {offre.id}, {offre.offre_financiere} {offre.devise} -> {offre.offre_financiere_fcfa} FCFA"
+                    f"Offre mise à jour: {offre.id}, {offre.offre_financiere} "
+                    f"{offre.devise} -> {offre.offre_financiere_fcfa} FCFA "
+                    f"({'HTVA' if offre.est_htva else 'TTC'}) -> "
+                    f"{offre.offre_financiere_fcfa_ttc} FCFA TTC"
                 )
             except Exception as e:
                 print(f"Erreur lors de la mise à jour de l'offre {offre.id}: {e}")
+
+
+# Modèle pour l'attribution des lots
+class AttributionLot(models.Model):
+    STATUT_CHOICES = [
+        ("ATTRIBUE", "Attribué"),
+        ("REJETE", "Rejeté"),
+        ("EN_ATTENTE", "En attente de décision"),
+    ]
+
+    lot = models.ForeignKey(
+        Lot,
+        related_name="attributions",
+        on_delete=models.CASCADE,
+    )
+    soumissionnaire = models.ForeignKey(
+        Soumissionnaire,
+        related_name="attributions",
+        on_delete=models.CASCADE,
+    )
+    statut = models.CharField(
+        max_length=20, choices=STATUT_CHOICES, default="EN_ATTENTE"
+    )
+    motif_rejet = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Motif de rejet si le soumissionnaire n'est pas retenu",
+    )
+    document_attribution = models.FileField(
+        upload_to="attributions/%Y/%m/%d/",
+        blank=True,
+        null=True,
+        help_text="Document scanné de la lettre d'attribution",
+    )
+    date_attribution = models.DateField(blank=True, null=True)
+    observations = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ("lot", "soumissionnaire")
+        verbose_name = "Attribution de lot"
+        verbose_name_plural = "Attributions de lots"
+
+    def __str__(self):
+        return f"Attribution {self.lot} - {self.soumissionnaire.nom} ({self.get_statut_display()})"
+
+    def clean(self):
+        # Vérification que le soumissionnaire a bien fait une offre pour ce lot
+        if not OffreLot.objects.filter(
+            lot=self.lot, ligne_rapport__soumissionnaire=self.soumissionnaire
+        ).exists():
+            raise ValidationError(
+                f"Le soumissionnaire {self.soumissionnaire.nom} n'a pas fait d'offre pour ce lot"
+            )
+
+        # Si statut est ATTRIBUE, document d'attribution obligatoire
+        if self.statut == "ATTRIBUE" and not self.document_attribution:
+            raise ValidationError(
+                "Un document d'attribution est requis pour l'attribution du marché"
+            )
 
 
 class ExperienceSimilaire(models.Model):

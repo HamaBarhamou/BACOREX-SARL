@@ -1,0 +1,25 @@
+<!-- templates/dao/attribution_confirm_delete.html -->
+{% extends 'home.html' %}
+
+{% block title %}Supprimer l'attribution{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Confirmation de suppression</h5>
+        </div>
+        <div class="card-body">
+            <p>Êtes-vous sûr de vouloir supprimer l'attribution de {{ attribution.soumissionnaire.nom }} pour {{ lot.nom_lot }} ?</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'dao:gestion_attributions' dao.pk %}" class="btn btn-outline-secondary me-md-2">Annuler</a>
+                    <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
