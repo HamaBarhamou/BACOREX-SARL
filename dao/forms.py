@@ -148,9 +148,13 @@ class AttributionLotForm(forms.ModelForm):
             "observations",
         ]
         widgets = {
-            "date_attribution": forms.DateInput(attrs={"type": "date"}),
-            "motif_rejet": forms.Textarea(attrs={"rows": 3}),
-            "observations": forms.Textarea(attrs={"rows": 3}),
+            "soumissionnaire": forms.Select(attrs={"class": "form-select"}),
+            "statut": forms.Select(attrs={"class": "form-select"}),
+            "date_attribution": forms.DateInput(
+                attrs={"type": "date", "class": "form-control"}
+            ),
+            "motif_rejet": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
+            "observations": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
         }
 
     def __init__(self, *args, lot=None, **kwargs):

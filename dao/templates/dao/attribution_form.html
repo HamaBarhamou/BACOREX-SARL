@@ -25,19 +25,15 @@
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="{{ form.soumissionnaire.id_for_label }}" class="form-label">Soumissionnaire</label>
-                        <select name="{{ form.soumissionnaire.name }}" id="{{ form.soumissionnaire.id_for_label }}" class="form-select">
-                            {{ form.soumissionnaire.html_output }}
-                        </select>
+                        <label for="id_soumissionnaire" class="form-label">Soumissionnaire</label>
+                        {{ form.soumissionnaire }}
                         {% if form.soumissionnaire.errors %}
                             <div class="text-danger">{{ form.soumissionnaire.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="{{ form.statut.id_for_label }}" class="form-label">Statut</label>
-                        <select name="{{ form.statut.name }}" id="{{ form.statut.id_for_label }}" class="form-select">
-                            {{ form.statut.html_output }}
-                        </select>
+                        <label for="id_statut" class="form-label">Statut</label>
+                        {{ form.statut }}
                         {% if form.statut.errors %}
                             <div class="text-danger">{{ form.statut.errors }}</div>
                         {% endif %}

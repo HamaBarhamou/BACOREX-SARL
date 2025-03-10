@@ -570,6 +570,7 @@ def ajouter_attribution(request, lot_id):
             return redirect("dao:gestion_attributions", dao_id=lot.dao.id)
     else:
         form = AttributionLotForm(lot=lot)
+        print("form=", form)
 
     context = {
         "form": form,
