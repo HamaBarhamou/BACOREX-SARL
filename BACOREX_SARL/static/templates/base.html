@@ -24,51 +24,101 @@
     <!-- Custom CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-    
+    <style>
+        /* Style pour l'en-tête fixe */
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Ajustement du contenu principal pour éviter qu'il soit caché sous l'en-tête fixe */
+        .main-content {
+            margin-top: 140px; /* À ajuster selon la hauteur de votre en-tête */
+        }
+        
+        /* Style pour la barre latérale et le contenu principal */
+        .sidebar {
+            min-height: calc(100vh - 190px); /* 100vh moins hauteur de l'en-tête et du pied de page */
+            padding: 15px;
+        }
+        
+        .content-area {
+            min-height: calc(100vh - 190px);
+            padding: 15px;
+        }
+        
+        /* Supprimer les bordures de débogage */
+        .border-debug {
+            border: none !important;
+        }
+        
+        /* Footer styling */
+        #footer {
+            margin-top: 20px;
+            padding: 10px 0;
+            background-color: #f8f9fa;
+        }
+    </style>
 
     {% block headfile %}
     {% endblock %}
     <title>{% block title %} {% endblock %}</title>
 </head>
 <body>
-    <div class="container-fluid m-2 h-25">
-        <div class="row">
-            <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-start border border-secondary">
-                <div style="width: 100px; height: 100px;">
-                    {% load static %}
-                    <img src="{% static 'images/logo.png' %}" alt="BACOREX-SARL" class="img-fluid">
+    <!-- En-tête fixe -->
+    <div class="header-fixed">
+        <div class="container-fluid py-2">
+            <div class="row align-items-center">
+                <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-start border-debug">
+                    <div style="width: 100px; height: 100px;">
+                        {% load static %}
+                        <img src="{% static 'images/logo.png' %}" alt="BACOREX-SARL" class="img-fluid">
+                    </div>
                 </div>
-                
+                <div class="col-10 col-sm-10 d-flex justify-content-center border-debug">
+                    {% block entete %} 
+                        <!-- En-tête -->
+                    {% endblock %}
+                </div>
+                <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-end border-debug">
+                    {% block profile %} 
+                        <!-- Profil -->
+                    {% endblock %}
+                </div>
             </div>
-            <div class="col-10 col-sm-10 d-flex justify-content-center border border-success">
-                {% block entete %} 
-                    <!-- En-tête -->
-                {% endblock %}
-            </div>
-            <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-end border border-warning ">
-                {% block profile %} 
-                    <!-- Profil -->
-                {% endblock %}
+        </div>
+        
+        {% block entete_messagerie %} 
+        {% endblock %}
+    </div>
+    
+    <!-- Contenu principal avec marge supérieure pour éviter le chevauchement avec l'en-tête fixe -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 col-sm-2 sidebar border-debug">
+                    {% block menu %} 
+                    {% endblock %}
+                </div>
+                <div class="col-12 col-sm-10 content-area border-debug">
+                    {% block content %} {% endblock %}
+                </div> 
             </div>
         </div>
     </div>
     
-    {% block entete_messagerie %} 
-    {% endblock %}
-    <div class="row container-fluid border border-dark">
-        <div class="col-12 col-sm-2 border border-success">
-            {% block menu %} 
-            {% endblock %}
-        </div>
-        <div class="col-12 col-sm-10 border border-dark overflow-scroll">
-            {% block content %} {% endblock %}
-        </div> 
-    </div>
-    <div id="footer" class="container-fluid border border-dark m-2">
+    <!-- Pied de page -->
+    <div id="footer" class="container-fluid border-debug">
         {% block footer %}
             {% include "footer.html" %}
         {% endblock %}
     </div>
+    
     <!-- Bootstrap JS bundle -->
     {% block codejs %}
     {% endblock %}
@@ -78,5 +128,19 @@
     <!-- Select2 JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Script pour ajuster dynamiquement la marge du contenu principal si la hauteur de l'en-tête change
+        document.addEventListener("DOMContentLoaded", function() {
+            const headerHeight = document.querySelector('.header-fixed').offsetHeight;
+            document.querySelector('.main-content').style.marginTop = (headerHeight + 20) + 'px';
+            
+            // Réajuster lors du redimensionnement de la fenêtre
+            window.addEventListener('resize', function() {
+                const headerHeight = document.querySelector('.header-fixed').offsetHeight;
+                document.querySelector('.main-content').style.marginTop = (headerHeight + 20) + 'px';
+            });
+        });
+    </script>
 </body>
 </html>
