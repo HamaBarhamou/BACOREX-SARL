@@ -32,24 +32,106 @@
             left: 0;
             right: 0;
             background-color: white;
-            z-index: 1000;
+            z-index: 1030;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
         }
         
-        /* Ajustement du contenu principal pour éviter qu'il soit caché sous l'en-tête fixe */
+        /* Style pour le menu sidebar fixe */
+        .sidebar-fixed {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 16.666667%; /* Équivalent à col-sm-2 */
+            z-index: 1020;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        
+        /* Conteneur pour le menu latéral */
+        .sidebar-container {
+            height: 100%;
+            padding-top: 15px;
+            overflow-y: auto;
+        }
+        
+        /* Ajustement du contenu principal */
         .main-content {
-            margin-top: 140px; /* À ajuster selon la hauteur de votre en-tête */
+            transition: margin-top 0.3s ease, margin-left 0.3s ease;
         }
         
-        /* Style pour la barre latérale et le contenu principal */
-        .sidebar {
-            min-height: calc(100vh - 190px); /* 100vh moins hauteur de l'en-tête et du pied de page */
-            padding: 15px;
-        }
-        
+        /* Style pour la zone de contenu */
         .content-area {
-            min-height: calc(100vh - 190px);
+            min-height: calc(100vh - 160px);
             padding: 15px;
+        }
+        
+        /* Ajustement du contenu déplacé à droite pour laisser place au menu fixe */
+        .content-shifted {
+            margin-left: 16.666667%; /* Équivalent à col-sm-2 */
+        }
+        
+        /* Styles responsifs pour mobile */
+        @media (max-width: 768px) {
+            .header-fixed .row {
+                flex-wrap: nowrap;
+            }
+            
+            .sidebar-fixed {
+                width: 75%; /* Plus large sur mobile mais pas tout l'écran */
+                left: -75%; /* Caché par défaut */
+                box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            }
+            
+            .sidebar-fixed.show {
+                left: 0; /* Afficher quand 'show' est appliqué */
+            }
+            
+            /* Fond assombri quand menu est ouvert */
+            .sidebar-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 1019;
+                display: none;
+            }
+            
+            .sidebar-backdrop.show {
+                display: block;
+            }
+            
+            .content-shifted {
+                margin-left: 0;
+            }
+            
+            /* Ajuster la taille du logo */
+            .logo-container {
+                width: 60px;
+                height: 60px;
+            }
+            
+            /* Style pour le header */
+            .header-content {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Style pour les très petits écrans */
+        @media (max-width: 576px) {
+            .header-fixed .col-1 {
+                padding: 0 5px;
+            }
+            
+            .logo-container {
+                width: 50px;
+                height: 50px;
+            }
         }
         
         /* Supprimer les bordures de débogage */
@@ -62,6 +144,46 @@
             margin-top: 20px;
             padding: 10px 0;
             background-color: #f8f9fa;
+            width: 100%;
+        }
+        
+        /* Bouton menu hamburger */
+        .toggle-sidebar {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .toggle-sidebar:hover {
+            background-color: #0069d9;
+        }
+        
+        /* Animation pour le menu latéral */
+        @keyframes slideIn {
+            from { left: -75%; }
+            to { left: 0; }
+        }
+        
+        @keyframes slideOut {
+            from { left: 0; }
+            to { left: -75%; }
+        }
+        
+        .sidebar-fixed.animate-in {
+            animation: slideIn 0.3s forwards;
+        }
+        
+        .sidebar-fixed.animate-out {
+            animation: slideOut 0.3s forwards;
         }
     </style>
 
@@ -71,41 +193,77 @@
 </head>
 <body>
     <!-- En-tête fixe -->
-    <div class="header-fixed">
-        <div class="container-fluid py-2">
-            <div class="row align-items-center">
-                <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-start border-debug">
-                    <div style="width: 100px; height: 100px;">
-                        {% load static %}
-                        <img src="{% static 'images/logo.png' %}" alt="BACOREX-SARL" class="img-fluid">
-                    </div>
-                </div>
-                <div class="col-10 col-sm-10 d-flex justify-content-center border-debug">
-                    {% block entete %} 
-                        <!-- En-tête -->
-                    {% endblock %}
-                </div>
-                <div class="col-1 col-sm-1 d-flex justify-content-center justify-content-sm-end border-debug">
-                    {% block profile %} 
-                        <!-- Profil -->
-                    {% endblock %}
+<div class="header-fixed">
+    <div class="container-fluid py-3" style="background: linear-gradient(135deg, #5a3e36 0%, #8a6e65 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+        <div class="row align-items-center">
+            <!-- Logo -->
+            <div class="col-auto col-sm-3 col-md-2 d-flex justify-content-center justify-content-sm-start ps-sm-4">
+                <div class="logo-container" style="width: 100px; height: 100px; padding: 2px; background: white; border-radius: 50%; box-shadow: 0 3px 10px rgba(0,0,0,0.2);">
+                    {% load static %}
+                    <img src="{% static 'images/logo.png' %}" alt="BACOREX-SARL" class="img-fluid rounded-circle" style="width: 100%; height: 100%; object-fit: cover; border: 3px solid #f8d568;">
                 </div>
             </div>
+            
+            <!-- Bloc entete (surchargeable par les templates enfants) -->
+            <div class="col col-sm-6 col-md-8 d-flex justify-content-center justify-content-sm-start header-content">
+                {% block entete %}
+                    <!-- Contenu par défaut (peut être surchargé) -->
+                    <div class="text-center text-sm-start">
+                        <h2 class="mb-0 text-white fw-bold" style="font-family: 'Merriweather', serif; letter-spacing: 1px; font-size: calc(1.6rem + 0.8vw); text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                            BACOREX <span style="color: #f8d568;">SARL</span>
+                        </h2>
+                        <p class="mb-0 mt-2" style="color: #ffffff; font-family: 'Open Sans', sans-serif; font-size: calc(0.9rem + 0.2vw); text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px;">
+                            <span class="d-none d-md-inline" style="color: #f8d568;">✦</span> 
+                            Tableau de bord de gestion des projets 
+                            <span class="d-none d-md-inline" style="color: #f8d568;">✦</span>
+                        </p>
+                        <div class="mt-1 d-none d-md-block" style="width: 80px; height: 3px; background: #f8d568; border-radius: 2px;"></div>
+                    </div>
+                {% endblock %}
+            </div>
+            
+            <!-- Profil utilisateur -->
+            <div class="col-auto col-sm-3 col-md-2 d-flex justify-content-center justify-content-sm-end pe-sm-4">
+                {% block profile %}
+                    {% include "profile.html" %}
+                {% endblock %}
+            </div>
         </div>
-        
+    </div>
+    
+    <div class="header-notification" style="background-color: #f5f5f5; border-bottom: 3px solid #f8d568;">
         {% block entete_messagerie %} 
         {% endblock %}
     </div>
+</div>
+    
+    <!-- Fond assombri pour le menu mobile -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
     
     <!-- Contenu principal avec marge supérieure pour éviter le chevauchement avec l'en-tête fixe -->
     <div class="main-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 col-sm-2 sidebar border-debug">
-                    {% block menu %} 
-                    {% endblock %}
+        <div class="container-fluid p-0">
+            <div class="row g-0">
+                <!-- Bouton pour basculer le menu sur mobile -->
+                <div class="d-block d-md-none w-100 px-3">
+                    <button type="button" class="btn btn-primary toggle-sidebar">
+                        <i class="fas fa-bars"></i> Menu
+                    </button>
                 </div>
-                <div class="col-12 col-sm-10 content-area border-debug">
+                
+                <!-- Barre latérale fixe - masquée par défaut sur mobile -->
+                <div id="sidebar" class="col-sm-2 sidebar-fixed">
+                    <div class="d-flex justify-content-end d-md-none mb-3">
+                        <button type="button" class="btn-close close-sidebar" aria-label="Close"></button>
+                    </div>
+                    <div class="sidebar-container">
+                        {% block menu %} 
+                        {% endblock %}
+                    </div>
+                </div>
+                
+                <!-- Zone de contenu principal - pleine largeur sur mobile, déplacée sur desktop -->
+                <div class="col-12 col-md-10 content-area content-shifted border-debug">
                     {% block content %} {% endblock %}
                 </div> 
             </div>
@@ -130,15 +288,69 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-        // Script pour ajuster dynamiquement la marge du contenu principal si la hauteur de l'en-tête change
         document.addEventListener("DOMContentLoaded", function() {
+            // Calculer la hauteur de l'en-tête
             const headerHeight = document.querySelector('.header-fixed').offsetHeight;
-            document.querySelector('.main-content').style.marginTop = (headerHeight + 20) + 'px';
+            
+            // Ajuster la marge supérieure du contenu principal
+            document.querySelector('.main-content').style.marginTop = (headerHeight + 10) + 'px';
+            
+            // Ajuster la position du menu latéral pour qu'il commence après l'en-tête
+            document.querySelector('.sidebar-fixed').style.top = headerHeight + 'px';
             
             // Réajuster lors du redimensionnement de la fenêtre
             window.addEventListener('resize', function() {
                 const headerHeight = document.querySelector('.header-fixed').offsetHeight;
-                document.querySelector('.main-content').style.marginTop = (headerHeight + 20) + 'px';
+                document.querySelector('.main-content').style.marginTop = (headerHeight + 10) + 'px';
+                document.querySelector('.sidebar-fixed').style.top = headerHeight + 'px';
+                
+                // Masquer automatiquement le menu sur petit écran lors du redimensionnement
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('show');
+                    document.getElementById('sidebar-backdrop').classList.remove('show');
+                }
+            });
+            
+            // Gérer le bouton de basculement du menu sur mobile
+            const toggleButtons = document.querySelectorAll('.toggle-sidebar');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const closeButton = document.querySelector('.close-sidebar');
+            
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    sidebar.classList.add('show');
+                    backdrop.classList.add('show');
+                });
+            });
+            
+            // Fermeture du menu
+            function closeSidebar() {
+                sidebar.classList.remove('show');
+                backdrop.classList.remove('show');
+            }
+            
+            // Fermer avec le bouton close
+            if (closeButton) {
+                closeButton.addEventListener('click', closeSidebar);
+            }
+            
+            // Fermer en cliquant sur le fond assombri
+            backdrop.addEventListener('click', closeSidebar);
+            
+            // Gérer Select2 de manière responsive
+            if ($.fn.select2) {
+                $('.select2').select2({
+                    width: '100%',
+                    dropdownAutoWidth: true
+                });
+            }
+            
+            // Adapter Select2 au redimensionnement
+            window.addEventListener('resize', function() {
+                if ($.fn.select2) {
+                    $('.select2').select2('close');
+                }
             });
         });
     </script>
