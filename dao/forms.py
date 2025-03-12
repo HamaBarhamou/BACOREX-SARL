@@ -176,7 +176,6 @@ class ExperienceSimilaireForm(forms.ModelForm):
     class Meta:
         model = ExperienceSimilaire
         fields = [
-            "dao",
             "reference_marche",
             "objet",
             "description_travaux",
@@ -190,7 +189,6 @@ class ExperienceSimilaireForm(forms.ModelForm):
             "document",
         ]
         widgets = {
-            "dao": forms.Select(attrs={"class": "form-control"}),
             "reference_marche": forms.TextInput(attrs={"class": "form-control"}),
             "objet": forms.TextInput(attrs={"class": "form-control"}),
             "description_travaux": forms.Textarea(attrs={"class": "form-control"}),

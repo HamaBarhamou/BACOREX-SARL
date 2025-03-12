@@ -339,13 +339,6 @@ class AttributionLot(models.Model):
 
 
 class ExperienceSimilaire(models.Model):
-    dao = models.ForeignKey(
-        DAO,
-        related_name="experiences_similaires",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
     reference_marche = models.CharField(max_length=200)
     objet = models.CharField(max_length=600)
     description_travaux = models.TextField()

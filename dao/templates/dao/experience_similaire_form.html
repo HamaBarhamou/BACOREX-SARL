@@ -3,10 +3,95 @@
 {% load static %}
 
 {% block content %}
-    <h2>{{ form.instance.pk|yesno:"Update Experience Similaire,Create Experience Similaire" }}</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
-    </form>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <!-- En-tête de la carte -->
+        <!-- En-tête de la carte avec un bon contraste -->
+        <div class="card-header bg-primary text-white">
+            <h3 class="text-center font-weight-bold">
+                {{ form.instance.pk|yesno:"Modifier l'expérience similaire,Créer une expérience similaire" }}
+            </h3>
+        </div>
+
+        <!-- Corps du formulaire -->
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.reference_marche.id_for_label }}" class="form-label">Référence Marché</label>
+                            {{ form.reference_marche }}
+                            <div class="text-danger">{{ form.reference_marche.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.objet.id_for_label }}" class="form-label">Objet</label>
+                            {{ form.objet }}
+                            <div class="text-danger">{{ form.objet.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.description_travaux.id_for_label }}" class="form-label">Description des Travaux</label>
+                            {{ form.description_travaux }}
+                            <div class="text-danger">{{ form.description_travaux.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.delai_execution_jours.id_for_label }}" class="form-label">Délai d'exécution (jours)</label>
+                            {{ form.delai_execution_jours }}
+                            <div class="text-danger">{{ form.delai_execution_jours.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.nom_client.id_for_label }}" class="form-label">Nom du Client</label>
+                            {{ form.nom_client }}
+                            <div class="text-danger">{{ form.nom_client.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.financement.id_for_label }}" class="form-label">Financement</label>
+                            {{ form.financement }}
+                            <div class="text-danger">{{ form.financement.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.maitre_ouvrage.id_for_label }}" class="form-label">Maître d'Ouvrage</label>
+                            {{ form.maitre_ouvrage }}
+                            <div class="text-danger">{{ form.maitre_ouvrage.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.montant_contrat.id_for_label }}" class="form-label">Montant du Contrat (FCFA)</label>
+                            {{ form.montant_contrat }}
+                            <div class="text-danger">{{ form.montant_contrat.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.date_demarrage_travaux.id_for_label }}" class="form-label">Date de Début</label>
+                            {{ form.date_demarrage_travaux }}
+                            <div class="text-danger">{{ form.date_demarrage_travaux.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.date_fin_travaux.id_for_label }}" class="form-label">Date de Fin</label>
+                            {{ form.date_fin_travaux }}
+                            <div class="text-danger">{{ form.date_fin_travaux.errors }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.document.id_for_label }}" class="form-label">Document</label>
+                            {{ form.document }}
+                            <div class="text-danger">{{ form.document.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boutons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'dao:experience_similaire_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
