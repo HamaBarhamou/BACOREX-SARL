@@ -1,59 +1,436 @@
-{% load static %}
-{% load bootstrap5 %}
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{# Display django.contrib.messages as Bootstrap alerts #}
+{% load static %} {% load bootstrap5 %}
+{% bootstrap_css %} {% bootstrap_javascript %}
 {% bootstrap_messages %}
 
-<div class="container-fluid vh-100 d-flex justify-content-center align-items-center" style="background-image: url('{% static 'images/Background.jpg' %}'); background-size: cover;">
-  <div class="col-md-6">
-    <h1 class="text-center text-light" style="background-color: rgba(0, 0, 0, 0.6); padding: 10px;">Se connecter</h1>
-
-    <!-- Ajout du texte d'introduction -->
-    <p class="text-center text-white" style="background-color: rgba(0, 0, 0, 0.6); padding: 10px;">
-      Bienvenue sur la plateforme de gestion de projet de BACOREX. Chaque jour, votre travail aide notre entreprise à se développer et à répondre aux besoins de notre clientèle exigeante. 
-      Connectez-vous pour accéder à vos projets, collaborer avec vos collègues et contribuer à notre succès continu.
-    </p>
-
-    {% if error %}
-      <div class="alert alert-danger" role="alert">
-        Utilisateur inexistant ou mauvais mot de passe.
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BACOREX - Portail de Gestion</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #0f172a;
+      --light: #f8fafc;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --error: #ef4444;
+      --success: #10b981;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+    
+    .login-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .login-image {
+      width: 55%;
+      background-image: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.7)), url('{% static "images/Background.jpg" %}');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2rem;
+      color: white;
+    }
+    
+    .company-info {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+      animation: fadeIn 1s ease-in-out;
+      padding: 2rem;
+      background-color: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+    }
+    
+    .company-info h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .company-info p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      max-width: 550px;
+      line-height: 1.8;
+    }
+    
+    .company-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    
+    .login-form-container {
+      width: 45%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 2rem;
+      background-color: white;
+      overflow-y: auto;
+    }
+    
+    .login-header {
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    
+    .logo-container {
+      margin-bottom: 1.5rem;
+    }
+    
+    .logo-container img {
+      max-width: 180px;
+      height: auto;
+    }
+    
+    .form-wrapper {
+      max-width: 400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .form-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.75rem;
+    }
+    
+    .form-subtitle {
+      color: var(--text-light);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      font-size: 0.925rem;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      padding-left: 3rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: var(--text-dark);
+      background-color: #f8fafc;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+      background-color: white;
+    }
+    
+    .form-icon {
+      position: absolute;
+      left: 1rem;
+      top: 2.3rem;
+      color: var(--text-light);
+    }
+    
+    .text-help {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+    }
+    
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+    }
+    
+    .remember-me {
+      display: flex;
+      align-items: center;
+    }
+    
+    .remember-me input {
+      margin-right: 0.5rem;
+    }
+    
+    .forgot-password {
+      color: var(--primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    
+    .forgot-password:hover {
+      text-decoration: underline;
+    }
+    
+    .btn-login {
+      width: 100%;
+      padding: 0.85rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .btn-login:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    
+    .btn-login:active {
+      transform: translateY(1px);
+    }
+    
+    .login-icon {
+      margin-right: 0.5rem;
+    }
+    
+    .footer-text {
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--text-light);
+      font-size: 0.8rem;
+    }
+    
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .alert-danger {
+      background-color: rgba(239, 68, 68, 0.1);
+      border-left: 4px solid var(--error);
+      color: var(--error);
+    }
+    
+    .alert-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      border-left: 4px solid var(--success);
+      color: var(--success);
+    }
+    
+    .support-contact {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+    
+    .support-contact a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .support-contact a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 992px) {
+      .login-container {
+        flex-direction: column;
+      }
+      
+      .login-image {
+        width: 100%;
+        height: 35vh;
+      }
+      
+      .login-form-container {
+        width: 100%;
+        padding: 2rem 1.5rem;
+      }
+      
+      .company-info {
+        padding: 1.5rem;
+      }
+      
+      .company-info h1 {
+        font-size: 2rem;
+      }
+      
+      .company-info p {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .company-stats {
+        flex-wrap: wrap;
+      }
+      
+      .stat-item {
+        width: 48%;
+        margin-bottom: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-image">
+      <div class="company-info">
+        <h1>BACOREX</h1>
+        <p>Bienvenue sur notre plateforme de gestion de projet. Un outil puissant conçu pour optimiser votre productivité et faciliter la collaboration entre les équipes.</p>
+        <p>Chaque jour, votre travail aide notre entreprise à se développer et à répondre aux besoins de notre clientèle exigeante.</p>
+        
+        <div class="company-stats">
+          <div class="stat-item">
+            <div class="stat-value">120+</div>
+            <div class="stat-label">Projets actifs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">95%</div>
+            <div class="stat-label">Satisfaction client</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">15</div>
+            <div class="stat-label">Années d'expertise</div>
+          </div>
+        </div>
       </div>
-    {% endif %} 
-
-    {% if user.is_authenticated %}
-      <div class="alert alert-success" role="alert">
-        Vous êtes connecté, {{ user.username }} ! <a href="{% url 'logout' %}">Se déconnecter</a>
+    </div>
+    
+    <div class="login-form-container">
+      <div class="login-header">
+        <div class="logo-container">
+          <img src="{% static 'images/logo.png' %}" alt="Logo BACOREX">
+        </div>
       </div>
-    {% else %}
-      <form method="post" action="." class="bg-light p-4 rounded">
-        {% csrf_token %}
-
-        {% if form.errors %}
+      
+      <div class="form-wrapper">
+        <h2 class="form-title">Connexion à votre espace</h2>
+        <p class="form-subtitle">Accédez à vos projets et ressources en toute sécurité</p>
+        
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-circle"></i> Utilisateur inexistant ou mauvais mot de passe.
+        </div>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+        <div class="alert alert-success" role="alert">
+          <i class="fas fa-check-circle"></i> Vous êtes connecté, {{ user.username }} ! <a href="{% url 'logout' %}">Se déconnecter</a>
+        </div>
+        {% else %}
+        <form method="post" action=".">
+          {% csrf_token %}
+          
+          {% if form.errors %}
           <div class="alert alert-danger" role="alert">
             <ul class="mb-0">
               {% for error in form.errors %}
-                <li>{{ error }}</li>
+              <li>{{ error }}</li>
               {% endfor %}
             </ul>
           </div>
+          {% endif %}
+          
+          <div class="form-group">
+            <label for="id_username" class="form-label">Nom d'utilisateur</label>
+            <i class="fas fa-user form-icon"></i>
+            <input type="text" name="username" id="id_username" class="form-control" required>
+            <div class="text-help">Votre identifiant professionnel BACOREX</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="id_password" class="form-label">Mot de passe</label>
+            <i class="fas fa-lock form-icon"></i>
+            <input type="password" name="password" id="id_password" class="form-control" required>
+            <div class="text-help">Votre mot de passe sécurisé</div>
+          </div>
+          
+          <div class="remember-forgot">
+            <div class="remember-me">
+              <input type="checkbox" id="remember" name="remember">
+              <label for="remember">Se souvenir de moi</label>
+            </div>
+            <a href="#" class="forgot-password">Mot de passe oublié?</a>
+          </div>
+          
+          <button type="submit" class="btn-login">
+            <i class="fas fa-sign-in-alt login-icon"></i>
+            Se connecter
+          </button>
+          
+          <div class="support-contact">
+            <p>Besoin d'aide? <a href="mailto:support@bacorex.com">Contactez le support</a></p>
+          </div>
+        </form>
         {% endif %}
-
-        <div class="mb-3">
-          <label for="id_username" class="form-label">Nom d'utilisateur</label>
-          {{ form.username }}
-          <p class="text-muted">Entrez votre nom d'utilisateur.</p>
+        
+        <div class="footer-text">
+          <p>&copy; 2025 BACOREX - Tous droits réservés</p>
         </div>
-
-        <div class="mb-3">
-          <label for="id_password" class="form-label">Mot de passe</label>
-          {{ form.password }}
-          <p class="text-muted">Entrez votre mot de passe.</p>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Se connecter</button>
-      </form>
-    {% endif %}
+      </div>
+    </div>
   </div>
-</div>
+</body>
+</html>
