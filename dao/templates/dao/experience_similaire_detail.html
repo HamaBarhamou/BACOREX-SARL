@@ -1,44 +1,121 @@
 {% extends "home.html" %}
-
 {% load static %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h2 class="text-center mb-4" style="color: #333;">Détails de l'Expérience Similaire</h2>
-            <div class="card shadow-lg border-0 rounded-lg mt-4 overflow-hidden">
+        <div class="col-lg-10">
+            <!-- Titre principal -->
+            <h2 class="text-center mb-4 text-dark font-weight-bold">
+                🏗️ Détails de l'Expérience Similaire
+            </h2>
+
+            <!-- Carte principale -->
+            <div class="card shadow-lg border-0 rounded-lg mt-4">
+                <div class="card-header bg-dark text-white text-center">
+                    <h3 class="font-weight-bold">📌 Informations Générales</h3>
+                </div>
                 <div class="card-body">
-                    <h3 class="card-title text-center"><strong>Informations de l'Expérience</strong></h3>
+                    <div class="row">
+                        <!-- Colonne gauche -->
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>📌 Référence :</strong> {{ experience.reference_marche }}</li>
+                                <li class="list-group-item"><strong>⏳ Délai :</strong> {{ experience.delai_execution_jours }} jours / {{ experience.delai_execution_mois }} mois</li>
+                                <li class="list-group-item"><strong>🏢 Client :</strong> {{ experience.nom_client }}</li>
+                                <li class="list-group-item"><strong>💰 Financement :</strong> {{ experience.financement }}</li>
+                                <li class="list-group-item"><strong>🛠️ Maître d'Ouvrage :</strong> {{ experience.maitre_ouvrage }}</li>
+                            </ul>
+                        </div>
+                        <!-- Colonne droite -->
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>💲 Montant :</strong> {{ experience.montant_contrat|floatformat:2 }} FCFA</li>
+                                <li class="list-group-item"><strong>📅 Début :</strong> {{ experience.date_demarrage_travaux|date:"d M Y" }}</li>
+                                <li class="list-group-item"><strong>📅 Fin :</strong> {{ experience.date_fin_travaux|date:"d M Y" }}</li>
+                                <li class="list-group-item"><strong>📂 Document :</strong> 
+                                    {% if experience.document %}
+                                        <a href="{{ experience.document.url }}" class="btn btn-outline-primary btn-sm">
+                                            📄 Télécharger
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Aucun document disponible</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     <hr>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Référence du Marché:</strong> {{ experience.reference_marche }}</li>
-                        <li class="list-group-item"><strong>Description des Travaux:</strong> {{ experience.description_travaux }}</li>
-                        <li class="list-group-item"><strong>Délai d'exécution (jours):</strong> {{ experience.delai_execution_jours }}</li>
-                        <li class="list-group-item"><strong>Délai d'exécution (mois):</strong> {{ experience.delai_execution_mois }}</li>
-                        <li class="list-group-item"><strong>Nom du Client:</strong> {{ experience.nom_client }}</li>
-                        <li class="list-group-item"><strong>Financement:</strong> {{ experience.financement }}</li>
-                        <li class="list-group-item"><strong>Maître d'Ouvrage:</strong> {{ experience.maitre_ouvrage }}</li>
-                        <li class="list-group-item"><strong>Montant du Contrat:</strong> {{ experience.montant_contrat }}</li>
-                        <li class="list-group-item"><strong>Date de Démarrage des Travaux:</strong> {{ experience.date_demarrage_travaux }}</li>
-                        <li class="list-group-item"><strong>Date de Fin des Travaux:</strong> {{ experience.date_fin_travaux }}</li>
-                        <li class="list-group-item"><strong>Objet:</strong> {{ experience.objet }}</li>
-                        <li class="list-group-item"><strong>Document:</strong> <a href="{{ experience.document.url }}" class="btn btn-primary">Télécharger</a></li>
-                    </ul>
-                    <div class="card-footer text-center">
-                        <div class="small"><i class="fas fa-user mr-2"></i>Auteur: Nom de l'Auteur</div>
-                        <div class="small"><i class="fas fa-calendar-alt mr-2"></i>Date: 20 Mai 2024</div>
+                    <!-- Description complète -->
+                    <div class="mt-3">
+                        <h5 class="font-weight-bold">📖 Description des Travaux</h5>
+                        <p class="text-muted">{{ experience.description_travaux }}</p>
                     </div>
                 </div>
+
+                <!-- Pied de carte -->
                 <div class="card-footer text-center">
-                    <div class="small"><a href="{% url 'dao:update_experience_similaire' experience.pk %}" class="btn btn-warning">Modifier</a></div>
-                    <div class="small"><form method="post" action="{% url 'dao:delete_experience_similaire' experience.pk %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                    </form></div>
+                    <small class="text-muted">
+                        <i class="fas fa-user mr-2"></i>Auteur: Nom de l'Auteur | 
+                        <i class="fas fa-calendar-alt mr-2"></i> Date: 20 Mai 2024
+                    </small>
                 </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="text-center mt-4">
+                <a href="{% url 'dao:update_experience_similaire' experience.pk %}" class="btn btn-warning px-4">
+                    ✏ Modifier
+                </a>
+                <button class="btn btn-danger px-4" data-toggle="modal" data-target="#confirmDeleteModal">
+                    ❌ Supprimer
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- MODAL DE CONFIRMATION -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteLabel">⚠️ Confirmation de suppression</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Êtes-vous sûr de vouloir supprimer cette expérience similaire ? Cette action est <strong>irréversible</strong>.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <form id="delete-form" method="post" action="{% url 'dao:delete_experience_similaire' experience.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Oui, supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FIX : JavaScript pour s'assurer que le bon formulaire est soumis -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteModal = document.getElementById("confirmDeleteModal");
+        const deleteForm = document.getElementById("delete-form");
+
+        // Vérifier si les éléments existent avant d'ajouter l'événement
+        if (deleteModal && deleteForm) {
+            deleteModal.addEventListener("shown.bs.modal", function () {
+                // Ajouter l'événement sur le bouton de suppression
+                document.getElementById("confirmDeleteBtn").addEventListener("click", function () {
+                    deleteForm.submit();
+                });
+            });
+        }
+    });
+</script>
+
+
 {% endblock %}
