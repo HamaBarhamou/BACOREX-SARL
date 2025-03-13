@@ -337,6 +337,19 @@ class AttributionLot(models.Model):
                 "Un document d'attribution est requis pour l'attribution du marché"
             )
 
+    def save(self, *args, **kwargs):
+        self.lot.dao.is_closed = True
+        self.lot.dao.save()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        dao = self.lot.dao
+        super().delete(*args, **kwargs)  # Suppression de l'attribution
+        # Vérifier s'il reste des attributions pour ce DAO
+        if not AttributionLot.objects.filter(lot__dao=dao).exists():
+            dao.is_closed = False
+            dao.save()
+
 
 class ExperienceSimilaire(models.Model):
     reference_marche = models.CharField(max_length=200)

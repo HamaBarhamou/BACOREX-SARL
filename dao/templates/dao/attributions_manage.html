@@ -52,9 +52,9 @@
                                             <td>{{ attribution.date_attribution|default_if_none:"-" }}</td>
                                             <td>
                                                 {% if attribution.document_attribution %}
-                                                <a href="{{ attribution.document_attribution.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#documentModal{{ attribution.pk }}">
                                                     <i class="fas fa-file-pdf"></i> Voir
-                                                </a>
+                                                </button>
                                                 {% else %}
                                                 -
                                                 {% endif %}
@@ -79,6 +79,36 @@
                                                 </div>
                                             </td>
                                         </tr>
+
+                                        <!-- Modal pour la consultation du document -->
+                                        <div class="modal fade" id="documentModal{{ attribution.pk }}" tabindex="-1" aria-labelledby="documentModalLabel{{ attribution.pk }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-light">
+                                                        <h5 class="modal-title" id="documentModalLabel{{ attribution.pk }}">Document d'attribution</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {% if attribution.document_attribution.name|lower|slice:"-4:" == ".pdf" %}
+                                                            <iframe src="{{ attribution.document_attribution.url }}" class="w-100" style="height: 70vh; border: none;"></iframe>
+                                                        {% else %}
+                                                            <div class="alert alert-info">
+                                                                Ce format de document ne peut pas être prévisualisé.
+                                                                <a href="{{ attribution.document_attribution.url }}" download class="btn btn-primary mt-2">
+                                                                    <i class="fas fa-download me-2"></i> Télécharger
+                                                                </a>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="modal-footer bg-light">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                        <a href="{{ attribution.document_attribution.url }}" download class="btn btn-primary">
+                                                            <i class="fas fa-download me-2"></i> Télécharger
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         {% endfor %}
                                     </tbody>
                                 </table>
