@@ -52,7 +52,8 @@ class User(AbstractUser):
             if loop[0] == self.fonction:
                 fonction = loop[1]
                 break
-        return "{} : {}".format(self.username, fonction)
+        return self.username + " - " + fonction.upper()
+        return "{} - {}".format(self.username, fonction)
 
     def has_role(self, roles):
         if self.is_superuser:

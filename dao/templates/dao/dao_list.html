@@ -101,6 +101,7 @@
                             <th class="py-3" style="color: #3a5a78; border-bottom: 2px solid #4e73df;">Soumission</th>
                             <th class="py-3 text-center" style="color: #3a5a78; border-bottom: 2px solid #4e73df;">Statut</th>
                             <th class="py-3 text-center" style="color: #3a5a78; border-bottom: 2px solid #4e73df;">Document</th>
+                            <th class="py-3 text-center" style="color: #3a5a78; border-bottom: 2px solid #4e73df;">Détails</th>
                             <th class="py-3 text-center" style="color: #3a5a78; border-bottom: 2px solid #4e73df;">Actions</th>
                         </tr>
                     </thead>
@@ -131,12 +132,17 @@
                             </td>
                             <td class="py-3 align-middle text-center">
                                 {% if dao.fichier %}
-                                    <a href="{{ dao.fichier.url }}" class="btn btn-sm" style="background-color: rgba(76, 154, 255, 0.1); color: #4c9aff; border: 1px solid #4c9aff;">
-                                        <i class="fas fa-download me-1"></i> Fichier
-                                    </a>
+                                    <button class="btn btn-sm" style="background-color: rgba(76, 154, 255, 0.1); color: #4c9aff; border: 1px solid #4c9aff;" data-bs-toggle="modal" data-bs-target="#documentModal{{ dao.pk }}">
+                                        <i class="fas fa-eye me-1"></i> Voir
+                                    </button>
                                 {% else %}
                                     <span class="text-muted"><i class="fas fa-times"></i></span>
                                 {% endif %}
+                            </td>
+                            <td class="py-3 align-middle text-center">
+                                <a href="#" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-info-circle"></i> Détails
+                                </a>
                             </td>
                             <td class="py-3 align-middle text-center">
                                 <div class="btn-group">
@@ -203,11 +209,41 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Modal pour la visionneuse de documents -->
+                                <div class="modal fade" id="documentModal{{ dao.pk }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-light">
+                                                <h5 class="modal-title text-primary">Document : {{ dao.dao_number }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-0">
+                                                {% if dao.fichier.name|lower|slice:"-4:" == ".pdf" %}
+                                                    <iframe src="{{ dao.fichier.url }}" class="w-100" style="height: 80vh; border: none;"></iframe>
+                                                {% else %}
+                                                    <div class="p-4 text-center">
+                                                        <p class="text-muted mb-4">Ce format de document ne peut pas être prévisualisé.</p>
+                                                        <a href="{{ dao.fichier.url }}" download class="btn btn-primary">
+                                                            <i class="fas fa-download me-2"></i> Télécharger
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="modal-footer bg-light">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                <a href="{{ dao.fichier.url }}" download class="btn btn-primary">
+                                                    <i class="fas fa-download me-2"></i> Télécharger
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="8" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="fas fa-folder-open fa-3x mb-3" style="color: #b6c0cd;"></i>
                                     <p>Aucun DAO trouvé</p>

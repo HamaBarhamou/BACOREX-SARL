@@ -10,6 +10,13 @@
                 🏗️ Détails de l'Expérience Similaire
             </h2>
 
+            <!-- Bouton de retour -->
+            <div class="mb-4">
+                <a href="{% url 'dao:experience_similaire_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+                </a>
+            </div>
+
             <!-- Carte principale -->
             <div class="card shadow-lg border-0 rounded-lg mt-4">
                 <div class="card-header bg-dark text-white text-center">
@@ -67,7 +74,7 @@
                 <a href="{% url 'dao:update_experience_similaire' experience.pk %}" class="btn btn-warning px-4">
                     ✏ Modifier
                 </a>
-                <button class="btn btn-danger px-4" data-toggle="modal" data-target="#confirmDeleteModal">
+                <button class="btn btn-danger px-4" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
                     ❌ Supprimer
                 </button>
             </div>
@@ -81,15 +88,13 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="confirmDeleteLabel">⚠️ Confirmation de suppression</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
                 <p>Êtes-vous sûr de vouloir supprimer cette expérience similaire ? Cette action est <strong>irréversible</strong>.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <form id="delete-form" method="post" action="{% url 'dao:delete_experience_similaire' experience.pk %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Oui, supprimer</button>
@@ -98,24 +103,4 @@
         </div>
     </div>
 </div>
-
-<!-- FIX : JavaScript pour s'assurer que le bon formulaire est soumis -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const deleteModal = document.getElementById("confirmDeleteModal");
-        const deleteForm = document.getElementById("delete-form");
-
-        // Vérifier si les éléments existent avant d'ajouter l'événement
-        if (deleteModal && deleteForm) {
-            deleteModal.addEventListener("shown.bs.modal", function () {
-                // Ajouter l'événement sur le bouton de suppression
-                document.getElementById("confirmDeleteBtn").addEventListener("click", function () {
-                    deleteForm.submit();
-                });
-            });
-        }
-    });
-</script>
-
-
 {% endblock %}
