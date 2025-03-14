@@ -22,6 +22,14 @@ class Configuration(models.Model):
     def __str__(self):
         return f"Configuration (TVA: {self.tva_pourcentage}%)"
 
+    def clean(self):
+        """Valide que la TVA n'est pas négative."""
+        if self.tva_pourcentage < Decimal("0.00"):
+            raise ValidationError(
+                {"tva_pourcentage": "La TVA ne peut pas être négative."}
+            )
+        super().clean()
+
     @classmethod
     def get_tva(cls):
         """Retourne le taux de TVA actuel"""
