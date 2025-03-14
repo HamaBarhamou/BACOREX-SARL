@@ -44,23 +44,3 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         run: poetry run python manage.py test
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install Poetry
-        run: pip install poetry
-
-      - name: Install project dependencies
-        run: poetry install --no-root  # Ajoutez --no-root pour éviter l'erreur
-
-      - name: Run Django tests
-        run: poetry run python manage.py test
