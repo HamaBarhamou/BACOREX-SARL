@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 23.12.1  # Utilisez la dernière version de Black
+    rev: 23.12.1 
     hooks:
       - id: black
         language_version: python3.11  # Spécifiez votre version de Python
