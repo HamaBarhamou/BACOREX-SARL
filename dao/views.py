@@ -1,33 +1,35 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from decimal import Decimal, InvalidOperation
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
 from datetime import datetime
-from .forms import (
-    DAOForm,
-    ExperienceSimilaireForm,
-    ReponseDAOForm,
-    RapportDepouillementForm,
-    LotFormSet,
-    LigneRapportFormSet,
-    AttributionLotForm,
-)
-from django.template import loader
-from .models import (
-    DAO,
-    ExperienceSimilaire,
-    ReponseDAO,
-    RapportDepouillement,
-    OffreLot,
-    Soumissionnaire,
-    Configuration,
-    AttributionLot,
-    Lot,
-)
+from decimal import Decimal, InvalidOperation
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template import loader
+
+from .forms import (
+    AttributionLotForm,
+    DAOForm,
+    ExperienceSimilaireForm,
+    LigneRapportFormSet,
+    LotFormSet,
+    RapportDepouillementForm,
+    ReponseDAOForm,
+)
+from .models import (
+    DAO,
+    AttributionLot,
+    Configuration,
+    ExperienceSimilaire,
+    Lot,
+    OffreLot,
+    RapportDepouillement,
+    ReponseDAO,
+    Soumissionnaire,
+)
 
 
 @login_required(login_url="/user/")
@@ -223,7 +225,9 @@ def dao_delete(request, pk):
                 request, f"Le DAO {dao.dao_number} a été supprimé avec succès."
             )
         except Exception as e:
-            messages.error(request, "Une erreur s'est produite lors de la suppression.")
+            messages.error(
+                request, "Une erreur s'est produite lors de la suppression: ", e
+            )
     return redirect("dao:dao_list")
 
 
@@ -447,7 +451,7 @@ def rapport_depouillement_update(request, pk):
                                 # Aucun soumissionnaire n'est spécifié
                                 messages.warning(
                                     request,
-                                    f"Une ligne sans soumissionnaire a été ignorée.",
+                                    "Une ligne sans soumissionnaire a été ignorée.",
                                 )
                                 continue
 
@@ -563,7 +567,7 @@ def ajouter_attribution(request, lot_id):
     if request.method == "POST":
         form = AttributionLotForm(request.POST, request.FILES, lot=lot)
         if form.is_valid():
-            attribution = form.save()
+            form.save()
             messages.success(
                 request, f"Attribution pour {lot.nom_lot} ajoutée avec succès"
             )

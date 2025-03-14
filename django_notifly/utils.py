@@ -1,6 +1,4 @@
 from .models import Notification, UserNotification
-from django.core.exceptions import ValidationError
-
 
 NEW_PROJECT = 1
 UPDATE_PROJECT = 2
@@ -43,7 +41,8 @@ def send_notification(
     except Exception as e:
         # Loguer l'erreur ou faire un traitement spécifique
         print(f"Erreur lors de la création de la notification : {e}")
-        # Vous pouvez décider de renvoyer None ou de relancer l'exception selon votre logique d'erreur.
+        # Vous pouvez décider de renvoyer None ou de relancer l'exception selon votre
+        # logique d'erreur.
 
 
 def mark_notification_as_read(user_notification_id):

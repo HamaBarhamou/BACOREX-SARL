@@ -1,6 +1,7 @@
 from django.db import models
-from userprofile.models import User
+
 from gestionprojets.models import Projet
+from userprofile.models import User
 
 
 class Document(models.Model):

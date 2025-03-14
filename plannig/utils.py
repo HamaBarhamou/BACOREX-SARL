@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
 from calendar import HTMLCalendar
+from datetime import datetime, timedelta
+
 from .models import Event
-import calendar
-from django.db.models import Q
 
 
 class Calendar(HTMLCalendar):
@@ -20,7 +19,10 @@ class Calendar(HTMLCalendar):
 
         if day != 0:
             if f"{year}-{month}-{day}" == today:
-                return f"<td bgcolor='#00FF00'><span class='date'>{day}</span><ul> {d} </ul></td>"
+                return (
+                    f"<td bgcolor='#00FF00'><span class='date'>{day}</span><ul>"
+                    f" {d} </ul></td>"
+                )
             else:
                 return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
         return "<td></td>"
@@ -69,7 +71,7 @@ class Calendar(HTMLCalendar):
         """ for loop in dic:
             print(f"{loop} {dic[loop]}") """
 
-        cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
+        cal = '<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f"{self.formatmonthname(self.year, self.month, withyear=withyear)}\n"
         cal += f"{self.formatweekheader()}\n"
         today = str(datetime.utcnow()).split(" ")[0]
@@ -77,7 +79,7 @@ class Calendar(HTMLCalendar):
             cal += (
                 f"{self.formatweek(week, events, self.year, self.month, today, dic)}\n"
             )
-        cal += f"</table>\n"
+        cal += "</table>\n"
         return cal
 
     def daterange(self, start, end):

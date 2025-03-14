@@ -1,5 +1,6 @@
-from django import template
 from decimal import Decimal, InvalidOperation
+
+from django import template
 
 register = template.Library()
 
@@ -95,15 +96,13 @@ def sort_by_offre_for_lot(lignes, ligne_offres, lot_id):
                     original_devise = offre.devise
                     break
 
-            result.append(
-                {
-                    "soumissionnaire": ligne.soumissionnaire,
-                    "offre_value": offre_value,
-                    "original_offre": original_offre,
-                    "original_devise": original_devise,
-                    "observations": ligne.observations,
-                }
-            )
+            result.append({
+                "soumissionnaire": ligne.soumissionnaire,
+                "offre_value": offre_value,
+                "original_offre": original_offre,
+                "original_devise": original_devise,
+                "observations": ligne.observations,
+            })
     # Trier par montant de l'offre (croissant)
     return sorted(result, key=lambda x: x["offre_value"])
 

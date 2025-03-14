@@ -1,12 +1,11 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.template import loader
-from django.http import HttpResponse
-from datetime import datetime, date, timedelta
-from .models import *
-from django.utils.safestring import mark_safe
 from calendar import monthrange
+from datetime import datetime, timedelta
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.template import loader
+from django.utils.safestring import mark_safe
+
 from .utils import Calendar
 
 

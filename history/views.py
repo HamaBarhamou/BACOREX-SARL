@@ -1,6 +1,7 @@
-from django.shortcuts import render
-from .models import ActionHistory
 from django.core.paginator import Paginator
+from django.shortcuts import render
+
+from .models import ActionHistory
 
 
 def history_list(request):

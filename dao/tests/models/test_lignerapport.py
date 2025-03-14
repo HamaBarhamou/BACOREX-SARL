@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils.timezone import now
-from dao.models import DAO, RapportDepouillement, Soumissionnaire, LigneRapport
+
+from dao.models import DAO, LigneRapport, RapportDepouillement, Soumissionnaire
 
 
 class LigneRapportModelTest(TestCase):

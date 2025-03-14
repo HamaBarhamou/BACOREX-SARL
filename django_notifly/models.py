@@ -1,11 +1,8 @@
-from django.db import models
-from userprofile.models import User
-from django.utils import timezone
-
-
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.utils import timezone
+
+# from userprofile.models import User
 
 User = get_user_model()
 
@@ -42,7 +39,10 @@ class Notification(models.Model):
 
     def __str__(self):
         recipient_names = ", ".join(self.recipients.values_list("username", flat=True))
-        return f"Notification pour {recipient_names} - {self.get_notification_type_display()}"
+        return (
+            f"Notification pour {recipient_names} -"
+            f" {self.get_notification_type_display()}"
+        )
 
 
 class UserNotification(models.Model):
@@ -57,4 +57,7 @@ class UserNotification(models.Model):
         self.save()
 
     def __str__(self):
-        return f"{self.user.username} - {self.notification} - {'Lue' if self.is_read else 'Non lue'}"
+        return (
+            f"{self.user.username} - {self.notification} -"
+            f" {'Lue' if self.is_read else 'Non lue'}"
+        )

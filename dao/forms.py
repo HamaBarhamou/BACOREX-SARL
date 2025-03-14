@@ -1,16 +1,17 @@
 from django import forms
-from .models import (
-    ExperienceSimilaire,
-    DAO,
-    Lot,
-    ReponseDAO,
-    RapportDepouillement,
-    LigneRapport,
-    OffreLot,
-    Soumissionnaire,
-    AttributionLot,
-)
 from django.forms import inlineformset_factory
+
+from .models import (
+    DAO,
+    AttributionLot,
+    ExperienceSimilaire,
+    LigneRapport,
+    Lot,
+    OffreLot,
+    RapportDepouillement,
+    ReponseDAO,
+    Soumissionnaire,
+)
 
 
 class DAOForm(forms.ModelForm):
@@ -98,7 +99,8 @@ class LigneRapportForm(forms.ModelForm):
 
         if not soumissionnaire and not nouveau_soumissionnaire:
             raise forms.ValidationError(
-                "Vous devez sélectionner un soumissionnaire existant ou en créer un nouveau."
+                "Vous devez sélectionner un soumissionnaire existant ou en créer un"
+                " nouveau."
             )
 
         if nouveau_soumissionnaire:

@@ -1,12 +1,14 @@
-from django.db import models
-from django.core.exceptions import ValidationError
 from datetime import date
-from django.utils import timezone
-from userprofile.models import User
-from gestiondesstock.models import Materiels
+
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.db.models import Q
-from django_notifly.utils import send_notification, PURCHASE_REQUEST
 from django.urls import reverse
+from django.utils import timezone
+
+from django_notifly.utils import PURCHASE_REQUEST, send_notification
+from gestiondesstock.models import Materiels
+from userprofile.models import User
 
 
 # Create your models here.
@@ -117,16 +119,14 @@ class Projet(models.Model):
 
     # Retourner tous les utilisateurs impliqués dans un projet
     def get_all_users(self):
-        users = set(
-            [
-                self.coordinateur,
-                self.chef_project,
-                self.conducteur_travaux,
-                self.directeur_energie,
-                self.daf,
-                self.pdg,
-            ]
-        )
+        users = set([
+            self.coordinateur,
+            self.chef_project,
+            self.conducteur_travaux,
+            self.directeur_energie,
+            self.daf,
+            self.pdg,
+        ])
         users.update(self.list_intervenant.all())
         tasks = self.task_set.all()
         for task in tasks:
@@ -141,15 +141,17 @@ class Projet(models.Model):
             "description": self.description,
             "start_date": self.start_date,
             "end_date": self.end_date,
-            "coordinateur": self.coordinateur.get_full_name()
-            if self.coordinateur
-            else None,
-            "chef_project": self.chef_project.get_full_name()
-            if self.chef_project
-            else None,
-            "conducteur_travaux": self.conducteur_travaux.get_full_name()
-            if self.conducteur_travaux
-            else None,
+            "coordinateur": (
+                self.coordinateur.get_full_name() if self.coordinateur else None
+            ),
+            "chef_project": (
+                self.chef_project.get_full_name() if self.chef_project else None
+            ),
+            "conducteur_travaux": (
+                self.conducteur_travaux.get_full_name()
+                if self.conducteur_travaux
+                else None
+            ),
             "status": self.get_status_display(),
             "budget": self.budget,
             "pourcentage_achevement": self.pourcentage_achevement(),
@@ -430,7 +432,9 @@ class Achat(models.Model):
         Révoque une approbation si les conditions pour la révocation sont remplies.
         """
         if not self.peut_rejeter(user):
-            return False  # Ajoutez une gestion appropriée pour informer l'utilisateur que la révocation n'est pas possible
+            return False
+            # Ajoutez une gestion appropriée pour informer l'utilisateur que la révocation
+            # n'est pas possible
 
         if user.is_chefDeProjet():
             self.status = "non_envoyer"
@@ -449,7 +453,8 @@ class Achat(models.Model):
 
     def peut_rejeter(self, user):
         """
-        Détermine si une approbation peut être révoquée par l'utilisateur en fonction de l'état actuel des approbations.
+        Détermine si une approbation peut être révoquée par l'utilisateur en fonction de
+        l'état actuel des approbations.
         """
         if user.is_daf() and self.approbation_pdg == "en_attente":
             return True
@@ -493,7 +498,7 @@ class Achat(models.Model):
             ]
 
         send_notification(
-            notification_type="PURCHASE_REQUEST_REJECTED",  # Modifier pour refléter le type d'action
+            notification_type="PURCHASE_REQUEST_REJECTED",
             message=message,
             url=notification_url,
             recipients=recipients,

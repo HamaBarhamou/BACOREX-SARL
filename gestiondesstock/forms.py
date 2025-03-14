@@ -1,8 +1,7 @@
 from django import forms
 from django.forms import ModelForm
-from django.db import models
-from .models import CategoriMateriel
-from .models import Entrepot, Materiels
+
+from .models import Materiels
 
 
 class CategoriMaterielForm(forms.Form):
@@ -33,5 +32,5 @@ class MaterielsForm(ModelForm):
         model = Materiels
         fields = ["name", "description", "qte", "categorie", "entrepot", "image"]
 
-        def __init__(self, *args, **kwargs):
-            super(CaseForm, self).__init__(*args, **kwargs)
+        """ def __init__(self, *args, **kwargs):
+            super(CaseForm, self).__init__(*args, **kwargs) """

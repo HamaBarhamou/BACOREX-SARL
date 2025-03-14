@@ -1,6 +1,7 @@
-from django import forms
-from .models import User, MessagePredefini
 from ckeditor.widgets import CKEditorWidget
+from django import forms
+
+from .models import MessagePredefini, User
 
 
 class MessageForm(forms.Form):
@@ -32,14 +33,12 @@ class MessageForm(forms.Form):
             user_role_str = projet.get_user_role(user)
             user_role_value = self.ROLE_MAPPING.get(user_role_str)
             if user_role_value is not None:
-                self.fields[
-                    "message_predefini"
-                ].queryset = MessagePredefini.objects.filter(
-                    expeditaire_role=user_role_value
+                self.fields["message_predefini"].queryset = (
+                    MessagePredefini.objects.filter(expeditaire_role=user_role_value)
                 )
-                self.fields[
-                    "message_predefini"
-                ].label_from_instance = lambda obj: f"{obj.titre}"
+                self.fields["message_predefini"].label_from_instance = (
+                    lambda obj: f"{obj.titre}"
+                )
             else:
                 self.fields["message_predefini"].widget = forms.HiddenInput()
 

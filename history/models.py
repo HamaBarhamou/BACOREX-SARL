@@ -1,7 +1,6 @@
 from django.db import models
+
 from userprofile.models import User
-from django.contrib.postgres.fields import JSONField
-import json
 
 
 class ActionHistory(models.Model):
@@ -37,7 +36,11 @@ class ActionHistory(models.Model):
         ordering = ["-timestamp"]  # Ordonner par horodatage, les plus récents d'abord
 
     def __str__(self):
-        return f"{self.user.username} a effectué {self.action_type} sur {self.entity_type} (ID: {self.entity_id}) - {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+        return (
+            f"{self.user.username} a effectué {self.action_type} sur"
+            f" {self.entity_type} (ID: {self.entity_id}) -"
+            f" {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
 
     def parse_detail(self, key, old_value, new_value):
         if key == "status":
@@ -68,17 +71,24 @@ class ActionHistory(models.Model):
         # Pour une création, affichez simplement le nom de l'entité créée.
         if "Création" in self.action_type and not details.get("old_data"):
             # entity_name = details.get('new_data', {}).get('name', 'Inconnu')
-            return f"A créé {self.entity_type.lower()} (ID: {self.entity_id}) - '{entity_name}'."
+            return (
+                f"A créé {self.entity_type.lower()} (ID: {self.entity_id}) -"
+                f" '{entity_name}'."
+            )
 
         # Pour une suppression, affichez le nom de l'entité supprimée.
         if "Suppression" in self.action_type:
             # entity_name = details.get('old_data', {}).get('name', 'Inconnu')
-            return f"A supprimé {self.entity_type.lower()} (ID: {self.entity_id}) - '{entity_name}'."
+            return (
+                f"A supprimé {self.entity_type.lower()} (ID: {self.entity_id}) -"
+                f" '{entity_name}'."
+            )
 
         # Pour une mise à jour, introduisez la narration avec l'action et l'ID.
         if "Modification" in self.action_type:
             story_parts = [
-                f"<strong>A modifier {self.entity_type.lower()} (ID: {self.entity_id}): {entity_name}</strong>"
+                f"<strong>A modifier {self.entity_type.lower()} (ID: {self.entity_id}):"
+                f" {entity_name}</strong>"
             ]
 
             if "old_data" in details and "new_data" in details:
@@ -98,4 +108,8 @@ class ActionHistory(models.Model):
         return " ".join(story_parts)
 
     def action_summary(self):
-        return f"{self.user.username} a effectué l'action '{self.action_type}' sur {self.entity_type.lower()} (ID: {self.entity_id}) à {self.timestamp.strftime('%H:%M')}."
+        return (
+            f"{self.user.username} a effectué l'action '{self.action_type}' sur"
+            f" {self.entity_type.lower()} (ID: {self.entity_id}) à"
+            f" {self.timestamp.strftime('%H:%M')}."
+        )

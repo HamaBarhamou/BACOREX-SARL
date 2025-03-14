@@ -1,7 +1,8 @@
-from django.db import models
-from django.core.exceptions import ValidationError
 import logging
 from decimal import Decimal
+
+from django.core.exceptions import ValidationError
+from django.db import models
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
@@ -201,9 +202,11 @@ class OffreLot(models.Model):
     def __str__(self):
         return "Offre pour {} par {}".format(
             self.lot.nom_lot,
-            self.ligne_rapport.soumissionnaire.nom
-            if self.ligne_rapport.soumissionnaire
-            else "Inconnu",
+            (
+                self.ligne_rapport.soumissionnaire.nom
+                if self.ligne_rapport.soumissionnaire
+                else "Inconnu"
+            ),
         )
 
     def get_offre_fcfa(self):
@@ -328,7 +331,10 @@ class AttributionLot(models.Model):
         verbose_name_plural = "Attributions de lots"
 
     def __str__(self):
-        return f"Attribution {self.lot} - {self.soumissionnaire.nom} ({self.get_statut_display()})"
+        return (
+            f"Attribution {self.lot} -"
+            f" {self.soumissionnaire.nom} ({self.get_statut_display()})"
+        )
 
     def clean(self):
         # Vérification que le soumissionnaire a bien fait une offre pour ce lot
@@ -336,7 +342,8 @@ class AttributionLot(models.Model):
             lot=self.lot, ligne_rapport__soumissionnaire=self.soumissionnaire
         ).exists():
             raise ValidationError(
-                f"Le soumissionnaire {self.soumissionnaire.nom} n'a pas fait d'offre pour ce lot"
+                f"Le soumissionnaire {self.soumissionnaire.nom} n'a pas fait d'offre"
+                " pour ce lot"
             )
 
         # Si statut est ATTRIBUE, document d'attribution obligatoire

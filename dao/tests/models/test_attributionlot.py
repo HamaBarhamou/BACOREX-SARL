@@ -1,16 +1,17 @@
+from decimal import Decimal
+
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 from django.utils.timezone import now
+
 from dao.models import (
     DAO,
-    Lot,
-    Soumissionnaire,
-    OffreLot,
-    LigneRapport,
-    RapportDepouillement,
     AttributionLot,
+    LigneRapport,
+    Lot,
+    OffreLot,
+    RapportDepouillement,
+    Soumissionnaire,
 )
-from decimal import Decimal
 
 
 class AttributionLotModelTest(TestCase):

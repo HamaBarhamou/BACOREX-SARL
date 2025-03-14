@@ -1,46 +1,35 @@
-from datetime import datetime
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import render
+from datetime import date, datetime
+
+import pandas as pd
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseRedirect
-from django.urls import reverse
-from django.shortcuts import get_object_or_404
-from django.core.exceptions import ValidationError
-from django.http import JsonResponse
-from django.forms.models import model_to_dict
-from datetime import datetime, timedelta, date
-from django.shortcuts import redirect
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import F, Q, Sum
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template import loader
-from django.http import HttpResponse
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+
+from history.models import ActionHistory
+from userprofile.models import User
+
 from .forms import (
+    AchatForm,
+    ArticleAchatForm,
     ClientForm,
+    PhaseForm,
     ProjetForm,
     TaskForm,
     TaskLimitedForm,
-    PhaseForm,
-    AgentForm,
-    AchatForm,
-    ArticleAchatForm,
 )
-from .models import Client, Projet, Task, Phase, Achat, ArticleAchat
-from plannig.models import Event
+from .models import Achat, ArticleAchat, Client, Phase, Projet, Task
 from .serializers import (
-    TaskSerializer,
+    ClientSerializer,
     PhaseSerializer,
     ProjetSerializer,
-    ClientSerializer,
+    TaskSerializer,
 )
-from django.views.decorators.http import require_POST
-import pandas as pd
-from openpyxl import Workbook
-from django.db.models import F, Q, Sum
-from userprofile.models import User
-from django.db.models import Prefetch
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.utils.timezone import now
-from history.models import ActionHistory
-import json
-
 
 """ fonction = [
     "",
@@ -78,18 +67,16 @@ def ganttchartprojects(request):
         )
         print("tooltip=", tooltip)
         gantt_labels.append(projet.name)
-        gantt_data.append(
-            {
-                "id": projet.id,
-                "name": projet.name,
-                "start": projet.start_date.strftime("%Y-%m-%d"),
-                "end": projet.end_date.strftime("%Y-%m-%d"),
-                "status": projet.status,
-                "percentDone": percent_done,
-                "color": status_colors[projet.status],
-                "tooltip": tooltip,
-            }
-        )
+        gantt_data.append({
+            "id": projet.id,
+            "name": projet.name,
+            "start": projet.start_date.strftime("%Y-%m-%d"),
+            "end": projet.end_date.strftime("%Y-%m-%d"),
+            "status": projet.status,
+            "percentDone": percent_done,
+            "color": status_colors[projet.status],
+            "tooltip": tooltip,
+        })
     context = {
         "gantt_labels": gantt_labels,
         "gantt_data": gantt_data,
@@ -120,15 +107,13 @@ def Taskliste(request):
             percent_done = (days_passed / total_days) * 100 if total_days > 0 else 0
             percent_done = min(max(percent_done, 0), 100)
         gantt_labels.append(task.name)
-        gantt_data.append(
-            {
-                "name": task.name,
-                "start": task.start_date.strftime("%Y-%m-%d"),
-                "end": task.end_date.strftime("%Y-%m-%d"),
-                "status": task.status,
-                "percentDone": percent_done,
-            }
-        )
+        gantt_data.append({
+            "name": task.name,
+            "start": task.start_date.strftime("%Y-%m-%d"),
+            "end": task.end_date.strftime("%Y-%m-%d"),
+            "status": task.status,
+            "percentDone": percent_done,
+        })
     not_started_tasks = user_tasks.filter(
         start_date__lte=date.today(), end_date__gte=date.today(), status=1
     )
@@ -688,21 +673,19 @@ def download_projet_data(request):
         users = [user.username for user in projet.get_all_users()]
         users.extend([user.username for user in projet.list_intervenant.all()])
         users_str = ", ".join(users)
-        data.append(
-            {
-                "Nom Projet": projet.name,
-                "Description Projet": projet.description,
-                "Intervenants": users_str,
-                "Materiels": ", ".join(
-                    [materiel.name for materiel in projet.list_materiels.all()]
-                ),
-                "Client": projet.client.name,
-                "Statut Projet": dict(projet.STATUS).get(projet.status),
-                "Budget Projet": projet.budget,
-                "Date de demarrage": projet.start_date,
-                "Date de fin": projet.end_date,
-            }
-        )
+        data.append({
+            "Nom Projet": projet.name,
+            "Description Projet": projet.description,
+            "Intervenants": users_str,
+            "Materiels": ", ".join(
+                [materiel.name for materiel in projet.list_materiels.all()]
+            ),
+            "Client": projet.client.name,
+            "Statut Projet": dict(projet.STATUS).get(projet.status),
+            "Budget Projet": projet.budget,
+            "Date de demarrage": projet.start_date,
+            "Date de fin": projet.end_date,
+        })
     df = pd.DataFrame(data)
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="revue_portefeuille.xlsx"'

@@ -1,15 +1,16 @@
-from django.test import TestCase
-from django.core.exceptions import ValidationError
-from django.utils.timezone import now
 from decimal import Decimal
+
+from django.test import TestCase
+from django.utils.timezone import now
+
 from dao.models import (
     DAO,
+    Configuration,
+    LigneRapport,
     Lot,
+    OffreLot,
     RapportDepouillement,
     Soumissionnaire,
-    LigneRapport,
-    OffreLot,
-    Configuration,
 )
 
 

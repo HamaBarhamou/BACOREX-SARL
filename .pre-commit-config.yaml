@@ -1,0 +1,45 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.12.1  # Utilisez la dernière version de Black
+    hooks:
+      - id: black
+        language_version: python3.11  # Spécifiez votre version de Python
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8==7.0.0]
+        exclude: |
+          (?x)^(
+            .git/|
+            __pycache__/|
+            migrations/|
+            venv/|
+            .venv/|
+            env/|
+            .env/|
+            .mypy_cache/|
+            .pytest_cache/|
+            .tox/|
+            dist/|
+            build/|
+            .*\.egg-info/|
+            .*\.sqlite3
+          )
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2  # Utilisez la dernière version de Isort
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: ["--profile", "black"]
+
+  - repo: local
+    hooks:
+      - id: run-tests
+        name: Run Django Tests
+        entry: poetry run python manage.py test
+        language: system
+        pass_filenames: false
+        stages: [commit]

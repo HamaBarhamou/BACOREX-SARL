@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 ASSISTANT_DAO = 1
 CHEF_SERVICE_ETUDE = 2
@@ -83,26 +83,22 @@ class User(AbstractUser):
         return self.has_role([CHEF_PROJET, COORDINATEUR_OPERATIONS, ADMIN])
 
     def is_leader(self):
-        return self.has_role(
-            [
-                ADMIN,
-                COORDINATEUR_OPERATIONS,
-                DIRECTEUR_ENERGIE,
-                DIRECTEUR_ADMINISTRATIF_FINANCIER,
-                PRESIDENT_DIRECTEUR_GENERALE,
-            ]
-        )
+        return self.has_role([
+            ADMIN,
+            COORDINATEUR_OPERATIONS,
+            DIRECTEUR_ENERGIE,
+            DIRECTEUR_ADMINISTRATIF_FINANCIER,
+            PRESIDENT_DIRECTEUR_GENERALE,
+        ])
 
     def is_member_workflot_achats(self):
-        return self.is_superuser or self.has_role(
-            [
-                DIRECTEUR_ENERGIE,
-                COORDINATEUR_OPERATIONS,
-                CHEF_PROJET,
-                DIRECTEUR_ADMINISTRATIF_FINANCIER,
-                PRESIDENT_DIRECTEUR_GENERALE,
-            ]
-        )
+        return self.is_superuser or self.has_role([
+            DIRECTEUR_ENERGIE,
+            COORDINATEUR_OPERATIONS,
+            CHEF_PROJET,
+            DIRECTEUR_ADMINISTRATIF_FINANCIER,
+            PRESIDENT_DIRECTEUR_GENERALE,
+        ])
 
     def is_coordinateur_or_directeur_energie(self):
         return self.has_role([COORDINATEUR_OPERATIONS, DIRECTEUR_ENERGIE])
@@ -117,42 +113,36 @@ class User(AbstractUser):
         return self.has_role([CAISSIER])
 
     def is_directeur_energie_or_pdg_or_daf(self):
-        return self.has_role(
-            [
-                DIRECTEUR_ENERGIE,
-                PRESIDENT_DIRECTEUR_GENERALE,
-                DIRECTEUR_ADMINISTRATIF_FINANCIER,
-            ]
-        )
+        return self.has_role([
+            DIRECTEUR_ENERGIE,
+            PRESIDENT_DIRECTEUR_GENERALE,
+            DIRECTEUR_ADMINISTRATIF_FINANCIER,
+        ])
 
     def administraion_role(self):
         return self.has_role([ADMIN])
 
     def gestiondao_role(self):
-        return self.has_role(
-            [
-                ASSISTANT_DAO,
-                CHEF_SERVICE_ETUDE,
-                CHEF_DEPARTEMENT_ETUDE,
-                DIRECTEUR_ENERGIE,
-            ]
-        )
+        return self.has_role([
+            ASSISTANT_DAO,
+            CHEF_SERVICE_ETUDE,
+            CHEF_DEPARTEMENT_ETUDE,
+            DIRECTEUR_ENERGIE,
+        ])
 
     def gestiondesstock_role(self):
         return self.has_role([MAGASINIER])
 
     def gestionprojet_role(self):
-        return self.has_role(
-            [
-                CHEF_PROJET,
-                CONDUCTEUR_TRAVAUX,
-                INTERVENANT,
-                COORDINATEUR_OPERATIONS,
-                DIRECTEUR_ENERGIE,
-                PRESIDENT_DIRECTEUR_GENERALE,
-                DIRECTEUR_ADMINISTRATIF_FINANCIER,
-            ]
-        )
+        return self.has_role([
+            CHEF_PROJET,
+            CONDUCTEUR_TRAVAUX,
+            INTERVENANT,
+            COORDINATEUR_OPERATIONS,
+            DIRECTEUR_ENERGIE,
+            PRESIDENT_DIRECTEUR_GENERALE,
+            DIRECTEUR_ADMINISTRATIF_FINANCIER,
+        ])
 
     def newclients_role(self):
         return self.has_role([ADMIN, COORDINATEUR_OPERATIONS])
@@ -166,11 +156,9 @@ class User(AbstractUser):
         )
 
     def demande_achats_all(self):
-        return self.has_role(
-            [
-                COORDINATEUR_OPERATIONS,
-                DIRECTEUR_ADMINISTRATIF_FINANCIER,
-                PRESIDENT_DIRECTEUR_GENERALE,
-                DIRECTEUR_ENERGIE,
-            ]
-        )
+        return self.has_role([
+            COORDINATEUR_OPERATIONS,
+            DIRECTEUR_ADMINISTRATIF_FINANCIER,
+            PRESIDENT_DIRECTEUR_GENERALE,
+            DIRECTEUR_ENERGIE,
+        ])

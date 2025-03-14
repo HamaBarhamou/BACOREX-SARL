@@ -1,15 +1,15 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
-from .forms import MessageForm
-from django.template import loader
-from userprofile.forms import LoginForm
-from .models import Message, Document, MessagePredefini
 import datetime
+
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template import loader
+
 from gestioncouriers.utils import send_notification_email
-from django.shortcuts import get_object_or_404
 from gestionprojets.models import Projet
+
+from .forms import MessageForm
+from .models import Document, Message, MessagePredefini
 
 
 @login_required(login_url="/user/")

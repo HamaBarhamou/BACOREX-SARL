@@ -1,23 +1,22 @@
 from django import forms
-from django.forms import ModelForm, Textarea, NumberInput
-from django.forms import ClearableFileInput
-from django.db import models
-from .models import Client, Projet, Task, Phase, Achat, ArticleAchat
-from django.utils.translation import gettext_lazy as _
-from userprofile.models import User
-from gestiondesstock.models import Materiels
-from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import ValidationError
+from django.forms import ClearableFileInput, ModelForm, NumberInput, Textarea
+from django.utils.translation import gettext_lazy as _
+
+from gestiondesstock.models import Materiels
 from userprofile.models import (
+    CAISSIER,
+    CHEF_PROJET,
     CONDUCTEUR_TRAVAUX,
     COORDINATEUR_OPERATIONS,
-    CHEF_PROJET,
-    INTERVENANT,
     DIRECTEUR_ADMINISTRATIF_FINANCIER,
-    PRESIDENT_DIRECTEUR_GENERALE,
     DIRECTEUR_ENERGIE,
-    CAISSIER,
+    INTERVENANT,
+    PRESIDENT_DIRECTEUR_GENERALE,
+    User,
 )
+
+from .models import Achat, ArticleAchat, Client, Phase, Projet, Task
 
 
 class ClientForm(ModelForm):
@@ -147,7 +146,8 @@ class TaskForm(ModelForm):
         if start_date and end_date and end_date < start_date:
             raise ValidationError(
                 _(
-                    "La date de fin de la tâche doit être postérieure à la date de début."
+                    "La date de fin de la tâche doit être postérieure à la date de"
+                    " début."
                 )
             )
 

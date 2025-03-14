@@ -1,6 +1,8 @@
-from django.utils.timezone import now
-from django.test import TestCase
 from decimal import Decimal
+
+from django.test import TestCase
+from django.utils.timezone import now
+
 from dao.models import ExperienceSimilaire
 
 

@@ -1,5 +1,4 @@
 from django.db import models
-from gestionprojets.models import Projet
 
 
 # Create your models here.

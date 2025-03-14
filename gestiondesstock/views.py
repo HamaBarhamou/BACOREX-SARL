@@ -1,11 +1,10 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
-from django.http import HttpResponse
-from django.template import loader
 from django.contrib.auth.decorators import login_required
-from .forms import CategoriMaterielForm, MaterielsForm, EntrepotForm
-from .models import CategoriMateriel, Materiels, Entrepot
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.template import loader
+
+from .forms import CategoriMaterielForm, EntrepotForm, MaterielsForm
+from .models import CategoriMateriel, Entrepot, Materiels
 
 
 # Create your views here.

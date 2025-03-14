@@ -1,9 +1,7 @@
 from django import template
-from django_notifly.models import Notification, UserNotification
 from django.template.loader import render_to_string
-from django.utils.html import format_html
-from django.urls import reverse
-from django.core.paginator import Paginator
+
+from django_notifly.models import UserNotification
 
 register = template.Library()
 

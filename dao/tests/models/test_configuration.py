@@ -1,7 +1,9 @@
-from django.test import TestCase
 from decimal import Decimal
-from dao.models import Configuration
+
 from django.core.exceptions import ValidationError
+from django.test import TestCase
+
+from dao.models import Configuration
 
 
 class ConfigurationModelTest(TestCase):
@@ -12,7 +14,7 @@ class ConfigurationModelTest(TestCase):
 
     def test_get_tva(self):
         """Teste la méthode get_tva."""
-        config = Configuration.objects.create(tva_pourcentage=Decimal("20.00"))
+        Configuration.objects.create(tva_pourcentage=Decimal("20.00"))
         self.assertEqual(Configuration.get_tva(), Decimal("20.00"))
 
     def test_str_method(self):

@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.shortcuts import redirect, render
+
 from .models import UserNotification
 
 

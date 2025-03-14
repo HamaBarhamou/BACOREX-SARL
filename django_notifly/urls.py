@@ -1,6 +1,7 @@
 # django_Notifly/urls.py
 from django.urls import path
-from .views import unread_count, all_notifications_view, read_notification
+
+from .views import all_notifications_view, read_notification, unread_count
 
 app_name = "notifly"
 

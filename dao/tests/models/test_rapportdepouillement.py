@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.utils.timezone import now
+
 from dao.models import DAO, RapportDepouillement
 
 
