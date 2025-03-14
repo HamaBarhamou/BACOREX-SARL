@@ -11,7 +11,7 @@ class Configuration(models.Model):
     tva_pourcentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        default=19.00,
+        default=Decimal("19.00"),
         help_text="Taux de TVA en pourcentage (ex: 19.00 pour 19%)",
     )
 
