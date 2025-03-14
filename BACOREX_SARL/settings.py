@@ -134,11 +134,11 @@ if "RENDER" not in os.environ:  # If local environment
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": "bacorex_db",
-            "USER": "bacorex_user",
-            "PASSWORD": "bac0rex",
-            "HOST": "localhost",
-            "PORT": "",
+            "NAME": os.getenv("POSTGRES_DB", "bacorex_db"),  # Nom de la base de données
+            "USER": os.getenv("POSTGRES_USER", "bacorex_user"),  # Utilisateur
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "bac0rex"),  # Mot de passe
+            "HOST": os.getenv("POSTGRES_HOST", "localhost"),  # Hôte
+            "PORT": os.getenv("POSTGRES_PORT", ""),  # Port
         }
     }
 else:  # If production environment

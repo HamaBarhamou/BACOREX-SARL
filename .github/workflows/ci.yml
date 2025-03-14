@@ -42,5 +42,9 @@ jobs:
 
       - name: Run Django tests
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
         run: poetry run python manage.py test
